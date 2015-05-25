@@ -3,68 +3,167 @@ using System.Collections;
 using AssemblyCSharp;
 using DG.Tweening;
 using System;
+using UnityEngine.UI;
 
 public class GameScene : MonoBehaviour
 {
-		public GameObject maze;
-		public GameObject player;
-		
-		//view scripts
-		private MazeView _mazeView;
-		private PlayerView _playerView;
-		
-		//current maze data
-		private MazeData _mazeData;
 	
-		// Use this for initialization
-		void Start ()
-		{
-				DOTween.Init (false, true, LogBehaviour.ErrorsOnly);
-		
-				var mazeObject = (GameObject)Instantiate (maze);
-				_mazeView = mazeObject.GetComponent<MazeView> ();
-				
-				var playerObject = (GameObject)Instantiate (player);
-				_playerView = playerObject.GetComponent<PlayerView> ();
-				_playerView.onStepComplete += OnPlayerStepComplete;
-				Next ();
-		}
+	//container for maze and player
+	private GameObject _container;
+	private GameObject _maze;
+	private GameObject _player;
 	
-		void OnPlayerStepComplete ()
-		{
-				if (!_mazeData.IsInBounds (_playerView.cellX + MazeData.DIRECTIONS [_playerView.directionIdx, 0], _playerView.cellY + MazeData.DIRECTIONS [_playerView.directionIdx, 1]))
-						return;
+	//textfields for game state UI
+	private Text scoreText;
+	private Text movesText;
 		
-				NodeData node = _mazeData.GetNode (_playerView.cellX, _playerView.cellY);
+	//view scripts
+	private MazeView _mazeView;
+	private PlayerView _playerView;
+		
+	//current maze data
+	private MazeData _mazeData;
+	
+	//current game state
+	private int _score;
+	bool _activated;
+	private uint _movesLeft;
+	private uint _movesLeftCritical;
+	private bool _stuck;
+	
+	//score to add after previous interation, depending on bonus moves
+	private uint _increaseValue;
+
+	//scores to to takeoff on ueach update when stuck. approx should drain all score in 1 second
+	private int _reduceValue;
+	
+	// Use this for initialization
+	void Start ()
+	{
+		DOTween.Init (false, true, LogBehaviour.ErrorsOnly);
 				
-				Debug.LogFormat ("walls {0} at x:{1}, y:{2} ", Convert.ToString (node.walls, 2), _playerView.cellX, _playerView.cellY);
+		_container = GameObject.Find ("GameContainer");
+		
+		var mazeObject = (GameObject)Instantiate (Resources.Load ("Prefabs/Maze"));
+		mazeObject.transform.parent = _container.transform;
+		_mazeView = mazeObject.GetComponent<MazeView> ();
 				
+		var playerObject = (GameObject)Instantiate (Resources.Load ("Prefabs/Player"));
+		playerObject.transform.parent = _container.transform;
+		_playerView = playerObject.GetComponent<PlayerView> ();
+		_playerView.onStepComplete += OnPlayerStepComplete;
 				
-				if (!node.HasWall (_playerView.directionIdx))
-						_playerView.Next ();
-		}
+		scoreText = (Text)GameObject.Find ("Canvas/ScoreText").GetComponent<Text> ();
+		movesText = (Text)GameObject.Find ("Canvas/MovesText").GetComponent<Text> ();
+				
+		_movesLeft = 0;
+		_score = 0;
+		Next ();
+	}
+	
+	// Update is called once per frame
+	void Update ()
+	{
+		if (_stuck) {
+			scoreText.color = new Color (1.0f, 0.0f, 0.0f);
+			if (_score < _reduceValue)
+				Application.LoadLevel ("MenuScene");
+			else {
+				_score -= _reduceValue;
+				scoreText.text = "SCORE: " + _score;
+			}
+		} else
+			if (_increaseValue == 0)
+			scoreText.color = new Color (0.761f, 0.761f, 0.668f);
+		else {
+			if (_increaseValue > 0) {
+				scoreText.color = new Color (0.0f, 1.0f, 0.0f);
+
+				if (_increaseValue > _movesLeft)
+					_increaseValue = _movesLeft;
+			} else {
+				scoreText.color = new Color (1.0f, 0.0f, 0.0f);	
+				
+				if (_increaseValue < _movesLeft)
+					_increaseValue = _movesLeft;
+			}
 			
-		public void OnLeft ()
-		{
-				_playerView.OnLeft ();
+			_score += (int)_increaseValue;
+			_movesLeft -= _increaseValue;
+			scoreText.text = "SCORE: " + _score;
+			movesText.text = "MOVES: " + _movesLeft;
 		}
-			
-		public void OnRight ()
-		{
-				_playerView.OnRight ();
-		}
-			
-		// Update is called once per frame
-		void Update ()
-		{
-				if (Input.GetKeyDown (KeyCode.N)) {
-						Next ();
-				}
+	}
+	
+	private void OnPlayerStepComplete ()
+	{
+		if (!_activated)
+			Activate ();
+	
+		NodeData node = _mazeData.GetNode (_playerView.cellX, _playerView.cellY);
+		_score += node.score;
+		node.score = 0;
+		
+		scoreText.text = "SCORE: " + _score;
+		movesText.text = "MOVES: " + _movesLeft;
+		
+		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
+			movesText.color = new Color (0.761f, 0.761f, 0.668f);
+			Next ();
+			return;
 		}
 		
-		void Next ()
-		{
-				_mazeData = MazeGenerator.Generate (9, 9);
-				_mazeView.UpdateMazeData (_mazeData);
+		_movesLeft--;
+		if (_movesLeft == 0) {
+			Application.LoadLevel ("MenuScene");
+			return;
+		} 
+		
+		if (_movesLeft < _movesLeftCritical)
+			movesText.color = new Color (1.0f, 0.0f, 0.0f);
+		
+		if (!node.HasWall (_playerView.directionIdx)) {
+			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
+			_playerView.Next ();
+			_mazeView.ShowObjects (true);
+			_stuck = false;
+		} else {
+			_mazeView.ShowObjects (false);
+			_stuck = true;
+			
+			_reduceValue = (int)((float)_score * Time.deltaTime);
+			if (_reduceValue < 1)
+				_reduceValue = 1;
 		}
+	}
+		
+	private void Next ()
+	{
+		_activated = false;
+	
+		if (_movesLeft > 0) {
+			_increaseValue = (uint)((float)_movesLeft * Time.deltaTime * 2);
+			if (_increaseValue == 0)
+				_increaseValue = 1;
+		} else
+			_increaseValue = 0;
+	
+		_mazeData = MazeGenerator.Generate (8, 8, _playerView.cellX, _playerView.cellY);
+		_container.transform.position = new Vector2 (
+			-(_mazeData.width - 1) * MazeView.NODE_SIZE / 2, 
+			-(_mazeData.height - 1) * MazeView.NODE_SIZE / 2
+		);
+		_mazeView.UpdateMazeData (_mazeData);
+		
+		_playerView.InvokeAutostartIn (1);
+	}
+	
+	private void Activate ()
+	{
+		_increaseValue = 0;
+		_score += (int)_movesLeft;
+		_movesLeft = _mazeData.movesQuota;
+		_movesLeftCritical = _movesLeft/10;
+		_activated = true;
+	}
 }

@@ -13,141 +13,162 @@ using System.Collections.Generic;
 
 namespace AssemblyCSharp
 {
-		public class MazeData
+	public class MazeData
+	{
+		public const int MAX_SCORE = 4;
+		public uint movesQuota;
+		
+		public int width { get { return _width; } }
+
+		public int height { get { return _height; } }
+		
+		private int _width;
+		private int _height;
+		private NodeData[] _data;
+		private System.Random _rnd;
+
+		public MazeData (int width, int height)
 		{
-				public static int[,] DIRECTIONS = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+			_rnd = new System.Random ();
 
-				public int width { get { return _width; } }
-
-				public int height { get { return _height; } }
-		
-				private int _width;
-				private int _height;
-				private NodeData[] _data;
-				private System.Random _rnd;
-
-				public MazeData (int width, int height)
-				{
-						_rnd = new System.Random ();
-
-						_width = width;
-						_height = height;
+			_width = width;
+			_height = height;
 			
-						_data = new NodeData[_width * _height];
+			_data = new NodeData[_width * _height];
 			
-						for (int j = 0; j < _width; j++)
-								for (int i = 0; i < _height; i++)
-										_data [i + j * _width] = new NodeData (i, j);
-				}
+			for (int j = 0; j < _width; j++)
+				for (int i = 0; i < _height; i++)
+					_data [i + j * _width] = new NodeData (i, j);
+		}
 
-				public NodeData GetNode (int x, int y)
-				{
-						return _data [x + y * _width];
-				}
+		public NodeData GetNode (int x, int y)
+		{
+			return _data [x + y * _width];
+		}
 		
-				public NodeData GetRandomNode ()
-				{
-						return GetNode (_rnd.Next (0, _width), _rnd.Next (0, _height));
-				}
+		public NodeData GetRandomNode ()
+		{
+			return GetNode (_rnd.Next (0, _width), _rnd.Next (0, _height));
+		}
 		
-				/**
+		/**
          * Gets all neighbours of specified node not processed by alghoritm.
          */
-				public List<NodeData> GetNotProcessedNeighboursOf (NodeData target)
-				{
-						List<NodeData> neighbours = new List<NodeData> ();
+		public List<NodeData> GetNotProcessedNeighboursOf (NodeData target)
+		{
+			List<NodeData> neighbours = new List<NodeData> ();
 			
-						for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 4; i++) {
 				
-								int x = target.x + DIRECTIONS [i, 0];
-								int y = target.y + DIRECTIONS [i, 1];
+				int x = target.x + NodeData.DIRECTIONS [i, 0];
+				int y = target.y + NodeData.DIRECTIONS [i, 1];
 				
-								if (IsInBounds (x, y)) {
-										NodeData neighbour = GetNode (x, y);
-										if (!neighbour.processed)
-												neighbours.Add (neighbour);
-								}
-						}
-						return neighbours;
+				if (IsInBounds (x, y)) {
+					NodeData neighbour = GetNode (x, y);
+					if (!neighbour.HasFlag (NodeData.PROCESSED))
+						neighbours.Add (neighbour);
 				}
-		
-				public bool IsInBounds (int x, int y)
-				{
-						return ((x > -1) && (x < _width) && (y > -1) && (y < _height));
+			}
+			return neighbours;
+		}
+		/**
+         * Gets merged neighbours of specified node processed by alghoritm.
+         */
+		public List<NodeData> GetMergedNeighboursOf (NodeData target)
+		{
+			List<NodeData> neighbours = new List<NodeData> ();
+			
+			for (int i = 0; i < 4; i++) {
+				
+				if (!target.HasWall (i)) {
+					int x = target.x + NodeData.DIRECTIONS [i, 0];
+					int y = target.y + NodeData.DIRECTIONS [i, 1];
+				
+					if (IsInBounds (x, y)) {
+						NodeData neighbour = GetNode (x, y);
+						neighbours.Add (neighbour);
+					}
 				}
+			}
+			return neighbours;
+		}
 		
-				/**
+		public bool IsInBounds (int x, int y)
+		{
+			return ((x > -1) && (x < _width) && (y > -1) && (y < _height));
+		}
+		
+		/**
 		 * Finds a random neighbour with specified <code>processed</code> param
 		 */
 		
-				public NodeData GetRandomNeighbour (NodeData target, bool processed)
-				{
+		public NodeData GetRandomNeighbour (NodeData target, bool processedNeeded)
+		{
 			
-						int offset = _rnd.Next (0, 4);
-						for (int i = 0; i < 4; i++) {
-								int dir = (offset + i) % 4;
+			int offset = _rnd.Next (0, 4);
+			for (int i = 0; i < 4; i++) {
+				int dir = (offset + i) % 4;
 				
-								int x = target.x + DIRECTIONS [dir, 0];
-								int y = target.y + DIRECTIONS [dir, 1];
+				int x = target.x + NodeData.DIRECTIONS [dir, 0];
+				int y = target.y + NodeData.DIRECTIONS [dir, 1];
 				
-								if (IsInBounds (x, y)) {
-										NodeData neighbour = GetNode (x, y);
-										if (neighbour.processed == processed)
-												return neighbour;
-								}
-						}
-			
-						return null;
+				if (IsInBounds (x, y)) {
+					NodeData neighbour = GetNode (x, y);
+					if ((neighbour.HasFlag (NodeData.PROCESSED) && processedNeeded) || (!neighbour.HasFlag (NodeData.PROCESSED) && !processedNeeded))
+						return neighbour;
 				}
+			}
+			
+			return null;
+		}
 		
-				/**
+		/**
 		 * Removes walls between two specified nodes
 		 */
-				public void Merge (NodeData from, NodeData to)
-				{
-						int dx = to.x - from.x;
-						int dy = to.y - from.y;
+		public void Merge (NodeData from, NodeData to)
+		{
+			int dx = to.x - from.x;
+			int dy = to.y - from.y;
 			
-						if (dx != 0) {
-								if (dx > 0) {
-										to.walls &= ~NodeData.WEST_WALL;
-										from.walls &= ~NodeData.EAST_WALL;
-								} else {
-										to.walls &= ~NodeData.EAST_WALL;
-										from.walls &= ~NodeData.WEST_WALL;
-								}
-						} else if (dy != 0) {
-								if (dy > 0) {
-										to.walls &= ~NodeData.SOUTH_WALL;
-										from.walls &= ~NodeData.NORTH_WALL;
-								} else {
-										to.walls &= ~NodeData.NORTH_WALL;
-										from.walls &= ~NodeData.SOUTH_WALL;
-								}
-						}
+			if (dx != 0) {
+				if (dx > 0) {
+					to.RemoveWall (NodeData.DIRECTION_LEFT_IDX);
+					from.RemoveWall (NodeData.DIRECTION_RIGHT_IDX);
+				} else {
+					to.RemoveWall (NodeData.DIRECTION_RIGHT_IDX);
+					from.RemoveWall (NodeData.DIRECTION_LEFT_IDX);
 				}
-		
-				public NodeData GetRandomUnmergedNeighbour (NodeData target)
-				{
-						List<NodeData> neighbours = new List<NodeData> ();
-			
-						for (int i = 0; i < 4; i++) {
-				
-								int x = target.x + DIRECTIONS [i, 0];
-								int y = target.y + DIRECTIONS [i, 1];
-				
-								if (IsInBounds (x, y)) {
-										NodeData neighbour = GetNode (x, y);
-										if ((i == 0) && ((target.walls & NodeData.NORTH_WALL) > 0) ||
-												(i == 1) && ((target.walls & NodeData.EAST_WALL) > 0) ||
-												(i == 2) && ((target.walls & NodeData.SOUTH_WALL) > 0) ||
-												(i == 3) && ((target.walls & NodeData.WEST_WALL) > 0))
-												neighbours.Add (neighbour);
-								}
-						}
-
-						return neighbours [_rnd.Next (0, neighbours.Count)];
+			} else if (dy != 0) {
+				if (dy > 0) {
+					to.RemoveWall (NodeData.DIRECTION_DOWN_IDX);
+					from.RemoveWall (NodeData.DIRECTION_UP_IDX);
+				} else {
+					to.RemoveWall (NodeData.DIRECTION_UP_IDX);
+					from.RemoveWall (NodeData.DIRECTION_DOWN_IDX);
 				}
+			}
 		}
+		
+		public NodeData GetRandomUnmergedNeighbour (NodeData target)
+		{
+			List<NodeData> neighbours = new List<NodeData> ();
+			
+			for (int directionIdx = 0; directionIdx < 4; directionIdx++) {
+				
+				int x = target.x + NodeData.DIRECTIONS [directionIdx, 0];
+				int y = target.y + NodeData.DIRECTIONS [directionIdx, 1];
+				
+				if (IsInBounds (x, y)) {
+					NodeData neighbour = GetNode (x, y);
+										
+					int opposite = directionIdx + (2 * (directionIdx > 1 ? -1 : 1));
+					if (neighbour.HasWall (opposite))
+						neighbours.Add (neighbour);
+				}
+			}
+
+			return neighbours [_rnd.Next (0, neighbours.Count)];
+		}
+	}
 }
 
