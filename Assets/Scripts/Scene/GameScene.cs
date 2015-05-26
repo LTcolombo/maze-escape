@@ -77,7 +77,7 @@ public class GameScene : MonoBehaviour
 			scoreText.color = new Color (0.761f, 0.761f, 0.668f);
 		else {
 			if (_increaseValue > 0) {
-				scoreText.color = new Color (0.0f, 1.0f, 0.0f);
+				scoreText.color = new Color (0.0f, 0.8f, 0.0f);
 
 				if (_increaseValue > _movesLeft)
 					_increaseValue = _movesLeft;
