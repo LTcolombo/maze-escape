@@ -37,7 +37,7 @@ namespace AssemblyCSharp
 		public int y;
 		
 		//score assigned to node
-		public int score;
+		public int score = 0;
 		
 		//previous node during maze generation
 		public NodeData previousNode;

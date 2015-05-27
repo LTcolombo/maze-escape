@@ -181,7 +181,7 @@ public class MazeView : MonoBehaviour
 				}
 				
 				GameObject tileInstance = (GameObject)Instantiate (_tile);
-				float tint = 0.3f + 0.7f * (float)node.score / (4);//todo max-min
+				float tint = 0.3f + 0.7f * (float)node.score / _mazeData.config.maxScore;
 				tileInstance.GetComponent<SpriteRenderer> ().color = new Color (tint * r, tint * g, tint * b, 1);
 				_tileInstances.Add (tileInstance);
 				tileInstance.transform.parent = _tilesContainer.transform;
@@ -200,6 +200,31 @@ public class MazeView : MonoBehaviour
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
 				}
+				
+				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_RIGHT)) {
+					GameObject specInstance = (GameObject)Instantiate (_speedUp);
+					_objectInstances.Add (specInstance);
+					specInstance.transform.parent = _genericContainer.transform;
+					specInstance.transform.eulerAngles = new Vector3 (0, 0, -90);
+					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
+				}
+				
+				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_DOWN)) {
+					GameObject specInstance = (GameObject)Instantiate (_speedUp);
+					_objectInstances.Add (specInstance);
+					specInstance.transform.parent = _genericContainer.transform;
+					specInstance.transform.eulerAngles = new Vector3 (0, 0, 180);
+					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
+				}
+				
+				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_LEFT)) {
+					GameObject specInstance = (GameObject)Instantiate (_speedUp);
+					_objectInstances.Add (specInstance);
+					specInstance.transform.parent = _genericContainer.transform;
+					specInstance.transform.eulerAngles = new Vector3 (0, 0, 90);
+					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
+				}
+				
 				if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
 					GameObject specInstance = (GameObject)Instantiate (_rotator);
 					_objectInstances.Add (specInstance);

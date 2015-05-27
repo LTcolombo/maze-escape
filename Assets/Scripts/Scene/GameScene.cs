@@ -149,13 +149,17 @@ public class GameScene : MonoBehaviour
 			_increaseValue = 0;
 	
 		_mazeData = new MazeData(getNextMazeConfig(), _playerView.cellX, _playerView.cellY);
+		
+		ScoreDecorator.Apply(_mazeData);
+		SpeedUpDecorator.Apply(_mazeData);
+		
 		_container.transform.position = new Vector2 (
 			-(_mazeData.config.width - 1) * MazeView.NODE_SIZE / 2, 
 			-(_mazeData.config.height - 1) * MazeView.NODE_SIZE / 2
 		);
 		_mazeView.UpdateMazeData (_mazeData);
 		
-		_playerView.InvokeAutostartIn (1);
+		//_playerView.InvokeAutostartIn (1);
 	}
 
 //move to model
