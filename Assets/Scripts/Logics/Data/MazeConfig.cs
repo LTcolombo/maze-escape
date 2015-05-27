@@ -5,11 +5,11 @@ namespace AssemblyCSharp
 	{
 		public int width;
 		public int height;
-		public float speedUpsRate = 0;
-		public float rotatorsRate = 0;
-		public float bonusRate = 2;
+		public int speedUpsCount = 0;
+		public int rotatorsCount = 0;
 		public int hidersCount = 0;
 		public int minScore;
 		public int maxScore;
+		public float bonusRate = 2;
 	}
 }

@@ -172,7 +172,7 @@ public class GameScene : MonoBehaviour
 		config.minScore = 1;
 		config.maxScore = 4;
 		
-		config.speedUpsRate = 1;
+		config.speedUpsCount = 2;
 		
 		return config;
 	}
