@@ -35,13 +35,15 @@ namespace AssemblyCSharp
 							break;
 						}
 					}
+					
+					if (nodeHasSpeedUp) //branch reached a point of another branch that has already been processed
+						break;
 									
 					if (nextNode != null) {
 						int direction = GetDirection (nextNode, node);
 						
-						if (!nodeHasSpeedUp)
-							currentChain.nodes.Add (node);
-						if (currentDirection != direction || nodeHasSpeedUp) {
+						currentChain.nodes.Add (node);
+						if (currentDirection != direction) {
 							if (currentChain != null && currentChain.nodes.Count > 1)
 								chains.Add (currentChain);
 								
