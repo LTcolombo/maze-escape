@@ -114,13 +114,13 @@ public class MazeView : MonoBehaviour
 	
 	public void DesaturateTileAt (int x, int y)
 	{
-		int index = x * _mazeData.width + y;
+		int index = x * _mazeData.config.width + y;
 		if (index < _tileInstances.Count) {
 			SpriteRenderer renderer = ((GameObject)_tileInstances [index]).GetComponent<SpriteRenderer> ();
 			//normalize color
 			float sumColor = renderer.color.r + renderer.color.g + renderer.color.b; 
-			renderer.color = new Color (sumColor/3, sumColor/3, sumColor/3, 1f);
-			}
+			renderer.color = new Color (sumColor / 3, sumColor / 3, sumColor / 3, 1f);
+		}
 	}
 		
 	private void Redraw ()
@@ -137,14 +137,14 @@ public class MazeView : MonoBehaviour
 		
 		_tileInstances.Clear ();
 				
-		for (int i = 0; i < _mazeData.width; i++) {
-			for (int j = 0; j < _mazeData.height; j++) {
+		for (int i = 0; i < _mazeData.config.width; i++) {
+			for (int j = 0; j < _mazeData.config.height; j++) {
 				NodeData node = _mazeData.GetNode (i, j);
 				
 				
 				float[] tileRelativePos = new float[2] {
-					(float)i / _mazeData.width,
-					(float)j / _mazeData.height
+					(float)i / _mazeData.config.width,
+					(float)j / _mazeData.config.height
 								};
 				
 				float r = 0;
@@ -161,17 +161,17 @@ public class MazeView : MonoBehaviour
 				}
 				
 				
-				float zOrder = (float)(j - i) / (_mazeData.width + _mazeData.height);
+				float zOrder = (float)(j - i) / (_mazeData.config.width + _mazeData.config.height);
 				
 				GameObject wallInstance = null;
 				if (i > 0 && node.HasWall (NodeData.DIRECTION_LEFT_IDX)) {
 					
-					if ((j < (_mazeData.height - 1) && node.HasWall (NodeData.DIRECTION_UP_IDX))) 
+					if ((j < (_mazeData.config.height - 1) && node.HasWall (NodeData.DIRECTION_UP_IDX))) 
 						wallInstance = (GameObject)Instantiate (_wallNorthWest);
 					else
 						wallInstance = (GameObject)Instantiate (_wallWest);
 					
-				} else if ((j < (_mazeData.height - 1) && node.HasWall (NodeData.DIRECTION_UP_IDX))) 
+				} else if ((j < (_mazeData.config.height - 1) && node.HasWall (NodeData.DIRECTION_UP_IDX))) 
 					wallInstance = (GameObject)Instantiate (_wallNorth);
 				
 				if (wallInstance != null) {
@@ -181,7 +181,7 @@ public class MazeView : MonoBehaviour
 				}
 				
 				GameObject tileInstance = (GameObject)Instantiate (_tile);
-				float tint = 0.5f + (float)node.score / (MazeData.MAX_SCORE * 2);
+				float tint = 0.3f + 0.7f * (float)node.score / (4);//todo max-min
 				tileInstance.GetComponent<SpriteRenderer> ().color = new Color (tint * r, tint * g, tint * b, 1);
 				_tileInstances.Add (tileInstance);
 				tileInstance.transform.parent = _tilesContainer.transform;

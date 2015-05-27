@@ -125,10 +125,10 @@ public class GameScene : MonoBehaviour
 		if (!node.HasWall (_playerView.directionIdx)) {
 			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
 			_playerView.Next ();
-			_mazeView.ShowObjects (true);
+			//_mazeView.ShowObjects (true);
 			_stuck = false;
 		} else {
-			_mazeView.ShowObjects (false);
+			//_mazeView.ShowObjects (false);
 			_stuck = true;
 			
 			_reduceValue = (int)((float)_score * Time.deltaTime);
@@ -148,14 +148,29 @@ public class GameScene : MonoBehaviour
 		} else
 			_increaseValue = 0;
 	
-		_mazeData = MazeGenerator.Generate (8, 8, _playerView.cellX, _playerView.cellY);
+		_mazeData = new MazeData(getNextMazeConfig(), _playerView.cellX, _playerView.cellY);
 		_container.transform.position = new Vector2 (
-			-(_mazeData.width - 1) * MazeView.NODE_SIZE / 2, 
-			-(_mazeData.height - 1) * MazeView.NODE_SIZE / 2
+			-(_mazeData.config.width - 1) * MazeView.NODE_SIZE / 2, 
+			-(_mazeData.config.height - 1) * MazeView.NODE_SIZE / 2
 		);
 		_mazeView.UpdateMazeData (_mazeData);
 		
 		_playerView.InvokeAutostartIn (1);
+	}
+
+//move to model
+	MazeConfig getNextMazeConfig ()
+	{
+		MazeConfig config = new MazeConfig();
+		config.width = 8;
+		config.height = 8;
+		
+		config.minScore = 1;
+		config.maxScore = 4;
+		
+		config.speedUpsRate = 1;
+		
+		return config;
 	}
 	
 	private void Activate ()
