@@ -29,7 +29,8 @@ public class MazeView : MonoBehaviour
 	private GameObject _wallNorthWest;
 	private GameObject _exit;
 	private GameObject _speedUp;
-	private GameObject _rotator;
+	private GameObject _rotatorCW;
+	private GameObject _rotatorCCW;
 	
 	//set of base colors
 	private ColorComponent[] _colorComponents;
@@ -53,7 +54,8 @@ public class MazeView : MonoBehaviour
 		_wallNorthWest = (GameObject)(Resources.Load ("Prefabs/WallNorthWest"));
 		_exit = (GameObject)(Resources.Load ("Prefabs/Exit"));
 		_speedUp = (GameObject)(Resources.Load ("Prefabs/SpeedUp"));
-		_rotator = (GameObject)(Resources.Load ("Prefabs/Rotator"));
+		_rotatorCW = (GameObject)(Resources.Load ("Prefabs/RotatorCW"));
+		_rotatorCCW = (GameObject)(Resources.Load ("Prefabs/RotatorCCW"));
 		
 		_genericContainer = CreateContainer ("GenericContainer");
 		_tilesContainer = CreateContainer ("TilesContainer");
@@ -226,7 +228,14 @@ public class MazeView : MonoBehaviour
 				}
 				
 				if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
-					GameObject specInstance = (GameObject)Instantiate (_rotator);
+					GameObject specInstance = (GameObject)Instantiate (_rotatorCW);
+					_objectInstances.Add (specInstance);
+					specInstance.transform.parent = _genericContainer.transform;
+					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
+				}
+				
+				if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
+					GameObject specInstance = (GameObject)Instantiate (_rotatorCCW);
 					_objectInstances.Add (specInstance);
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);

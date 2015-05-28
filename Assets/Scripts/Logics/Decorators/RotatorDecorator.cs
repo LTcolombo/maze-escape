@@ -19,16 +19,16 @@ namespace AssemblyCSharp
 				while (node!=null && !candidates.Contains(node)) {
 					NodeData nextNode = node.previousNode;
 					
-					if (!node.HasFlag(
+					if (!node.HasFlag (
 						NodeData.SPECIALS_SPEEDUP_UP |
 						NodeData.SPECIALS_SPEEDUP_RIGHT |
 						NodeData.SPECIALS_SPEEDUP_DOWN |
-						NodeData.SPECIALS_SPEEDUP_LEFT)){
+						NodeData.SPECIALS_SPEEDUP_LEFT)) {
 
 						if (nextNode != null) {
 							int direction = GetDirection (nextNode, node);
 
-							if (currentDirection>-1 && currentDirection != direction) {							
+							if (currentDirection > -1 && currentDirection != direction) {							
 								candidates.Add (node);
 							}				
 							currentDirection = direction;
@@ -42,7 +42,7 @@ namespace AssemblyCSharp
 			for (int i =0; i < candidates.Count; i++) {
 				if (i >= mazeData.config.rotatorsCount) 
 					break;
-				candidates[i].AddFlag (NodeData.SPECIALS_ROTATOR_CW);
+				candidates [i].AddFlag (i % 2 == 0 ? NodeData.SPECIALS_ROTATOR_CW : NodeData.SPECIALS_ROTATOR_CCW);
 			}
 		}
 
@@ -63,15 +63,16 @@ namespace AssemblyCSharp
 			}
 		}
 
-		public static void Shuffle(List<NodeData> list) {
+		public static void Shuffle (List<NodeData> list)
+		{
 			int n = list.Count;
-			Random rnd = new Random();
+			Random rnd = new Random ();
 			while (n > 1) {
-				int k = (rnd.Next(0, n) % n);
+				int k = (rnd.Next (0, n) % n);
 				n--;
-				NodeData value = list[k];
-				list[k] = list[n];
-				list[n] = value;
+				NodeData value = list [k];
+				list [k] = list [n];
+				list [n] = value;
 			}
 		}
 	}

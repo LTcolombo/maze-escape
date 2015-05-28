@@ -151,7 +151,7 @@ public class GameScene : MonoBehaviour
 		_mazeData = new MazeData(getNextMazeConfig(), _playerView.cellX, _playerView.cellY);
 		
 		ScoreDecorator.Apply(_mazeData);
-		//SpeedUpDecorator.Apply(_mazeData);
+		SpeedUpDecorator.Apply(_mazeData);
 		RotatorDecorator.Apply(_mazeData);
 		
 		_container.transform.position = new Vector2 (
