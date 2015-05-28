@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System;
 
 namespace AssemblyCSharp
 {
@@ -37,8 +38,12 @@ namespace AssemblyCSharp
 				}
 			}
 
-			foreach (NodeData candidate in candidates)
-				candidate.AddFlag (NodeData.SPECIALS_ROTATOR_CW);
+			Shuffle (candidates);
+			for (int i =0; i < candidates.Count; i++) {
+				if (i >= mazeData.config.rotatorsCount) 
+					break;
+				candidates[i].AddFlag (NodeData.SPECIALS_ROTATOR_CW);
+			}
 		}
 
 		static int GetDirection (NodeData nextNode, NodeData node)
@@ -55,6 +60,18 @@ namespace AssemblyCSharp
 					return NodeData.DIRECTION_RIGHT_IDX;
 				else
 					return NodeData.DIRECTION_LEFT_IDX;
+			}
+		}
+
+		public static void Shuffle(List<NodeData> list) {
+			int n = list.Count;
+			Random rnd = new Random();
+			while (n > 1) {
+				int k = (rnd.Next(0, n) % n);
+				n--;
+				NodeData value = list[k];
+				list[k] = list[n];
+				list[n] = value;
 			}
 		}
 	}
