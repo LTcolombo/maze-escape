@@ -113,6 +113,51 @@ public class GameScene : MonoBehaviour
 			return;
 		}
 		
+		_playerView.speed = 1;
+		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_UP)) {
+			if (_playerView.directionIdx == NodeData.DIRECTION_UP_IDX)
+				_playerView.speed = 2;
+			
+			if (_playerView.directionIdx == NodeData.DIRECTION_DOWN_IDX)
+				_playerView.speed = 0.5f;
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_RIGHT)) {
+			if (_playerView.directionIdx == NodeData.DIRECTION_RIGHT_IDX)
+				_playerView.speed = 2;
+			
+			if (_playerView.directionIdx == NodeData.DIRECTION_LEFT_IDX)
+				_playerView.speed = 0.5f;
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_DOWN)) {
+			if (_playerView.directionIdx == NodeData.DIRECTION_DOWN_IDX)
+				_playerView.speed = 2;
+			
+			if (_playerView.directionIdx == NodeData.DIRECTION_UP_IDX)
+				_playerView.speed = 0.5f;
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_LEFT)) {
+			if (_playerView.directionIdx == NodeData.DIRECTION_LEFT_IDX)
+				_playerView.speed = 2;
+			
+			if (_playerView.directionIdx == NodeData.DIRECTION_RIGHT_IDX)
+				_playerView.speed = 0.5f;
+		}
+		
+//		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
+//			_playerView.directionIdx++;
+//			if (_playerView.directionIdx > 3)
+//				_playerView.directionIdx = 0;
+//		}
+//		
+//		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
+//			_playerView.directionIdx--;
+//			if (_playerView.directionIdx < 0)
+//				_playerView.directionIdx = 3;
+//		}
+		
 		_movesLeft--;
 		if (_movesLeft == 0) {
 			Application.LoadLevel ("MenuScene");
@@ -148,11 +193,11 @@ public class GameScene : MonoBehaviour
 		} else
 			_increaseValue = 0;
 	
-		_mazeData = new MazeData(getNextMazeConfig(), _playerView.cellX, _playerView.cellY);
+		_mazeData = new MazeData (getNextMazeConfig (), _playerView.cellX, _playerView.cellY);
 		
-		ScoreDecorator.Apply(_mazeData);
-		SpeedUpDecorator.Apply(_mazeData);
-		RotatorDecorator.Apply(_mazeData);
+		ScoreDecorator.Apply (_mazeData);
+		SpeedUpDecorator.Apply (_mazeData);
+		RotatorDecorator.Apply (_mazeData);
 		
 		_container.transform.position = new Vector2 (
 			-(_mazeData.config.width - 1) * MazeView.NODE_SIZE / 2, 
@@ -166,7 +211,7 @@ public class GameScene : MonoBehaviour
 //move to model
 	MazeConfig getNextMazeConfig ()
 	{
-		MazeConfig config = new MazeConfig();
+		MazeConfig config = new MazeConfig ();
 		config.width = 8;
 		config.height = 8;
 		
@@ -184,7 +229,7 @@ public class GameScene : MonoBehaviour
 		_increaseValue = 0;
 		_score += (int)_movesLeft;
 		_movesLeft = _mazeData.movesQuota;
-		_movesLeftCritical = _movesLeft/10;
+		_movesLeftCritical = _movesLeft / 10;
 		_activated = true;
 	}
 }

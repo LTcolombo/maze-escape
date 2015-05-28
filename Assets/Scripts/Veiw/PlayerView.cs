@@ -11,6 +11,7 @@ public class PlayerView : MonoBehaviour
 	public int directionIdx;
 	public int cellX;
 	public int cellY;
+	public float speed = 1f;
 	
 	public event PlayerStepComplete onStepComplete;
 
@@ -30,11 +31,12 @@ public class PlayerView : MonoBehaviour
 	
 	public void Next ()
 	{
+		transform.eulerAngles = new Vector3 (0, 0, -90 * directionIdx);
 		transform.DOMove (transform.position + new Vector3 (
 			NodeData.DIRECTIONS [directionIdx, 0] * MazeView.NODE_SIZE, 
 			NodeData.DIRECTIONS [directionIdx, 1] * MazeView.NODE_SIZE, 
 			0
-		), MOVE_TIME).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
+		), MOVE_TIME / speed).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
 				
 		cellX += NodeData.DIRECTIONS [directionIdx, 0];
 		cellY += NodeData.DIRECTIONS [directionIdx, 1];
