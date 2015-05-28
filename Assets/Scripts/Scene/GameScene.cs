@@ -26,9 +26,9 @@ public class GameScene : MonoBehaviour
 	
 	//current game state
 	private int _score;
-	bool _activated;
 	private uint _movesLeft;
 	private uint _movesLeftCritical;
+	private bool _activated;
 	private bool _stuck;
 	
 	//score to add after previous interation, depending on bonus moves

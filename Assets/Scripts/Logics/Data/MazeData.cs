@@ -103,7 +103,7 @@ namespace AssemblyCSharp
 					
 					deadEnds.Add (currentNode);
 					
-					if (lastNode == null || currentNode.GetDistance () > lastNode.GetDistance ())
+					if (currentNode.GetDistance () > lastNode.GetDistance ())
 						lastNode = currentNode;
 				}
 				
