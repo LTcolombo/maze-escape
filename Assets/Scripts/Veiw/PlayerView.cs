@@ -12,6 +12,7 @@ public class PlayerView : MonoBehaviour
 	public int cellX;
 	public int cellY;
 	public float speed = 1f;
+	public int ddirection = 0;
 	
 	public event PlayerStepComplete onStepComplete;
 
@@ -31,15 +32,26 @@ public class PlayerView : MonoBehaviour
 	
 	public void Next ()
 	{
-		transform.eulerAngles = new Vector3 (0, 0, -90 * directionIdx);
 		transform.DOMove (transform.position + new Vector3 (
 			NodeData.DIRECTIONS [directionIdx, 0] * MazeView.NODE_SIZE, 
 			NodeData.DIRECTIONS [directionIdx, 1] * MazeView.NODE_SIZE, 
 			0
 		), MOVE_TIME / speed).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
-				
+		
 		cellX += NodeData.DIRECTIONS [directionIdx, 0];
 		cellY += NodeData.DIRECTIONS [directionIdx, 1];
+		
+		if (ddirection != 0) {
+			transform.DORotate (transform.rotation.eulerAngles + new Vector3 (
+				0, 0, ddirection * -90), MOVE_TIME / speed);
+		}
+		
+		directionIdx += ddirection;
+		if (directionIdx > 3)
+			directionIdx = 0;
+			
+		if (directionIdx < 0)
+			directionIdx = 3;
 	}
 		
 	void AutoStart ()
@@ -50,6 +62,7 @@ public class PlayerView : MonoBehaviour
 	
 	void OnStepCompleted ()
 	{
+		DOTween.CompleteAll ();
 		transform.eulerAngles = new Vector3 (0, 0, -90 * directionIdx);
 		if (onStepComplete != null)
 			onStepComplete ();

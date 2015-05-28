@@ -146,17 +146,14 @@ public class GameScene : MonoBehaviour
 				_playerView.speed = 0.5f;
 		}
 		
-//		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
-//			_playerView.directionIdx++;
-//			if (_playerView.directionIdx > 3)
-//				_playerView.directionIdx = 0;
-//		}
-//		
-//		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
-//			_playerView.directionIdx--;
-//			if (_playerView.directionIdx < 0)
-//				_playerView.directionIdx = 3;
-//		}
+		_playerView.ddirection = 0;
+		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
+			_playerView.ddirection = 1;
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
+			_playerView.ddirection = -1;
+		}
 		
 		_movesLeft--;
 		if (_movesLeft == 0) {
