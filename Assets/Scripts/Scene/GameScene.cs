@@ -152,6 +152,7 @@ public class GameScene : MonoBehaviour
 		
 		ScoreDecorator.Apply(_mazeData);
 		SpeedUpDecorator.Apply(_mazeData);
+		RotatorDecorator.Apply(_mazeData);
 		
 		_container.transform.position = new Vector2 (
 			-(_mazeData.config.width - 1) * MazeView.NODE_SIZE / 2, 

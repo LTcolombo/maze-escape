@@ -28,7 +28,7 @@ namespace AssemblyCSharp
 		public const uint SPECIALS_SPEEDUP_LEFT = 1 << 9;
 		public const uint SPECIALS_ROTATOR_CW = 1 << 10;
 		public const uint SPECIALS_ROTATOR_CCW = 1 << 11;
-		
+
 		//direction vectors
 		public static int[,] DIRECTIONS = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 		
@@ -85,6 +85,19 @@ namespace AssemblyCSharp
 		public bool HasFlag (uint type)
 		{
 			return (_data & type) > 0;
+		}
+
+		public uint MatchCount (uint compared)
+		{
+			uint temp = _data & compared;
+
+			uint count = 0;
+			for (var i = 0; i < sizeof(uint)*8; i++) {
+				if ((temp & 1 << i)>0)
+					count ++;
+			}
+
+			return count;
 		}
 		
 		public uint GetDistance ()
