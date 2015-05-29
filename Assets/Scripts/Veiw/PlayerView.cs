@@ -30,20 +30,28 @@ public class PlayerView : MonoBehaviour
 		Invoke ("AutoStart", value);
 	}
 	
-	public void Next ()
+	public void Next (bool moveAllowed)
 	{
-		transform.DOMove (transform.position + new Vector3 (
+		if (moveAllowed) {
+			transform.DOMove (transform.position + new Vector3 (
 			NodeData.DIRECTIONS [directionIdx, 0] * MazeView.NODE_SIZE, 
 			NodeData.DIRECTIONS [directionIdx, 1] * MazeView.NODE_SIZE, 
 			0
-		), MOVE_TIME / speed).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
+			), MOVE_TIME / speed).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
 		
-		cellX += NodeData.DIRECTIONS [directionIdx, 0];
-		cellY += NodeData.DIRECTIONS [directionIdx, 1];
-		
-		if (ddirection != 0) {
-			transform.DORotate (transform.rotation.eulerAngles + new Vector3 (
-				0, 0, ddirection * -90), MOVE_TIME / speed);
+			cellX += NodeData.DIRECTIONS [directionIdx, 0];
+			cellY += NodeData.DIRECTIONS [directionIdx, 1];
+
+			
+			if (ddirection != 0) {
+				transform.DORotate (transform.rotation.eulerAngles + new Vector3 (
+					0, 0, ddirection * -90), MOVE_TIME / speed);
+			}
+		} else {
+			if (ddirection != 0) {
+				transform.DORotate (transform.rotation.eulerAngles + new Vector3 (
+					0, 0, ddirection * -90), MOVE_TIME / speed).OnComplete (OnStepCompleted);
+			}
 		}
 		
 		directionIdx += ddirection;

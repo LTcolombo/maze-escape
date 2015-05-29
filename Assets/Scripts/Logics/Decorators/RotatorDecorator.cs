@@ -42,7 +42,7 @@ namespace AssemblyCSharp
 			for (int i =0; i < candidates.Count; i++) {
 				if (i >= mazeData.config.rotatorsCount) 
 					break;
-				candidates [i].AddFlag (i % 2 == 0 ? NodeData.SPECIALS_ROTATOR_CW : NodeData.SPECIALS_ROTATOR_CCW);
+				candidates [i].AddFlag (i % 1 == 0 ? NodeData.SPECIALS_ROTATOR_CW : NodeData.SPECIALS_ROTATOR_CCW);
 			}
 		}
 

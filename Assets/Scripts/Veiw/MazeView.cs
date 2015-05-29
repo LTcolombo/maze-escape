@@ -55,7 +55,7 @@ public class MazeView : MonoBehaviour
 		_exit = (GameObject)(Resources.Load ("Prefabs/Exit"));
 		_speedUp = (GameObject)(Resources.Load ("Prefabs/SpeedUp"));
 		_rotatorCW = (GameObject)(Resources.Load ("Prefabs/RotatorCW"));
-		_rotatorCCW = (GameObject)(Resources.Load ("Prefabs/RotatorCCW"));
+		//_rotatorCCW = (GameObject)(Resources.Load ("Prefabs/RotatorCCW"));
 		
 		_genericContainer = CreateContainer ("GenericContainer");
 		_tilesContainer = CreateContainer ("TilesContainer");

@@ -147,13 +147,6 @@ public class GameScene : MonoBehaviour
 		}
 		
 		_playerView.ddirection = 0;
-		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
-			_playerView.ddirection = 1;
-		}
-		
-		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
-			_playerView.ddirection = -1;
-		}
 		
 		_movesLeft--;
 		if (_movesLeft == 0) {
@@ -166,16 +159,27 @@ public class GameScene : MonoBehaviour
 		
 		if (!node.HasWall (_playerView.directionIdx)) {
 			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
-			_playerView.Next ();
-			//_mazeView.ShowObjects (true);
+			_playerView.Next (true);
 			_stuck = false;
 		} else {
-			//_mazeView.ShowObjects (false);
-			_stuck = true;
+						
+			if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
+				_playerView.ddirection = 1;
+			}
 			
-			_reduceValue = (int)((float)_score * Time.deltaTime);
-			if (_reduceValue < 1)
-				_reduceValue = 1;
+			if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
+				_playerView.ddirection = -1;
+			}
+			
+			_playerView.Next (false);
+
+			if (_playerView.ddirection == 0) {
+				_reduceValue = (int)((float)_score * Time.deltaTime);
+				if (_reduceValue < 1)
+					_reduceValue = 1;
+
+				_stuck = true;
+			}
 		}
 	}
 		
