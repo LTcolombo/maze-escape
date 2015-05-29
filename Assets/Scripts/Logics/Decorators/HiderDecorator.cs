@@ -10,7 +10,7 @@
 				return;
 
 			for (int i =0; i < mazeData.deadEnds.Count; i++) {
-				if (i > mazeData.config.hidersCount)
+				if (i >= mazeData.config.hidersCount)
 					break;
 
 				int distance = (int)mazeData.deadEnds [i].GetDistance ();
@@ -36,7 +36,7 @@
 					if (index == turnOn)
 						node.AddFlag (NodeData.SPECIALS_HIDE_WALLS);
 
-					node = mazeData.deadEnds [i].previousNode;
+					node = node.previousNode;
 				}
 			}
 		}

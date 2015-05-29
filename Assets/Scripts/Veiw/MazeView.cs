@@ -19,8 +19,8 @@ public class MazeView : MonoBehaviour
 	public static float NODE_SIZE = 128f;
 	
 	//containers
+	private GameObject _wallsContainer;
 	private GameObject _genericContainer;
-	private GameObject _tilesContainer;
 	
 	//prefabs
 	private GameObject _tile;
@@ -31,6 +31,8 @@ public class MazeView : MonoBehaviour
 	private GameObject _speedUp;
 	private GameObject _rotatorCW;
 	private GameObject _rotatorCCW;
+	private GameObject _hide;
+	private GameObject _show;
 	
 	//set of base colors
 	private ColorComponent[] _colorComponents;
@@ -55,42 +57,44 @@ public class MazeView : MonoBehaviour
 		_exit = (GameObject)(Resources.Load ("Prefabs/Exit"));
 		_speedUp = (GameObject)(Resources.Load ("Prefabs/SpeedUp"));
 		_rotatorCW = (GameObject)(Resources.Load ("Prefabs/RotatorCW"));
-		//_rotatorCCW = (GameObject)(Resources.Load ("Prefabs/RotatorCCW"));
+		_rotatorCCW = (GameObject)(Resources.Load ("Prefabs/RotatorCCW"));
+		_hide = (GameObject)(Resources.Load ("Prefabs/Hide"));
+		_show = (GameObject)(Resources.Load ("Prefabs/Show"));
 		
-		_genericContainer = CreateContainer ("GenericContainer");
-		_tilesContainer = CreateContainer ("TilesContainer");
+		_wallsContainer = CreateContainer ("Walls");
+		_genericContainer = CreateContainer ("Objects");
 	
 		_colorComponents = new ColorComponent[3];
-		//
-		//				colorComponents [0] = new ColorComponent (new Color (0.8f, 0.3f, 0.5f), new float[2] {
-		//						0.0f,
-		//						0.0f
-		//				});
-		//
-		//				colorComponents [1] = new ColorComponent (new Color (0.4f, 0.7f, 0.3f), new float[2] {
-		//			1.0f,
-		//			0.5f
-		//		});
-		//
-		//				colorComponents [2] = new ColorComponent (new Color (0.2f, 0.5f, 0.8f), new float[2] {
-		//			0.0f,
-		//			1.0f
-		//		});
 		
-		_colorComponents [0] = new ColorComponent (new Color (0.7f, 0.3f, 0.0f), new float[2] {
-			0.0f,
-			0.0f
-		});
+		_colorComponents [0] = new ColorComponent (new Color (0.8f, 0.3f, 0.5f), new float[2] {
+								0.0f,
+								0.0f
+						});
 		
-		_colorComponents [1] = new ColorComponent (new Color (0.0f, 0.7f, 0.3f), new float[2] {
-			1.0f,
-			0.5f
-		});
+		_colorComponents [1] = new ColorComponent (new Color (0.4f, 0.7f, 0.3f), new float[2] {
+					1.0f,
+					0.5f
+				});
 		
-		_colorComponents [2] = new ColorComponent (new Color (0.3f, 0.0f, 0.7f), new float[2] {
-			0.0f,
-			1.0f
-		});
+		_colorComponents [2] = new ColorComponent (new Color (0.2f, 0.5f, 0.8f), new float[2] {
+					0.0f,
+					1.0f
+				});
+		
+//		_colorComponents [0] = new ColorComponent (new Color (0.7f, 0.3f, 0.0f), new float[2] {
+//			0.0f,
+//			0.0f
+//		});
+//		
+//		_colorComponents [1] = new ColorComponent (new Color (0.0f, 0.7f, 0.3f), new float[2] {
+//			1.0f,
+//			0.5f
+//		});
+//		
+//		_colorComponents [2] = new ColorComponent (new Color (0.3f, 0.0f, 0.7f), new float[2] {
+//			0.0f,
+//			1.0f
+//		});
 	}
 		
 	
@@ -99,6 +103,7 @@ public class MazeView : MonoBehaviour
 	{
 		if (_dirty) {
 			Redraw ();
+			ShowWalls (true);
 			_dirty = false;
 		}
 	}
@@ -109,9 +114,9 @@ public class MazeView : MonoBehaviour
 		_dirty = true;
 	}
 	
-	public void ShowObjects (bool value)
+	public void ShowWalls (bool value)
 	{
-		_genericContainer.transform.localPosition = new Vector3 (0, 0, value ? 0 : 2);
+		_wallsContainer.transform.localPosition = new Vector3 (0, 0, value ? 0 : 2);
 	}
 	
 	public void DesaturateTileAt (int x, int y)
@@ -178,7 +183,7 @@ public class MazeView : MonoBehaviour
 				
 				if (wallInstance != null) {
 					_objectInstances.Add (wallInstance);
-					wallInstance.transform.parent = _genericContainer.transform;
+					wallInstance.transform.parent = _wallsContainer.transform;
 					wallInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder);
 				}
 				
@@ -186,7 +191,7 @@ public class MazeView : MonoBehaviour
 				float tint = 0.3f + 0.7f * (float)node.score / _mazeData.config.maxScore;
 				tileInstance.GetComponent<SpriteRenderer> ().color = new Color (tint * r, tint * g, tint * b, 1);
 				_tileInstances.Add (tileInstance);
-				tileInstance.transform.parent = _tilesContainer.transform;
+				tileInstance.transform.parent = _genericContainer.transform;
 				tileInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 1);
 								
 				if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
@@ -236,6 +241,20 @@ public class MazeView : MonoBehaviour
 				
 				if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
 					GameObject specInstance = (GameObject)Instantiate (_rotatorCCW);
+					_objectInstances.Add (specInstance);
+					specInstance.transform.parent = _genericContainer.transform;
+					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
+				}
+				
+				if (node.HasFlag (NodeData.SPECIALS_HIDE_WALLS)) {
+					GameObject specInstance = (GameObject)Instantiate (_hide);
+					_objectInstances.Add (specInstance);
+					specInstance.transform.parent = _genericContainer.transform;
+					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
+				}
+				
+				if (node.HasFlag (NodeData.SPECIALS_SHOW_WALLS)) {
+					GameObject specInstance = (GameObject)Instantiate (_show);
 					_objectInstances.Add (specInstance);
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
