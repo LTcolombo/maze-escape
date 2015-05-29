@@ -29,6 +29,9 @@ namespace AssemblyCSharp
 		public const uint SPECIALS_ROTATOR_CW = 1 << 10;
 		public const uint SPECIALS_ROTATOR_CCW = 1 << 11;
 
+		public const uint SPECIALS_HIDE_WALLS = 1 << 12;
+		public const uint SPECIALS_SHOW_WALLS = 1 << 13;
+
 		//direction vectors
 		public static int[,] DIRECTIONS = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 		

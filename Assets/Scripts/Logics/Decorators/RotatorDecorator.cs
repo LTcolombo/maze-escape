@@ -9,6 +9,10 @@ namespace AssemblyCSharp
 
 		public static void Apply (MazeData mazeData)
 		{
+
+			if (mazeData.config.rotatorsCount == 0)
+				return;
+
 			List<NodeData> candidates = new List<NodeData> ();
 
 			foreach (NodeData deadEnd in mazeData.deadEnds) {

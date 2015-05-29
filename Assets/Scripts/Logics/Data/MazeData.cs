@@ -8,19 +8,15 @@ namespace AssemblyCSharp
 	public class MazeData
 	{
 		public uint movesQuota;
-		public List<NodeData> deadEnds;
+		public List<NodeData> deadEnds = new List<NodeData> ();
 		
 		public MazeConfig config { get { return _config; } }
 		private MazeConfig _config;
 		private NodeData[] _data;
-		private System.Random _rnd;
+		private System.Random _rnd= new System.Random ();
 
 		public MazeData (MazeConfig config, int startX, int startY)
-		{
-			_rnd = new System.Random ();
-			
-			deadEnds = new List<NodeData> ();
-			
+		{			
 			_config = config;
 			
 			_data = new NodeData[_config.width * _config.height];
