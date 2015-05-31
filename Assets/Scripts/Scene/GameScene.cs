@@ -71,9 +71,13 @@ public class GameScene : MonoBehaviour
 	{
 		if (_stuck) {
 			scoreText.color = new Color (1.0f, 0.0f, 0.0f);
-			if (_score < _reduceValue)
+			if (_score < _reduceValue) {
+				
+				if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
+					PlayerPrefs.SetInt ("highscore", _maxScore);
+					
 				Application.LoadLevel ("MenuScene");
-			else {
+			} else {
 				_score -= _reduceValue;
 				scoreText.text = "SCORE: " + _score;
 			}
