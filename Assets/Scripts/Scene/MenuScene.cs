@@ -1,29 +1,134 @@
 ﻿using UnityEngine;
 using System.Collections;
+using DG.Tweening;
+using UnityEngine.UI;
 
-public class MenuScene : MonoBehaviour {
+public class MenuScene : MonoBehaviour
+{
+
+	//set of base colors
+	private ColorComponent[] _colorComponents;
+	private static bool FIRST_LOAD = true;
+	private bool _canExit;
+	
+	//writing matrix
+	private static int[,] LOGO_MATRIX = new int[,] {
+		{0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0},
+		{0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0},
+		{0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0},
+		{0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+		{0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		{1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1},
+		{1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0},
+		{1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0},
+		{1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0},
+		{1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1}
+	};
+
+
 	// Use this for initialization
-	void Start () {
-		addText ("Maze Escape", 48, 0.7f);
-		addText ("High Score: " + PlayerPrefs.GetInt("High Score").ToString(), 24, 0.6f);
-		addText ("Tap somewhere\nto play", 18, 0.45f);
+	void Start ()
+	{
+		Text bestScoreText = (Text)GameObject.Find ("Canvas/BestScoreText").GetComponent<Text> ();
+		bestScoreText.text = "BEST SCORE: " + PlayerPrefs.GetInt ("highscore", 0);
+	
+		Camera.main.backgroundColor = new Color (0.92f, 0.92f, 0.86f);
+		Invoke ("InitScene", FIRST_LOAD ? 0.5f : 0.1f);
+		FIRST_LOAD = false;
 	}
 	
-	void addText(string text, int size, float yPos) {
-		GameObject textfield = new GameObject();
-		textfield.transform.parent = transform;
-		textfield.AddComponent<GUIText>();
-		textfield.GetComponent<GUIText>().alignment = TextAlignment.Center;
-		textfield.GetComponent<GUIText>().fontSize = size;
-		textfield.GetComponent<GUIText>().text = text;
-		textfield.GetComponent<GUIText>().anchor = TextAnchor.MiddleCenter;
-		textfield.transform.position = new Vector3(0.5f,yPos,0.0f);
+	void InitScene ()
+	{
+		_canExit = false;
+	
+		DOTween.CompleteAll ();
+		Camera.main.DOColor (new Color (0.17f, 0.17f, 0.17f), 0.7f).OnComplete (AllowExit);
+		
+		_colorComponents = new ColorComponent[3];
+		
+		_colorComponents [0] = new ColorComponent (new Color (0.8f, 0.3f, 0.5f), new float[2] {
+			0.0f,
+			0.0f
+		});
+		
+		_colorComponents [1] = new ColorComponent (new Color (0.4f, 0.7f, 0.3f), new float[2] {
+			1.0f,
+			0.5f
+		});
+		
+		_colorComponents [2] = new ColorComponent (new Color (0.2f, 0.5f, 0.8f), new float[2] {
+			0.0f,
+			1.0f
+		});
+		
+		GameObject tile = (GameObject)(Resources.Load ("Prefabs/Tile"));
+		for (int cell_y = 0; cell_y < LOGO_MATRIX.GetLength(0); cell_y++)
+			for (int cell_x = 0; cell_x< LOGO_MATRIX.GetLength(1); cell_x++) {
+			
+				if (LOGO_MATRIX [cell_y, cell_x] != 0) {
+					int x = (-LOGO_MATRIX.GetLength (1) / 2 + cell_x) * 40;
+					int y = (LOGO_MATRIX.GetLength (0) - cell_y) * 40; 
+				
+					float[] tileRelativePos = new float[2] {
+					(float)cell_y / LOGO_MATRIX.GetLength (0),
+					(float)cell_x / LOGO_MATRIX.GetLength (1)
+				};
+				
+					float r = 0;
+					float g = 0;
+					float b = 0;
+				
+					for (int colorIdx = 0; colorIdx < 3; colorIdx++) {
+						ColorComponent colorComponent = _colorComponents [colorIdx];
+						float distance = (Mathf.Abs (tileRelativePos [0] - colorComponent.position [0]) + Mathf.Abs (tileRelativePos [1] - colorComponent.position [1])) / 2;
+					
+						r += colorComponent.color.r - (colorComponent.color.r * distance);			
+						g += colorComponent.color.g - (colorComponent.color.g * distance);
+						b += colorComponent.color.b - (colorComponent.color.b * distance);
+					}
+				
+					float tint = 0.3f + 0.7f * (Random.Range (3.0f, 5.0f) / 5.0f);
+				
+					Vector3 pos = new Vector3 (x, y, 0);
+					if (cell_x % 2 == 0)
+						pos.x += Random.Range (-400, 400);
+					else
+						pos.y += Random.Range (-400, 400);
+				
+					GameObject tileInstance = (GameObject)Instantiate (tile, pos, Quaternion.identity);
+					tileInstance.GetComponent<SpriteRenderer> ().color = new Color (tint * r, tint * g, tint * b, 1);
+				
+					tileInstance.transform.localScale = new Vector3 (0.3f, 0.3f, 0.2f);
+					tileInstance.transform.DOMove (new Vector3 (x, y, 0), 0.5f);
+				}	
+			}
+		
+	}
+	
+	void AllowExit ()
+	{
+		_canExit = true;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		if (Input.anyKeyDown) {
-			Application.LoadLevel("GameScene");
+	void Update ()
+	{	
+		if (Application.isEditor && Input.anyKey && _canExit) {
+			Application.LoadLevel ("GameScene");
+			return;
 		} 
+		
+		if (Input.touchCount > 0) {
+			bool start = true;
+			for (int i = 0; i < Input.touchCount; i++) {
+				if (Input.GetTouch (i).phase != TouchPhase.Ended) 
+					start = false;
+			}
+			
+			if (start && _canExit) 
+				Application.LoadLevel ("GameScene");
+		}
+		
 	}
 }

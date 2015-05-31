@@ -15,6 +15,7 @@ public class GameScene : MonoBehaviour
 	
 	//textfields for game state UI
 	private Text scoreText;
+	private Text maxScoreText;
 	private Text movesText;
 		
 	//view scripts
@@ -26,6 +27,7 @@ public class GameScene : MonoBehaviour
 	
 	//current game state
 	private int _score;
+	private int _maxScore;
 	private uint _movesLeft;
 	private uint _movesLeftCritical;
 	private bool _activated;
@@ -40,7 +42,9 @@ public class GameScene : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		DOTween.Init (false, true, LogBehaviour.ErrorsOnly);
+		DOTween.CompleteAll ();
+		Camera.main.backgroundColor = new Color (0.17f, 0.17f, 0.17f);
+		Camera.main.DOColor (new Color (0.92f, 0.92f, 0.86f), 0.5f);
 				
 		_container = GameObject.Find ("GameContainer");
 		
@@ -54,6 +58,7 @@ public class GameScene : MonoBehaviour
 		_playerView.onStepComplete += OnPlayerStepComplete;
 				
 		scoreText = (Text)GameObject.Find ("Canvas/ScoreText").GetComponent<Text> ();
+		maxScoreText = (Text)GameObject.Find ("Canvas/MaxScoreText").GetComponent<Text> ();
 		movesText = (Text)GameObject.Find ("Canvas/MovesText").GetComponent<Text> ();
 				
 		_movesLeft = 0;
@@ -89,10 +94,22 @@ public class GameScene : MonoBehaviour
 			}
 			
 			_score += (int)_increaseValue;
+			
+			if (_maxScore < _score) {
+				_maxScore = _score;
+				maxScoreText.text = "MAX SCORE: " + _maxScore;
+			}
+			
 			_movesLeft -= _increaseValue;
 			scoreText.text = "SCORE: " + _score;
 			movesText.text = "MOVES: " + _movesLeft;
 		}
+	}
+	
+	void OnApplicationPause (bool paused)
+	{
+		if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
+			PlayerPrefs.SetInt ("highscore", _maxScore);
 	}
 	
 	private void OnPlayerStepComplete ()
@@ -101,8 +118,6 @@ public class GameScene : MonoBehaviour
 			Activate ();
 	
 		NodeData node = _mazeData.GetNode (_playerView.cellX, _playerView.cellY);
-		_score += node.score;
-		node.score = 0;
 		
 		scoreText.text = "SCORE: " + _score;
 		movesText.text = "MOVES: " + _movesLeft;
@@ -158,6 +173,10 @@ public class GameScene : MonoBehaviour
 		
 		_movesLeft--;
 		if (_movesLeft == 0) {
+			
+			if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
+				PlayerPrefs.SetInt ("highscore", _maxScore);
+				
 			Application.LoadLevel ("MenuScene");
 			return;
 		} 
@@ -165,19 +184,28 @@ public class GameScene : MonoBehaviour
 		if (_movesLeft < _movesLeftCritical)
 			movesText.color = new Color (1.0f, 0.0f, 0.0f);
 		
-		if (!node.HasWall (_playerView.directionIdx)) {
+		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
+			_playerView.ddirection = 1;
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
+			_playerView.ddirection = -1;
+		}
+		
+		if (!node.HasWall (_playerView.directionIdx) && (!_playerView.moved || _playerView.ddirection == 0)) {
+			_playerView.ddirection = 0;
 			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
+			_score += node.score;
+			
+			if (_maxScore < _score) {
+				_maxScore = _score;
+				maxScoreText.text = "MAX SCORE: " + _maxScore;
+			}
+			
+			node.score = 0;
 			_playerView.Next (true);
 			_stuck = false;
 		} else {
-						
-			if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
-				_playerView.ddirection = 1;
-			}
-			
-			if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
-				_playerView.ddirection = -1;
-			}
 			
 			_playerView.Next (false);
 
@@ -213,6 +241,7 @@ public class GameScene : MonoBehaviour
 			-(_mazeData.config.width - 1) * MazeView.NODE_SIZE / 2, 
 			-(_mazeData.config.height - 1) * MazeView.NODE_SIZE / 2
 		);
+		
 		_mazeView.UpdateMazeData (_mazeData);
 		
 		//_playerView.InvokeAutostartIn (1);
@@ -222,8 +251,8 @@ public class GameScene : MonoBehaviour
 	MazeConfig getNextMazeConfig ()
 	{
 		MazeConfig config = new MazeConfig ();
-		config.width = 8;
-		config.height = 8;
+		config.width = 10;
+		config.height = 10;
 		
 		config.minScore = 1;
 		config.maxScore = 4;

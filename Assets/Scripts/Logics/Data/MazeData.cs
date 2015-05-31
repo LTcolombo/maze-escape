@@ -11,9 +11,10 @@ namespace AssemblyCSharp
 		public List<NodeData> deadEnds = new List<NodeData> ();
 		
 		public MazeConfig config { get { return _config; } }
+
 		private MazeConfig _config;
 		private NodeData[] _data;
-		private System.Random _rnd= new System.Random ();
+		private System.Random _rnd = new System.Random ();
 
 		public MazeData (MazeConfig config, int startX, int startY)
 		{			
@@ -60,7 +61,7 @@ namespace AssemblyCSharp
 			
 			lastNode.AddFlag (NodeData.SPECIALS_EXIT);
 			
-			movesQuota = (uint)((float) lastNode.GetDistance () * config.bonusRate);
+			movesQuota = (uint)((float)lastNode.GetDistance () * config.bonusRate);
 		}
 		
 		private void CreateBranch (NodeData startNode, List<NodeData> edgeNodes, ref NodeData lastNode)
@@ -97,10 +98,14 @@ namespace AssemblyCSharp
 					currentNode = randomNeighbour;
 				} else {
 					
-					deadEnds.Add (currentNode);
 					
-					if (currentNode.GetDistance () > lastNode.GetDistance ())
+					if (currentNode.GetDistance () > lastNode.GetDistance ()) {
+						
+						deadEnds.Insert (0, currentNode);
 						lastNode = currentNode;
+					}
+					
+					deadEnds.Add (currentNode);
 				}
 				
 			} while (randomNeighbour!=null);

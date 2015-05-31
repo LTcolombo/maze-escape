@@ -12,6 +12,7 @@ public class PlayerView : MonoBehaviour
 	public int cellX;
 	public int cellY;
 	public float speed = 1f;
+	public bool moved;
 	public int ddirection = 0;
 	
 	public event PlayerStepComplete onStepComplete;
@@ -32,6 +33,8 @@ public class PlayerView : MonoBehaviour
 	
 	public void Next (bool moveAllowed)
 	{
+		moved = moveAllowed;
+	
 		if (moveAllowed) {
 			transform.DOMove (transform.position + new Vector3 (
 			NodeData.DIRECTIONS [directionIdx, 0] * MazeView.NODE_SIZE, 

@@ -66,35 +66,20 @@ public class MazeView : MonoBehaviour
 	
 		_colorComponents = new ColorComponent[3];
 		
-		_colorComponents [0] = new ColorComponent (new Color (0.8f, 0.3f, 0.5f), new float[2] {
-								0.0f,
-								0.0f
-						});
+		_colorComponents [0] = new ColorComponent (new Color (0.7f, 0.3f, 0.0f), new float[2] {
+			0.0f,
+			0.0f
+		});
 		
-		_colorComponents [1] = new ColorComponent (new Color (0.4f, 0.7f, 0.3f), new float[2] {
-					1.0f,
-					0.5f
-				});
+		_colorComponents [1] = new ColorComponent (new Color (0.0f, 0.7f, 0.3f), new float[2] {
+			1.0f,
+			0.5f
+		});
 		
-		_colorComponents [2] = new ColorComponent (new Color (0.2f, 0.5f, 0.8f), new float[2] {
-					0.0f,
-					1.0f
-				});
-		
-//		_colorComponents [0] = new ColorComponent (new Color (0.7f, 0.3f, 0.0f), new float[2] {
-//			0.0f,
-//			0.0f
-//		});
-//		
-//		_colorComponents [1] = new ColorComponent (new Color (0.0f, 0.7f, 0.3f), new float[2] {
-//			1.0f,
-//			0.5f
-//		});
-//		
-//		_colorComponents [2] = new ColorComponent (new Color (0.3f, 0.0f, 0.7f), new float[2] {
-//			0.0f,
-//			1.0f
-//		});
+		_colorComponents [2] = new ColorComponent (new Color (0.3f, 0.0f, 0.7f), new float[2] {
+			0.0f,
+			1.0f
+		});
 	}
 		
 	

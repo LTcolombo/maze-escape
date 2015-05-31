@@ -30,7 +30,7 @@ public class FontSizeAdjuster : MonoBehaviour
 			_target.fontSize = Mathf.CeilToInt (percentage * (float)Screen.height);
 			_lastHeight = Screen.height;
 			int sign = (_target.rectTransform.anchoredPosition.y > 0) ? 1 : -1;
-			_target.rectTransform.anchoredPosition = new Vector2 (0, sign * (float)_target.fontSize * 0.8f);
+			_target.rectTransform.anchoredPosition = new Vector2 (0, sign * (float)_target.fontSize * 0.9f);
 		}
 	}
 }
