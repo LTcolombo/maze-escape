@@ -4,6 +4,8 @@ using AssemblyCSharp;
 using DG.Tweening;
 using System;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using UnityEngine.Cloud.Analytics;
 
 public class GameScene : MonoBehaviour
 {
@@ -21,6 +23,8 @@ public class GameScene : MonoBehaviour
 	//view scripts
 	private MazeView _mazeView;
 	private PlayerView _playerView;
+
+	private int _levelNumber = 0;
 		
 	//current maze data
 	private MazeData _mazeData;
@@ -63,6 +67,7 @@ public class GameScene : MonoBehaviour
 				
 		_movesLeft = 0;
 		_score = 0;
+		_levelNumber = 0;
 		Next ();
 	}
 	
@@ -75,6 +80,14 @@ public class GameScene : MonoBehaviour
 				
 				if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
 					PlayerPrefs.SetInt ("highscore", _maxScore);
+					
+				
+				IDictionary<string, object> eventData = new Dictionary<string, object>();
+				eventData.Add(new KeyValuePair<string, object>("Number", _levelNumber));
+				eventData.Add(new KeyValuePair<string, object>("Score", _score));
+				eventData.Add(new KeyValuePair<string, object>("MaxScore", _maxScore));
+				eventData.Add(new KeyValuePair<string, object>("MovesLeft", _movesLeft));
+				UnityAnalytics.CustomEvent("GameLost", eventData);
 					
 				Application.LoadLevel ("MenuScene");
 			} else {
@@ -112,6 +125,14 @@ public class GameScene : MonoBehaviour
 	
 	void OnApplicationPause (bool paused)
 	{
+		
+		IDictionary<string, object> eventData = new Dictionary<string, object>();
+		eventData.Add(new KeyValuePair<string, object>("Number", _levelNumber));
+		eventData.Add(new KeyValuePair<string, object>("Score", _score));
+		eventData.Add(new KeyValuePair<string, object>("MaxScore", _maxScore));
+		eventData.Add(new KeyValuePair<string, object>("MovesLeft", _movesLeft));
+		UnityAnalytics.CustomEvent("GameExited", eventData);
+	
 		if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
 			PlayerPrefs.SetInt ("highscore", _maxScore);
 	}
@@ -181,6 +202,14 @@ public class GameScene : MonoBehaviour
 			if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
 				PlayerPrefs.SetInt ("highscore", _maxScore);
 				
+			
+			IDictionary<string, object> eventData = new Dictionary<string, object>();
+			eventData.Add(new KeyValuePair<string, object>("Number", _levelNumber));
+			eventData.Add(new KeyValuePair<string, object>("Score", _score));
+			eventData.Add(new KeyValuePair<string, object>("MaxScore", _maxScore));
+			eventData.Add(new KeyValuePair<string, object>("MovesLeft", _movesLeft));
+			UnityAnalytics.CustomEvent("GameLost", eventData);
+				
 			Application.LoadLevel ("MenuScene");
 			return;
 		} 
@@ -225,6 +254,8 @@ public class GameScene : MonoBehaviour
 		
 	private void Next ()
 	{
+		_levelNumber ++;
+	
 		_activated = false;
 	
 		if (_movesLeft > 0) {
