@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class FontSizeAdjuster : MonoBehaviour
 {
 
-	public float percentage;
+	public float relativeSize;
+	public float relativeY;
 	private Text _target;
 	private int _lastHeight;
 
@@ -27,10 +28,9 @@ public class FontSizeAdjuster : MonoBehaviour
 			return;
 	
 		if (_lastHeight != Screen.height) {
-			_target.fontSize = Mathf.CeilToInt (percentage * (float)Screen.height);
+			_target.fontSize = Mathf.CeilToInt (relativeSize * (float)Screen.height);
 			_lastHeight = Screen.height;
-			int sign = (_target.rectTransform.anchoredPosition.y > 0) ? 1 : -1;
-			_target.rectTransform.anchoredPosition = new Vector2 (0, sign * (float)_target.fontSize * 0.9f);
+			_target.rectTransform.anchoredPosition = new Vector2 (0, relativeY * (float)Screen.height);
 		}
 	}
 }
