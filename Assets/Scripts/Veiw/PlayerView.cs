@@ -7,11 +7,9 @@ public delegate void PlayerStepComplete ();
 
 public class PlayerView : MonoBehaviour
 {
-	public static float MOVE_TIME = 0.4f;
 	public int directionIdx;
 	public int cellX;
 	public int cellY;
-	public float speed = 1f;
 	public bool moved;
 	public int ddirection = 0;
 	
@@ -31,38 +29,33 @@ public class PlayerView : MonoBehaviour
 		Invoke ("AutoStart", value);
 	}
 	
-	public void Next (bool moveAllowed)
+	public void Next (float moveTime)
 	{
-		moved = moveAllowed;
+		moved = moveTime>0;
 	
-		if (moveAllowed) {
+		if (moved) {
 			transform.DOMove (transform.position + new Vector3 (
 			NodeData.DIRECTIONS [directionIdx, 0] * MazeView.NODE_SIZE, 
 			NodeData.DIRECTIONS [directionIdx, 1] * MazeView.NODE_SIZE, 
 			0
-			), MOVE_TIME / speed).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
+				), moveTime).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
 		
 			cellX += NodeData.DIRECTIONS [directionIdx, 0];
 			cellY += NodeData.DIRECTIONS [directionIdx, 1];
 
-			
-			if (ddirection != 0) {
-				transform.DORotate (transform.rotation.eulerAngles + new Vector3 (
-					0, 0, ddirection * -90), MOVE_TIME / speed);
-			}
 		} else {
 			if (ddirection != 0) {
 				transform.DORotate (transform.rotation.eulerAngles + new Vector3 (
-					0, 0, ddirection * -90), MOVE_TIME / speed).OnComplete (OnStepCompleted);
+					0, 0, ddirection * -90), 0.4f).OnComplete (OnStepCompleted);
 			}
-		}
-		
-		directionIdx += ddirection;
-		if (directionIdx > 3)
-			directionIdx = 0;
 			
-		if (directionIdx < 0)
-			directionIdx = 3;
+			directionIdx += ddirection;
+			if (directionIdx > 3)
+				directionIdx = 0;
+			
+			if (directionIdx < 0)
+				directionIdx = 3;
+		}
 	}
 		
 	void AutoStart ()

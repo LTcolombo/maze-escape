@@ -23,7 +23,6 @@ public class GameScene : MonoBehaviour
 	//view scripts
 	private MazeView _mazeView;
 	private PlayerView _playerView;
-
 	private int _levelNumber = 0;
 		
 	//current maze data
@@ -82,12 +81,12 @@ public class GameScene : MonoBehaviour
 					PlayerPrefs.SetInt ("highscore", _maxScore);
 					
 				
-				IDictionary<string, object> eventData = new Dictionary<string, object>();
-				eventData.Add(new KeyValuePair<string, object>("Number", _levelNumber));
-				eventData.Add(new KeyValuePair<string, object>("Score", _score));
-				eventData.Add(new KeyValuePair<string, object>("MaxScore", _maxScore));
-				eventData.Add(new KeyValuePair<string, object>("MovesLeft", _movesLeft));
-				UnityAnalytics.CustomEvent("GameLost", eventData);
+				IDictionary<string, object> eventData = new Dictionary<string, object> ();
+				eventData.Add (new KeyValuePair<string, object> ("Number", _levelNumber));
+				eventData.Add (new KeyValuePair<string, object> ("Score", _score));
+				eventData.Add (new KeyValuePair<string, object> ("MaxScore", _maxScore));
+				eventData.Add (new KeyValuePair<string, object> ("MovesLeft", _movesLeft));
+				UnityAnalytics.CustomEvent ("GameLost", eventData);
 					
 				Application.LoadLevel ("MenuScene");
 			} else {
@@ -126,12 +125,12 @@ public class GameScene : MonoBehaviour
 	void OnApplicationPause (bool paused)
 	{
 		
-		IDictionary<string, object> eventData = new Dictionary<string, object>();
-		eventData.Add(new KeyValuePair<string, object>("Number", _levelNumber));
-		eventData.Add(new KeyValuePair<string, object>("Score", _score));
-		eventData.Add(new KeyValuePair<string, object>("MaxScore", _maxScore));
-		eventData.Add(new KeyValuePair<string, object>("MovesLeft", _movesLeft));
-		UnityAnalytics.CustomEvent("GameExited", eventData);
+		IDictionary<string, object> eventData = new Dictionary<string, object> ();
+		eventData.Add (new KeyValuePair<string, object> ("Number", _levelNumber));
+		eventData.Add (new KeyValuePair<string, object> ("Score", _score));
+		eventData.Add (new KeyValuePair<string, object> ("MaxScore", _maxScore));
+		eventData.Add (new KeyValuePair<string, object> ("MovesLeft", _movesLeft));
+		UnityAnalytics.CustomEvent ("GameExited", eventData);
 	
 		if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
 			PlayerPrefs.SetInt ("highscore", _maxScore);
@@ -153,37 +152,37 @@ public class GameScene : MonoBehaviour
 			return;
 		}
 		
-		_playerView.speed = 1;
+		float moveTime = _mazeData.config.moveTime;
 		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_UP)) {
 			if (_playerView.directionIdx == NodeData.DIRECTION_UP_IDX)
-				_playerView.speed = 2;
+				moveTime /= 2;
 			
 			if (_playerView.directionIdx == NodeData.DIRECTION_DOWN_IDX)
-				_playerView.speed = 0.5f;
+				moveTime *= 2;
 		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_RIGHT)) {
 			if (_playerView.directionIdx == NodeData.DIRECTION_RIGHT_IDX)
-				_playerView.speed = 2;
+				moveTime /= 2;
 			
 			if (_playerView.directionIdx == NodeData.DIRECTION_LEFT_IDX)
-				_playerView.speed = 0.5f;
+				moveTime *= 2;
 		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_DOWN)) {
 			if (_playerView.directionIdx == NodeData.DIRECTION_DOWN_IDX)
-				_playerView.speed = 2;
+				moveTime /= 2;
 			
 			if (_playerView.directionIdx == NodeData.DIRECTION_UP_IDX)
-				_playerView.speed = 0.5f;
+				moveTime *= 2;
 		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_LEFT)) {
 			if (_playerView.directionIdx == NodeData.DIRECTION_LEFT_IDX)
-				_playerView.speed = 2;
+				moveTime /= 2;
 			
 			if (_playerView.directionIdx == NodeData.DIRECTION_RIGHT_IDX)
-				_playerView.speed = 0.5f;
+				moveTime *= 2;
 		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_HIDE_WALLS)) {
@@ -203,12 +202,12 @@ public class GameScene : MonoBehaviour
 				PlayerPrefs.SetInt ("highscore", _maxScore);
 				
 			
-			IDictionary<string, object> eventData = new Dictionary<string, object>();
-			eventData.Add(new KeyValuePair<string, object>("Number", _levelNumber));
-			eventData.Add(new KeyValuePair<string, object>("Score", _score));
-			eventData.Add(new KeyValuePair<string, object>("MaxScore", _maxScore));
-			eventData.Add(new KeyValuePair<string, object>("MovesLeft", _movesLeft));
-			UnityAnalytics.CustomEvent("GameLost", eventData);
+			IDictionary<string, object> eventData = new Dictionary<string, object> ();
+			eventData.Add (new KeyValuePair<string, object> ("Number", _levelNumber));
+			eventData.Add (new KeyValuePair<string, object> ("Score", _score));
+			eventData.Add (new KeyValuePair<string, object> ("MaxScore", _maxScore));
+			eventData.Add (new KeyValuePair<string, object> ("MovesLeft", _movesLeft));
+			UnityAnalytics.CustomEvent ("GameLost", eventData);
 				
 			Application.LoadLevel ("MenuScene");
 			return;
@@ -236,11 +235,11 @@ public class GameScene : MonoBehaviour
 			}
 			
 			node.score = 0;
-			_playerView.Next (true);
+			_playerView.Next (moveTime);
 			_stuck = false;
 		} else {
 			
-			_playerView.Next (false);
+			_playerView.Next (-1);
 
 			if (_playerView.ddirection == 0) {
 				_reduceValue = (int)((float)_score * Time.deltaTime);
@@ -286,15 +285,29 @@ public class GameScene : MonoBehaviour
 	MazeConfig getNextMazeConfig ()
 	{
 		MazeConfig config = new MazeConfig ();
-		config.width = 10;
-		config.height = 10;
 		
-		config.minScore = 1;
-		config.maxScore = 4;
+		var size = 4;
 		
-		config.speedUpsCount = 2;
-		config.rotatorsCount = 6;
-		config.hidersCount = 1;
+		if (_levelNumber > 5)
+			size = 6;
+			
+		if (_levelNumber > 12)
+			size = 6;
+			
+		if (_levelNumber > 18)
+			size = 10;
+				
+		config.width = size;
+		config.height = size;
+		
+		config.moveTime = 0.5f - 0.01f * Math.Min(30, _levelNumber);
+		
+		config.minScore = 1 + _levelNumber;
+		config.maxScore = 4 + _levelNumber;
+		
+		config.speedUpsCount = _levelNumber / 5;
+		config.rotatorsCount = _levelNumber / 10;
+		config.hidersCount = _levelNumber > 3 ? 1 : 0;
 		
 		return config;
 	}

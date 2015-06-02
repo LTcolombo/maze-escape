@@ -24,7 +24,7 @@ namespace AssemblyCSharp
 			
 			for (int j = 0; j < _config.width; j++)
 				for (int i = 0; i < _config.height; i++)
-					_data [i + j * _config.width] = new NodeData (i, j);
+					_data [i + j * _config.height] = new NodeData (i, j);
 								
 			//1. get starting point
 			NodeData startingNode = GetNode (startX, startY);

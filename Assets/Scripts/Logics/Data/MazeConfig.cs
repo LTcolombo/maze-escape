@@ -11,5 +11,6 @@ namespace AssemblyCSharp
 		public int minScore;
 		public int maxScore;
 		public float bonusRate = 2;
+		public float moveTime = 0.5f;
 	}
 }
