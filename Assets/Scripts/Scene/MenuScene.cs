@@ -65,13 +65,13 @@ public class MenuScene : MonoBehaviour
 			1.0f
 		});
 		
-		GameObject tile = (GameObject)(Resources.Load ("Prefabs/Tile"));
+		GameObject tile = (GameObject)(Resources.Load ("Prefabs/TileSmall"));
 		for (int cell_y = 0; cell_y < LOGO_MATRIX.GetLength(0); cell_y++)
 			for (int cell_x = 0; cell_x< LOGO_MATRIX.GetLength(1); cell_x++) {
 			
 				if (LOGO_MATRIX [cell_y, cell_x] != 0) {
-					int x = (-LOGO_MATRIX.GetLength (1) / 2 + cell_x) * 40;
-					int y = (LOGO_MATRIX.GetLength (0) - cell_y) * 40; 
+					int x = (-LOGO_MATRIX.GetLength (1) / 2 + cell_x) * 34;
+					int y = (LOGO_MATRIX.GetLength (0) - cell_y) * 34; 
 				
 					float[] tileRelativePos = new float[2] {
 					(float)cell_y / LOGO_MATRIX.GetLength (0),
@@ -102,7 +102,6 @@ public class MenuScene : MonoBehaviour
 					GameObject tileInstance = (GameObject)Instantiate (tile, pos, Quaternion.identity);
 					tileInstance.GetComponent<SpriteRenderer> ().color = new Color (tint * r, tint * g, tint * b, 1);
 				
-					tileInstance.transform.localScale = new Vector3 (0.3f, 0.3f, 0.2f);
 					tileInstance.transform.DOMove (new Vector3 (x, y, 0), 0.5f);
 				}	
 			}
