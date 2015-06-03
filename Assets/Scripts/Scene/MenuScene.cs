@@ -32,29 +32,17 @@ public class MenuScene : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		Prefabs.Init();
-		UnityAnalytics.StartSDK("84ec8035-1fc7-4fde-867c-3497cb4b2ace");
+		Prefabs.Init ();
+		UnityAnalytics.StartSDK ("84ec8035-1fc7-4fde-867c-3497cb4b2ace");
 	
 		Text bestScoreText = (Text)GameObject.Find ("Canvas/BestScoreText").GetComponent<Text> ();
 		bestScoreText.text = "BEST SCORE: " + PlayerPrefs.GetInt ("highscore", 0);
 	
-		Camera.main.backgroundColor = new Color (0.92f, 0.92f, 0.86f);
-		Invoke ("InitScene", FIRST_LOAD ? 0.5f : 0.1f);
+		Camera.main.backgroundColor = FIRST_LOAD ? new Color (0.17f, 0.17f, 0.17f) : new Color (0.92f, 0.92f, 0.86f);
+		InitScene ();
 		FIRST_LOAD = false;
 		
-		Instantiate(Prefabs.TILE);
-		Instantiate(Prefabs.WALL_WEST);
-		Instantiate(Prefabs.WALL_NORTH);
-		Instantiate(Prefabs.WALL_NORTH_WEST);
-		Instantiate(Prefabs.EXIT);
-		Instantiate(Prefabs.SPEED_UP);
-		Instantiate(Prefabs.ROTATOR_CW);
-		Instantiate(Prefabs.ROTATOR_CCW);
-		Instantiate(Prefabs.HIDE);
-		Instantiate(Prefabs.SHOW);
-		Instantiate(Prefabs.MAZE);
-		Instantiate(Prefabs.PLAYER);
-		Instantiate(Prefabs.TILE_SMALL);
+		_canExit = true;
 	}
 	
 	void InitScene ()
@@ -62,7 +50,8 @@ public class MenuScene : MonoBehaviour
 		_canExit = false;
 	
 		DOTween.CompleteAll ();
-		Camera.main.DOColor (new Color (0.17f, 0.17f, 0.17f), 0.7f).OnComplete (AllowExit);
+		if (!FIRST_LOAD)
+			Camera.main.DOColor (new Color (0.17f, 0.17f, 0.17f), 0.7f).OnComplete (AllowExit);
 		
 		_colorComponents = new ColorComponent[3];
 		
@@ -109,15 +98,17 @@ public class MenuScene : MonoBehaviour
 					float tint = 0.3f + 0.7f * (Random.Range (3.0f, 5.0f) / 5.0f);
 				
 					Vector3 pos = new Vector3 (x, y, 0);
-					if (cell_x % 2 == 0)
-						pos.x += Random.Range (-400, 400);
-					else
-						pos.y += Random.Range (-400, 400);
-				
+					if (!FIRST_LOAD) {
+						if (cell_x % 2 == 0)
+							pos.x += Random.Range (-400, 400);
+						else
+							pos.y += Random.Range (-400, 400);
+					}
 					GameObject tileInstance = (GameObject)Instantiate (Prefabs.TILE_SMALL, pos, Quaternion.identity);
 					tileInstance.GetComponent<SpriteRenderer> ().color = new Color (tint * r, tint * g, tint * b, 1);
 				
-					tileInstance.transform.DOMove (new Vector3 (x, y, 0), 0.5f);
+					if (!FIRST_LOAD)
+						tileInstance.transform.DOMove (new Vector3 (x, y, 0), 0.5f);
 				}	
 			}
 		
