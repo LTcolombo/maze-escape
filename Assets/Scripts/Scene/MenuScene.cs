@@ -41,6 +41,20 @@ public class MenuScene : MonoBehaviour
 		Camera.main.backgroundColor = new Color (0.92f, 0.92f, 0.86f);
 		Invoke ("InitScene", FIRST_LOAD ? 0.5f : 0.1f);
 		FIRST_LOAD = false;
+		
+		Instantiate(Prefabs.TILE);
+		Instantiate(Prefabs.WALL_WEST);
+		Instantiate(Prefabs.WALL_NORTH);
+		Instantiate(Prefabs.WALL_NORTH_WEST);
+		Instantiate(Prefabs.EXIT);
+		Instantiate(Prefabs.SPEED_UP);
+		Instantiate(Prefabs.ROTATOR_CW);
+		Instantiate(Prefabs.ROTATOR_CCW);
+		Instantiate(Prefabs.HIDE);
+		Instantiate(Prefabs.SHOW);
+		Instantiate(Prefabs.MAZE);
+		Instantiate(Prefabs.PLAYER);
+		Instantiate(Prefabs.TILE_SMALL);
 	}
 	
 	void InitScene ()

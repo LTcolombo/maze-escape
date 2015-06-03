@@ -51,11 +51,11 @@ public class GameScene : MonoBehaviour
 				
 		_container = GameObject.Find ("GameContainer");
 		
-		var mazeObject = (GameObject)Instantiate (Prefabs.MAZE);
+		GameObject mazeObject = (GameObject)Instantiate (Prefabs.MAZE);
 		mazeObject.transform.parent = _container.transform;
 		_mazeView = mazeObject.GetComponent<MazeView> ();
 				
-		var playerObject = (GameObject)Instantiate (Prefabs.PLAYER);
+		GameObject playerObject = (GameObject)Instantiate (Prefabs.PLAYER);
 		playerObject.transform.parent = _container.transform;
 		_playerView = playerObject.GetComponent<PlayerView> ();
 		_playerView.onStepComplete += OnPlayerStepComplete;
