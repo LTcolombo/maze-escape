@@ -3,6 +3,7 @@ using System.Collections;
 using DG.Tweening;
 using UnityEngine.UI;
 using UnityEngine.Cloud.Analytics;
+using AssemblyCSharp;
 
 public class MenuScene : MonoBehaviour
 {
@@ -31,6 +32,7 @@ public class MenuScene : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		Prefabs.Init();
 		UnityAnalytics.StartSDK("84ec8035-1fc7-4fde-867c-3497cb4b2ace");
 	
 		Text bestScoreText = (Text)GameObject.Find ("Canvas/BestScoreText").GetComponent<Text> ();
@@ -65,7 +67,6 @@ public class MenuScene : MonoBehaviour
 			1.0f
 		});
 		
-		GameObject tile = (GameObject)(Resources.Load ("Prefabs/TileSmall"));
 		for (int cell_y = 0; cell_y < LOGO_MATRIX.GetLength(0); cell_y++)
 			for (int cell_x = 0; cell_x< LOGO_MATRIX.GetLength(1); cell_x++) {
 			
@@ -99,7 +100,7 @@ public class MenuScene : MonoBehaviour
 					else
 						pos.y += Random.Range (-400, 400);
 				
-					GameObject tileInstance = (GameObject)Instantiate (tile, pos, Quaternion.identity);
+					GameObject tileInstance = (GameObject)Instantiate (Prefabs.TILE_SMALL, pos, Quaternion.identity);
 					tileInstance.GetComponent<SpriteRenderer> ().color = new Color (tint * r, tint * g, tint * b, 1);
 				
 					tileInstance.transform.DOMove (new Vector3 (x, y, 0), 0.5f);

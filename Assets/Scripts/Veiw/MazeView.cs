@@ -22,18 +22,6 @@ public class MazeView : MonoBehaviour
 	private GameObject _wallsContainer;
 	private GameObject _genericContainer;
 	
-	//prefabs
-	private GameObject _tile;
-	private GameObject _wallWest;
-	private GameObject _wallNorth;
-	private GameObject _wallNorthWest;
-	private GameObject _exit;
-	private GameObject _speedUp;
-	private GameObject _rotatorCW;
-	private GameObject _rotatorCCW;
-	private GameObject _hide;
-	private GameObject _show;
-	
 	//set of base colors
 	private ColorComponent[] _colorComponents;
 	
@@ -50,16 +38,6 @@ public class MazeView : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		_tile = (GameObject)(Resources.Load ("Prefabs/Tile"));
-		_wallWest = (GameObject)(Resources.Load ("Prefabs/WallWest"));
-		_wallNorth = (GameObject)(Resources.Load ("Prefabs/WallNorth"));
-		_wallNorthWest = (GameObject)(Resources.Load ("Prefabs/WallNorthWest"));
-		_exit = (GameObject)(Resources.Load ("Prefabs/Exit"));
-		_speedUp = (GameObject)(Resources.Load ("Prefabs/SpeedUp"));
-		_rotatorCW = (GameObject)(Resources.Load ("Prefabs/RotatorCW"));
-		_rotatorCCW = (GameObject)(Resources.Load ("Prefabs/RotatorCCW"));
-		_hide = (GameObject)(Resources.Load ("Prefabs/Hide"));
-		_show = (GameObject)(Resources.Load ("Prefabs/Show"));
 		
 		_wallsContainer = CreateContainer ("Walls");
 		_genericContainer = CreateContainer ("Objects");
@@ -159,12 +137,12 @@ public class MazeView : MonoBehaviour
 				if (i > 0 && node.HasWall (NodeData.DIRECTION_LEFT_IDX)) {
 					
 					if ((j < (_mazeData.config.height - 1) && node.HasWall (NodeData.DIRECTION_UP_IDX))) 
-						wallInstance = (GameObject)Instantiate (_wallNorthWest);
+						wallInstance = (GameObject)Instantiate (Prefabs.WALL_NORTH_WEST);
 					else
-						wallInstance = (GameObject)Instantiate (_wallWest);
+						wallInstance = (GameObject)Instantiate (Prefabs.WALL_WEST);
 					
 				} else if ((j < (_mazeData.config.height - 1) && node.HasWall (NodeData.DIRECTION_UP_IDX))) 
-					wallInstance = (GameObject)Instantiate (_wallNorth);
+					wallInstance = (GameObject)Instantiate (Prefabs.WALL_NORTH);
 				
 				if (wallInstance != null) {
 					_objectInstances.Add (wallInstance);
@@ -172,7 +150,7 @@ public class MazeView : MonoBehaviour
 					wallInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder);
 				}
 				
-				GameObject tileInstance = (GameObject)Instantiate (_tile);
+				GameObject tileInstance = (GameObject)Instantiate (Prefabs.TILE);
 				float tint = 0.3f + 0.7f * (float)node.score / _mazeData.config.maxScore;
 				tileInstance.GetComponent<SpriteRenderer> ().color = new Color (tint * r, tint * g, tint * b, 1);
 				_tileInstances.Add (tileInstance);
@@ -180,21 +158,21 @@ public class MazeView : MonoBehaviour
 				tileInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 1);
 								
 				if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
-					GameObject specInstance = (GameObject)Instantiate (_exit);
+					GameObject specInstance = (GameObject)Instantiate (Prefabs.EXIT);
 					_objectInstances.Add (specInstance);
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
 				}
 								
 				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_UP)) {
-					GameObject specInstance = (GameObject)Instantiate (_speedUp);
+					GameObject specInstance = (GameObject)Instantiate (Prefabs.SPEED_UP);
 					_objectInstances.Add (specInstance);
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
 				}
 				
 				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_RIGHT)) {
-					GameObject specInstance = (GameObject)Instantiate (_speedUp);
+					GameObject specInstance = (GameObject)Instantiate (Prefabs.SPEED_UP);
 					_objectInstances.Add (specInstance);
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.eulerAngles = new Vector3 (0, 0, -90);
@@ -202,7 +180,7 @@ public class MazeView : MonoBehaviour
 				}
 				
 				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_DOWN)) {
-					GameObject specInstance = (GameObject)Instantiate (_speedUp);
+					GameObject specInstance = (GameObject)Instantiate (Prefabs.SPEED_UP);
 					_objectInstances.Add (specInstance);
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.eulerAngles = new Vector3 (0, 0, 180);
@@ -210,7 +188,7 @@ public class MazeView : MonoBehaviour
 				}
 				
 				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_LEFT)) {
-					GameObject specInstance = (GameObject)Instantiate (_speedUp);
+					GameObject specInstance = (GameObject)Instantiate (Prefabs.SPEED_UP);
 					_objectInstances.Add (specInstance);
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.eulerAngles = new Vector3 (0, 0, 90);
@@ -218,28 +196,28 @@ public class MazeView : MonoBehaviour
 				}
 				
 				if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
-					GameObject specInstance = (GameObject)Instantiate (_rotatorCW);
+					GameObject specInstance = (GameObject)Instantiate (Prefabs.ROTATOR_CW);
 					_objectInstances.Add (specInstance);
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
 				}
 				
 				if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
-					GameObject specInstance = (GameObject)Instantiate (_rotatorCCW);
+					GameObject specInstance = (GameObject)Instantiate (Prefabs.ROTATOR_CCW);
 					_objectInstances.Add (specInstance);
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
 				}
 				
 				if (node.HasFlag (NodeData.SPECIALS_HIDE_WALLS)) {
-					GameObject specInstance = (GameObject)Instantiate (_hide);
+					GameObject specInstance = (GameObject)Instantiate (Prefabs.HIDE);
 					_objectInstances.Add (specInstance);
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
 				}
 				
 				if (node.HasFlag (NodeData.SPECIALS_SHOW_WALLS)) {
-					GameObject specInstance = (GameObject)Instantiate (_show);
+					GameObject specInstance = (GameObject)Instantiate (Prefabs.SHOW);
 					_objectInstances.Add (specInstance);
 					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
