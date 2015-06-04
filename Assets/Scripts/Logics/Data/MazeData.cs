@@ -51,8 +51,10 @@ namespace AssemblyCSharp
 					
 					//3.2 attach it to current tree
 					NodeData processedNeighbour = GetRandomNeighbour (edgeNode, true);
-					if (processedNeighbour != null)
+					if (processedNeighbour != null) {
 						Merge (processedNeighbour, edgeNode);
+						edgeNode.previousNode = processedNeighbour;
+					}
 					
 					//3.3 create the branch
 					CreateBranch (edgeNode, edgeNodes, ref lastNode);
@@ -71,9 +73,8 @@ namespace AssemblyCSharp
 			
 			do {
 				//1. if node exists in edge nodes, remove it
-				int idx = edgeNodes.IndexOf (currentNode);
-				if (idx >= 0)
-					edgeNodes.RemoveAt (idx);
+				if (edgeNodes.Contains (currentNode))
+					edgeNodes.Remove (currentNode);
 				
 				currentNode.AddFlag (NodeData.PROCESSED);
 				
@@ -90,22 +91,19 @@ namespace AssemblyCSharp
 					//3.2 append new edge nodes
 					List<NodeData> notProcessedNeighbours = GetNotProcessedNeighboursOf (randomNeighbour);
 					foreach (NodeData nodeData in notProcessedNeighbours) {
-						nodeData.previousNode = randomNeighbour;
-						edgeNodes.Add (nodeData);
+						if (!edgeNodes.Contains (nodeData)) 
+							edgeNodes.Add (nodeData);
 					}
 					
 					//3.3 process it on next loop entry
 					currentNode = randomNeighbour;
 				} else {
 					
-					
 					if (currentNode.GetDistance () > lastNode.GetDistance ()) {
-						
 						deadEnds.Insert (0, currentNode);
 						lastNode = currentNode;
-					}
-					
-					deadEnds.Add (currentNode);
+					} else
+						deadEnds.Add (currentNode);
 				}
 				
 			} while (randomNeighbour!=null);

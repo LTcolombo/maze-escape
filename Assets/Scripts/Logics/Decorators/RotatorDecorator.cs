@@ -21,7 +21,7 @@ namespace AssemblyCSharp
 				int currentDirection = -1;
 
 				while (node!=null && !candidates.Contains(node)) {
-					NodeData nextNode = node.previousNode;
+					NodeData previousNode = node.previousNode;
 					
 					if (!node.HasFlag (
 						NodeData.SPECIALS_SPEEDUP_UP |
@@ -29,8 +29,8 @@ namespace AssemblyCSharp
 						NodeData.SPECIALS_SPEEDUP_DOWN |
 						NodeData.SPECIALS_SPEEDUP_LEFT)) {
 
-						if (nextNode != null) {
-							int direction = GetDirection (nextNode, node);
+						if (previousNode != null) {
+							int direction = previousNode.GetDirection (node);
 
 							if (currentDirection > -1 && currentDirection != direction) {							
 								candidates.Add (node);
@@ -38,7 +38,7 @@ namespace AssemblyCSharp
 							currentDirection = direction;
 						}
 					}
-					node = nextNode;
+					node = previousNode;
 				}
 			}
 
@@ -47,23 +47,6 @@ namespace AssemblyCSharp
 				if (i >= mazeData.config.rotatorsCount) 
 					break;
 				candidates [i].AddFlag (i % 2 == 0 ? NodeData.SPECIALS_ROTATOR_CW : NodeData.SPECIALS_ROTATOR_CCW);
-			}
-		}
-
-		static int GetDirection (NodeData nextNode, NodeData node)
-		{
-			//presumably nodes are next to each other
-			//inverse direction to make speedup towards dead ends (and exit)
-			if (nextNode.x == node.x) {
-				if (nextNode.y < node.y)
-					return NodeData.DIRECTION_UP_IDX;
-				else
-					return NodeData.DIRECTION_DOWN_IDX;
-			} else {
-				if (nextNode.x < node.x)
-					return NodeData.DIRECTION_RIGHT_IDX;
-				else
-					return NodeData.DIRECTION_LEFT_IDX;
 			}
 		}
 

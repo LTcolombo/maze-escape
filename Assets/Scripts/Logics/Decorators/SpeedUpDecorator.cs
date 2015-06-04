@@ -31,7 +31,7 @@ namespace AssemblyCSharp
 				SpeedUpChain currentChain = new SpeedUpChain ();
 				
 				do {
-					NodeData nextNode = node.previousNode;
+					NodeData previousNode = node.previousNode;
 			
 					bool nodeHasSpeedUp = false;
 					foreach (SpeedUpChain chain in chains) {
@@ -44,8 +44,8 @@ namespace AssemblyCSharp
 					if (nodeHasSpeedUp) //branch reached a point of another branch that has already been processed
 						break;
 									
-					if (nextNode != null) {
-						int direction = GetDirection (nextNode, node);
+					if (previousNode != null) {
+						int direction = previousNode.GetDirection (node);
 						
 						currentChain.nodes.Add (node);
 						if (currentDirection != direction) {
@@ -57,7 +57,7 @@ namespace AssemblyCSharp
 						}				
 						currentDirection = direction;
 					}
-					node = nextNode;
+					node = previousNode;
 				} while (node!=null);
 			}
 			
@@ -87,23 +87,6 @@ namespace AssemblyCSharp
 						break;
 					}
 				}
-			}
-		}
-
-		static int GetDirection (NodeData nextNode, NodeData node)
-		{
-			//presumably nodes are next to each other
-			//inverse direction to make speedup towards dead ends (and exit)
-			if (nextNode.x == node.x) {
-				if (nextNode.y < node.y)
-					return NodeData.DIRECTION_UP_IDX;
-				else
-					return NodeData.DIRECTION_DOWN_IDX;
-			} else {
-				if (nextNode.x < node.x)
-					return NodeData.DIRECTION_RIGHT_IDX;
-				else
-					return NodeData.DIRECTION_LEFT_IDX;
 			}
 		}
 	}

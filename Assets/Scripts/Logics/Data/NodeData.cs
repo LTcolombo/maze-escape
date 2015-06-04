@@ -103,6 +103,22 @@ namespace AssemblyCSharp
 			return count;
 		}
 		
+		public int GetDirection (NodeData other)
+		{
+			//presumably nodes are next to each other
+			if (other.x == x) {
+				if (other.y > y)
+					return NodeData.DIRECTION_UP_IDX;
+				else
+					return NodeData.DIRECTION_DOWN_IDX;
+			} else {
+				if (other.x > x)
+					return NodeData.DIRECTION_RIGHT_IDX;
+				else
+					return NodeData.DIRECTION_LEFT_IDX;
+			}
+		}
+		
 		public uint GetDistance ()
 		{
 			uint distance = 0;
