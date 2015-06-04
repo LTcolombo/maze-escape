@@ -125,9 +125,8 @@ public class MenuScene : MonoBehaviour
 		if (Application.isEditor && Input.anyKey && _canExit) {
 			Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
 			tipText.text = "Loading...";
-			Application.LoadLevel ("GameScene");
 			_canExit = false;
-			return;
+			Application.LoadLevel ("MenuScene");
 		} 
 		
 		if (Input.touchCount > 0) {
@@ -140,8 +139,8 @@ public class MenuScene : MonoBehaviour
 			if (start && _canExit) {
 				Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
 				tipText.text = "Loading...";
-				Application.LoadLevel ("GameScene");
 				_canExit = false;
+				Application.LoadLevel ("MenuScene");
 			}
 		}
 		
