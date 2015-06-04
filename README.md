@@ -9,12 +9,15 @@ User defines the direction of a constantly moving arrow, which is placed into th
 If the arrow hits a wall - the game is lost.
 If the arrow reaches the exit - maze is regenerated.
 ### Key features
-### Complexity and focus. 
-Although the maze is relatively small, the fact that the arrow starts moving instantly (or after a short period of time after maze generation) doesn’t allow the user to look through and find the optimal path, as he needs to focus on the arrow.
-### Competitivity. 
+
+**Complexity and focus.** Although the maze is relatively small, the fact that the arrow starts moving instantly (or after a short period of time after maze generation) doesn’t allow the user to look through and find the optimal path, as he needs to focus on the arrow.
+
+**Competitivity.** 
 User performance is measured by score, which is appended each time he passes a cell. Its also altered when exit is reached depending how different from optimal his path was.
-### Graphical style. 
+
+**Graphical style.** 
 Strict geometric shapes with a rough texture.
+
 ## Special cells
 ### Speedup area. 
 Looks like a chevron on 2 or more lined up and merged cells. Makes the movement in the right direction twice faster and twice slower in the opposite.
