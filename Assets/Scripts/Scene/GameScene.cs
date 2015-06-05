@@ -41,10 +41,17 @@ public class GameScene : MonoBehaviour
 
 	//scores to to takeoff on ueach update when stuck. approx should drain all score in 1 second
 	private int _reduceValue;
-	
+	private static bool FIRST_LOAD = true;
+	private static bool INITED = false;
 	// Use this for initialization
 	void Start ()
 	{
+		if (FIRST_LOAD) {
+			FIRST_LOAD = false;
+			Application.LoadLevel ("MenuScene");
+			FIRST_LOAD = false;
+			return;
+		}
 		DOTween.CompleteAll ();
 		Camera.main.backgroundColor = new Color (0.17f, 0.17f, 0.17f);
 		Camera.main.DOColor (new Color (0.92f, 0.92f, 0.86f), 0.5f);
@@ -68,11 +75,14 @@ public class GameScene : MonoBehaviour
 		_score = 0;
 		_levelNumber = 0;
 		Next ();
+		INITED = true;
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!INITED) 
+			return;
 		if (_stuck) {
 			scoreText.color = new Color (1.0f, 0.0f, 0.0f);
 			if (_score < _reduceValue) {
@@ -300,7 +310,7 @@ public class GameScene : MonoBehaviour
 		config.width = size;
 		config.height = size;
 		
-		config.moveTime = 0.5f - 0.01f * Math.Min(30, _levelNumber);
+		config.moveTime = 0.5f - 0.01f * Math.Min (30, _levelNumber);
 		
 		config.minScore = 1 + _levelNumber;
 		config.maxScore = 4 + _levelNumber;
