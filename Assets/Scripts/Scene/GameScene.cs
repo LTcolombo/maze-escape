@@ -79,7 +79,7 @@ public class GameScene : MonoBehaviour
 				
 		_movesLeft = 0;
 		_score = 0;
-		_levelNumber = 0;
+		_levelNumber = PlayerPrefs.GetInt ("maxlevel", 0) / 2;
 		Next ();
 		INITED = true;
 	}
@@ -164,6 +164,7 @@ public class GameScene : MonoBehaviour
 		
 		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
 			movesText.color = new Color (0.761f, 0.761f, 0.668f);
+			_levelNumber ++;
 			Next ();
 			return;
 		}
@@ -268,8 +269,9 @@ public class GameScene : MonoBehaviour
 	}
 		
 	private void Next ()
-	{
-		_levelNumber ++;
+	{	
+		if (_levelNumber > PlayerPrefs.GetInt ("maxlevel", 0))
+			PlayerPrefs.SetInt ("maxlevel", _levelNumber);
 	
 		_activated = false;
 	
