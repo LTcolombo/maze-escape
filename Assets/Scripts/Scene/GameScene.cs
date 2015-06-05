@@ -46,6 +46,12 @@ public class GameScene : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		
+		if (!Debug.isDebugBuild) {
+			GetComponent<Console> ().enabled = false;
+			GetComponent<HUDFPS> ().enabled = false;
+		}
+		
 		if (FIRST_LOAD) {
 			FIRST_LOAD = false;
 			Application.LoadLevel ("MenuScene");
