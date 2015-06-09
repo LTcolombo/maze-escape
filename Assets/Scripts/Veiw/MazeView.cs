@@ -2,18 +2,6 @@ using UnityEngine;
 using System.Collections;
 using AssemblyCSharp;
 
-class ColorComponent
-{
-	public Color color;
-	public float[] position;
-	
-	public ColorComponent (Color color, float[] position)
-	{
-		this.color = color;
-		this.position = position;
-	}
-}
-
 public class MazeView : MonoBehaviour
 {
 	public static float NODE_SIZE = 128f;
@@ -21,10 +9,7 @@ public class MazeView : MonoBehaviour
 	//containers
 	private GameObject _wallsContainer;
 	private GameObject _genericContainer;
-	
-	//set of base colors
-	private ColorComponent[] _colorComponents;
-	
+		
 	//current maze data
 	private MazeData _mazeData;
 	
@@ -41,23 +26,6 @@ public class MazeView : MonoBehaviour
 		
 		_wallsContainer = CreateContainer ("Walls");
 		_genericContainer = CreateContainer ("Objects");
-	
-		_colorComponents = new ColorComponent[3];
-		
-		_colorComponents [0] = new ColorComponent (new Color (0.7f, 0.3f, 0.0f), new float[2] {
-			0.0f,
-			0.0f
-		});
-		
-		_colorComponents [1] = new ColorComponent (new Color (0.0f, 0.7f, 0.3f), new float[2] {
-			1.0f,
-			0.5f
-		});
-		
-		_colorComponents [2] = new ColorComponent (new Color (0.3f, 0.0f, 0.7f), new float[2] {
-			0.0f,
-			1.0f
-		});
 	}
 		
 	
@@ -106,6 +74,10 @@ public class MazeView : MonoBehaviour
 			Destroy (tileInstance);
 		
 		_tileInstances.Clear ();
+		
+		
+		//set of base colors
+		ColorComponent[] colorComponents = ColorComponent.GetArray ();
 				
 		for (int i = 0; i < _mazeData.config.width; i++) {
 			for (int j = 0; j < _mazeData.config.height; j++) {
@@ -116,23 +88,17 @@ public class MazeView : MonoBehaviour
 					(float)i / _mazeData.config.width,
 					(float)j / _mazeData.config.height
 								};
-				
-				float r = 0;
-				float g = 0;
-				float b = 0;
-				
-				for (int colorIdx = 0; colorIdx < 3; colorIdx++) {
-					ColorComponent colorComponent = _colorComponents [colorIdx];
-					float distance = (Mathf.Abs (tileRelativePos [0] - colorComponent.position [0]) + Mathf.Abs (tileRelativePos [1] - colorComponent.position [1])) / 2;
-					
-					r += colorComponent.color.r - (colorComponent.color.r * distance);			
-					g += colorComponent.color.g - (colorComponent.color.g * distance);
-					b += colorComponent.color.b - (colorComponent.color.b * distance);
-				}
-				
-				
-				float zOrder = (float)(j - i) / (_mazeData.config.width + _mazeData.config.height);
-				
+								
+				//create a tile				
+				GameObject tileInstance = (GameObject)Instantiate (Prefabs.TILE);
+				float tint = 0.3f + 0.7f * (float)node.score / _mazeData.config.maxScore;
+				tileInstance.GetComponent<SpriteRenderer> ().color = ColorComponent.GetColor (tileRelativePos, colorComponents, tint);
+				_tileInstances.Add (tileInstance);
+				tileInstance.transform.parent = _genericContainer.transform;
+				tileInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 1);
+
+				//create a wall
+				float zOrder = (float)(j - i) / (_mazeData.config.width + _mazeData.config.height);				
 				GameObject wallInstance = null;
 				if (i > 0 && node.HasWall (NodeData.DIRECTION_LEFT_IDX)) {
 					
@@ -144,86 +110,56 @@ public class MazeView : MonoBehaviour
 				} else if ((j < (_mazeData.config.height - 1) && node.HasWall (NodeData.DIRECTION_UP_IDX))) 
 					wallInstance = (GameObject)Instantiate (Prefabs.WALL_NORTH);
 				
-				if (wallInstance != null) {
-					_objectInstances.Add (wallInstance);
-					wallInstance.transform.parent = _wallsContainer.transform;
-					wallInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder);
-				}
+				if (wallInstance != null) 
+					AddObject (wallInstance, _wallsContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
 				
-				GameObject tileInstance = (GameObject)Instantiate (Prefabs.TILE);
-				float tint = 0.3f + 0.7f * (float)node.score / _mazeData.config.maxScore;
-				tileInstance.GetComponent<SpriteRenderer> ().color = new Color (tint * r, tint * g, tint * b, 1);
-				_tileInstances.Add (tileInstance);
-				tileInstance.transform.parent = _genericContainer.transform;
-				tileInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 1);
 								
-				if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
-					GameObject specInstance = (GameObject)Instantiate (Prefabs.EXIT);
-					_objectInstances.Add (specInstance);
-					specInstance.transform.parent = _genericContainer.transform;
-					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
-				}
+				if (node.HasFlag (NodeData.SPECIALS_EXIT)) 
+					AddObject ((GameObject)Instantiate (Prefabs.EXIT), _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
+
 								
-				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_UP)) {
-					GameObject specInstance = (GameObject)Instantiate (Prefabs.SPEED_UP);
-					_objectInstances.Add (specInstance);
-					specInstance.transform.parent = _genericContainer.transform;
-					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
-				}
+				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_UP)) 
+					AddObject ((GameObject)Instantiate (Prefabs.SPEED_UP), _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
 				
 				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_RIGHT)) {
 					GameObject specInstance = (GameObject)Instantiate (Prefabs.SPEED_UP);
-					_objectInstances.Add (specInstance);
-					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.eulerAngles = new Vector3 (0, 0, -90);
-					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
+					AddObject (specInstance, _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
 				}
 				
 				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_DOWN)) {
 					GameObject specInstance = (GameObject)Instantiate (Prefabs.SPEED_UP);
-					_objectInstances.Add (specInstance);
-					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.eulerAngles = new Vector3 (0, 0, 180);
-					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
+					AddObject (specInstance, _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
 				}
 				
 				if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_LEFT)) {
 					GameObject specInstance = (GameObject)Instantiate (Prefabs.SPEED_UP);
-					_objectInstances.Add (specInstance);
-					specInstance.transform.parent = _genericContainer.transform;
 					specInstance.transform.eulerAngles = new Vector3 (0, 0, 90);
-					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
+					AddObject (specInstance, _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
 				}
 				
-				if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
-					GameObject specInstance = (GameObject)Instantiate (Prefabs.ROTATOR_CW);
-					_objectInstances.Add (specInstance);
-					specInstance.transform.parent = _genericContainer.transform;
-					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
-				}
+				if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) 
+					AddObject ((GameObject)Instantiate (Prefabs.ROTATOR_CW), _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
 				
-				if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
-					GameObject specInstance = (GameObject)Instantiate (Prefabs.ROTATOR_CCW);
-					_objectInstances.Add (specInstance);
-					specInstance.transform.parent = _genericContainer.transform;
-					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
-				}
+				if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) 
+					AddObject ((GameObject)Instantiate (Prefabs.ROTATOR_CCW), _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
 				
-				if (node.HasFlag (NodeData.SPECIALS_HIDE_WALLS)) {
-					GameObject specInstance = (GameObject)Instantiate (Prefabs.HIDE);
-					_objectInstances.Add (specInstance);
-					specInstance.transform.parent = _genericContainer.transform;
-					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
-				}
+				if (node.HasFlag (NodeData.SPECIALS_HIDE_WALLS)) 
+					AddObject ((GameObject)Instantiate (Prefabs.SHOW), _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
+
+				if (node.HasFlag (NodeData.SPECIALS_SHOW_WALLS)) 
+					AddObject ((GameObject)Instantiate (Prefabs.SHOW), _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
 				
-				if (node.HasFlag (NodeData.SPECIALS_SHOW_WALLS)) {
-					GameObject specInstance = (GameObject)Instantiate (Prefabs.SHOW);
-					_objectInstances.Add (specInstance);
-					specInstance.transform.parent = _genericContainer.transform;
-					specInstance.transform.localPosition = new Vector3 (i * NODE_SIZE, j * NODE_SIZE, 0.5f);
-				}
 			}
 		}
+	}
+
+	private void AddObject (GameObject instance, GameObject container, Vector3 pos)
+	{
+		_objectInstances.Add (instance);
+		instance.transform.parent = container.transform;
+		instance.transform.localPosition = pos;
 	}
 	
 	private GameObject CreateContainer (string name)
@@ -233,7 +169,6 @@ public class MazeView : MonoBehaviour
 		result.transform.parent = transform;
 		result.transform.localPosition = new Vector3 (0, 0, 0);
 		return result;
-	}
-	
+	}	
 }
 
