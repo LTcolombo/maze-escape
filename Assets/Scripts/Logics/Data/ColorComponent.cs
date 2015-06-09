@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace AssemblyCSharp
 {
-	
 	public class ColorComponent
 	{
 		public Color color;
@@ -15,21 +14,42 @@ namespace AssemblyCSharp
 			this.position = position;
 		}
 
-		public static ColorComponent[] GetArray() {
+		public static ColorComponent[] GetArray ()
+		{
+			
+			Color[] colors = new Color[] {
+				new Color (0.7f, 0.3f, 0.0f),
+				new Color (0.0f, 0.7f, 0.3f),
+				new Color (0.4f, 0.1f, 0.6f),
+				new Color (0.6f, 0.1f, 0.3f),
+				new Color (0.3f, 0.6f, 0.1f),
+				new Color (0.1f, 0.3f, 0.6f)
+			};
 			
 			ColorComponent[] colorComponents = new ColorComponent[3];
 			
-			colorComponents [0] = new ColorComponent (new Color (0.7f, 0.3f, 0.0f), new float[2] {
+			int index = UnityEngine.Random.Range (0, colors.Length);
+			Debug.Log(index);
+			
+			colorComponents [0] = new ColorComponent (colors [index], new float[2] {
 				0.0f,
 				0.0f
 			});
 			
-			colorComponents [1] = new ColorComponent (new Color (0.0f, 0.7f, 0.3f), new float[2] {
+			index++;
+			if (index >=colors.Length)
+				index = 0;
+			
+			colorComponents [1] = new ColorComponent (colors [index], new float[2] {
 				1.0f,
 				0.5f
 			});
 			
-			colorComponents [2] = new ColorComponent (new Color (0.3f, 0.0f, 0.7f), new float[2] {
+			index++;
+			if (index >=colors.Length)
+				index = 0;
+			
+			colorComponents [2] = new ColorComponent (colors [index], new float[2] {
 				0.0f,
 				1.0f
 			});
@@ -37,7 +57,8 @@ namespace AssemblyCSharp
 			return colorComponents;
 		}
 
-		public static Color GetColor(float[] tileRelativePos, ColorComponent[] colorComponents, float tint) {
+		public static Color GetColor (float[] tileRelativePos, ColorComponent[] colorComponents, float tint)
+		{
 			float r = 0;
 			float g = 0;
 			float b = 0;
