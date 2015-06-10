@@ -29,7 +29,6 @@ namespace AssemblyCSharp
 			ColorComponent[] colorComponents = new ColorComponent[3];
 			
 			int index = UnityEngine.Random.Range (0, colors.Length);
-			Debug.Log(index);
 			
 			colorComponents [0] = new ColorComponent (colors [index], new float[2] {
 				0.0f,

@@ -146,7 +146,7 @@ public class MazeView : MonoBehaviour
 					AddObject ((GameObject)Instantiate (Prefabs.ROTATOR_CCW), _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
 				
 				if (node.HasFlag (NodeData.SPECIALS_HIDE_WALLS)) 
-					AddObject ((GameObject)Instantiate (Prefabs.SHOW), _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
+					AddObject ((GameObject)Instantiate (Prefabs.HIDE), _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
 
 				if (node.HasFlag (NodeData.SPECIALS_SHOW_WALLS)) 
 					AddObject ((GameObject)Instantiate (Prefabs.SHOW), _genericContainer, new Vector3 (i * NODE_SIZE, j * NODE_SIZE, zOrder));
