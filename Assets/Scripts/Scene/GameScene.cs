@@ -79,7 +79,7 @@ public class GameScene : MonoBehaviour
 				
 		_movesLeft = 0;
 		_score = 0;
-		_levelNumber =1;// PlayerPrefs.GetInt ("maxlevel", 0) / 2;
+		_levelNumber = PlayerPrefs.GetInt ("maxlevel", 0) / 2;
 		Next ();
 		INITED = true;
 	}
@@ -304,7 +304,7 @@ public class GameScene : MonoBehaviour
 	{
 		MazeConfig config = new MazeConfig ();
 		
-		int size = 3 + _levelNumber;
+		int size = 3 + _levelNumber/4;
 		
 		if (size > 10)
 			size = 10;
