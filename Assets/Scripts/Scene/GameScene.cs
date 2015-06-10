@@ -79,7 +79,7 @@ public class GameScene : MonoBehaviour
 				
 		_movesLeft = 0;
 		_score = 0;
-		_levelNumber = PlayerPrefs.GetInt ("maxlevel", 0) / 2;
+		_levelNumber =1;// PlayerPrefs.GetInt ("maxlevel", 0) / 2;
 		Next ();
 		INITED = true;
 	}
@@ -289,10 +289,10 @@ public class GameScene : MonoBehaviour
 		RotatorDecorator.Apply (_mazeData);
 		HiderDecorator.Apply (_mazeData);
 		
-		_container.transform.position = new Vector2 (
+		_container.transform.DOMove (new Vector2 (
 			-(_mazeData.config.width - 1) * MazeView.NODE_SIZE / 2, 
 			-(_mazeData.config.height - 1) * MazeView.NODE_SIZE / 2
-		);
+		), MazeView.TRANSITION_TIME);
 		
 		_mazeView.UpdateMazeData (_mazeData);
 		
@@ -304,15 +304,9 @@ public class GameScene : MonoBehaviour
 	{
 		MazeConfig config = new MazeConfig ();
 		
-		var size = 4;
+		int size = 3 + _levelNumber;
 		
-		if (_levelNumber > 5)
-			size = 6;
-			
-		if (_levelNumber > 12)
-			size = 6;
-			
-		if (_levelNumber > 18)
+		if (size > 10)
 			size = 10;
 				
 		config.width = size;
