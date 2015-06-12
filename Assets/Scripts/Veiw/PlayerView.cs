@@ -7,15 +7,16 @@ public delegate void PlayerStepComplete ();
 
 public class PlayerView : MonoBehaviour
 {
-	public int directionIdx;
 	public int cellX;
 	public int cellY;
+
+	public int directionIdx;
 	public bool moved;
 	public int rotateBy = 0;
 	
 	public event PlayerStepComplete onStepComplete;
 
-	Vector2 _startPoint;
+	Vector2 _touchStartPoint;
 
 	// Use this for initialization
 	void Start ()
@@ -50,11 +51,11 @@ public class PlayerView : MonoBehaviour
 			}
 			
 			directionIdx += rotateBy;
-			if (directionIdx > 3)
+			if (directionIdx >= NodeData.DIRECTIONS.Length)
 				directionIdx = 0;
 			
 			if (directionIdx < 0)
-				directionIdx = 3;
+				directionIdx = NodeData.DIRECTIONS.Length-1;
 		}
 	}
 		
@@ -92,10 +93,10 @@ public class PlayerView : MonoBehaviour
 				Touch touch = Input.GetTouch (i);
 			
 				if (touch.phase == TouchPhase.Began) {
-					_startPoint = touch.position;
+					_touchStartPoint = touch.position;
 				} else if (touch.phase == TouchPhase.Ended) {
 								
-					Vector2 delta = touch.position - _startPoint;
+					Vector2 delta = touch.position - _touchStartPoint;
 					if (delta.magnitude == 0)
 						continue;
 					

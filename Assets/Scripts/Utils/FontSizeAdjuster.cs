@@ -2,16 +2,19 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
+/**
+ * Adjust the font to be relative to screen size.
+ * Assumes the Y anchor to be 0
+ */
+
 [AddComponentMenu( "Utilities/FontSizeAdjuster")]
 public class FontSizeAdjuster : MonoBehaviour
 {
-
 	public float relativeSize;
 	public float relativeY;
 	private Text _target;
 	private int _lastHeight;
 
-	// Use this for initialization
 	void Start ()
 	{
 		_target = GetComponent<Text> ();
@@ -20,8 +23,7 @@ public class FontSizeAdjuster : MonoBehaviour
 		if (_target == null)
 			Debug.LogError("FontSizeAdjuster is assigned to a non text object");
 	}
-	
-	// Update is called once per frame
+
 	void Update ()
 	{
 		if (_target == null)

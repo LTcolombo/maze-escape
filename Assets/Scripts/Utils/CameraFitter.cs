@@ -1,6 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
+
+/**
+ * Resizes the orthographic size of the camera to contain provded minimal dimensions
+ */
 public class CameraFitter : MonoBehaviour
 {
 	public int MinWidth;

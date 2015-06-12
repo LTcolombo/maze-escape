@@ -2,10 +2,14 @@ using UnityEngine;
 
 namespace AssemblyCSharp
 {
+	/**
+	 * A prefab decpriptors static storage class
+	 */
+
 	public class Prefabs
 	{
 	
-		public static GameObject TILE;
+		public static GameObject NODE;
 		public static GameObject WALL_WEST;
 		public static GameObject WALL_NORTH;
 		public static GameObject WALL_NORTH_WEST;
@@ -27,9 +31,8 @@ namespace AssemblyCSharp
 				return;
 	
 			_inited = true;
-		
-		
-			TILE = (GameObject)(Resources.Load ("Prefabs/Tile"));
+				
+			NODE = (GameObject)(Resources.Load ("Prefabs/Node"));
 			WALL_WEST = (GameObject)(Resources.Load ("Prefabs/WallWest"));
 			WALL_NORTH = (GameObject)(Resources.Load ("Prefabs/WallNorth"));
 			WALL_NORTH_WEST = (GameObject)(Resources.Load ("Prefabs/WallNorthWest"));

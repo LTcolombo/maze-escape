@@ -63,8 +63,7 @@ namespace AssemblyCSharp
 					if (processedNeighbour != null) {
 						Merge (processedNeighbour, edgeNode);
 						edgeNode.previousNode = processedNeighbour;
-					}else 
-						UnityEngine.Debug.Log("smth wrong");
+					}
 					
 					//3.3 create the branch
 					CreateBranch (edgeNode, edgeNodes);
