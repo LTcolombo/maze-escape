@@ -59,8 +59,8 @@ public class GameScene : MonoBehaviour
 			return;
 		}
 		DOTween.CompleteAll ();
-		Camera.main.backgroundColor = new Color (0.17f, 0.17f, 0.17f);
-		Camera.main.DOColor (new Color (0.92f, 0.92f, 0.86f), 0.5f);
+		Camera.main.backgroundColor = new Color (0.0f, 0.0f, 0.0f);
+		Camera.main.DOColor (new Color (0.4f, 0.4f, 0.4f), 0.5f);
 				
 		_container = GameObject.Find ("GameContainer");
 		
@@ -90,7 +90,7 @@ public class GameScene : MonoBehaviour
 		if (!INITED) 
 			return;
 		if (_stuck) {
-			scoreText.color = new Color (1.0f, 0.0f, 0.0f);
+			scoreText.color = new Color (0.8f, 0.2f, 0.2f);
 			if (_score < _reduceValue) {
 				
 				if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
@@ -111,15 +111,15 @@ public class GameScene : MonoBehaviour
 			}
 		} else
 			if (_increaseValue == 0)
-			scoreText.color = new Color (0.761f, 0.761f, 0.668f);
+				scoreText.color = new Color (0.55f, 0.55f, 0.55f);
 		else {
 			if (_increaseValue > 0) {
-				scoreText.color = new Color (0.0f, 0.8f, 0.0f);
+				scoreText.color = new Color (0.2f, 0.8f, 0.2f);
 
 				if (_increaseValue > _movesLeft)
 					_increaseValue = _movesLeft;
 			} else {
-				scoreText.color = new Color (1.0f, 0.0f, 0.0f);	
+				scoreText.color = new Color (0.8f, 0.2f, 0.2f);	
 				
 				if (_increaseValue < _movesLeft)
 					_increaseValue = _movesLeft;
@@ -163,7 +163,7 @@ public class GameScene : MonoBehaviour
 		movesText.text = "MOVES: " + _movesLeft;
 		
 		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
-			movesText.color = new Color (0.761f, 0.761f, 0.668f);
+			movesText.color = new Color (0.55f, 0.55f, 0.55f);
 			_levelNumber ++;
 			Next ();
 			return;
@@ -231,7 +231,7 @@ public class GameScene : MonoBehaviour
 		} 
 		
 		if (_movesLeft < _movesLeftCritical)
-			movesText.color = new Color (1.0f, 0.0f, 0.0f);
+			movesText.color = new Color (0.8f, 0.2f, 0.2f);
 		
 		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
 			_playerView.ddirection = 1;

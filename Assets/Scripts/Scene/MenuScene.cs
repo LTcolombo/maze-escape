@@ -35,7 +35,7 @@ public class MenuScene : MonoBehaviour
 		Text bestScoreText = (Text)GameObject.Find ("Canvas/BestScoreText").GetComponent<Text> ();
 		bestScoreText.text = "BEST SCORE: " + PlayerPrefs.GetInt ("highscore", 0);
 	
-		Camera.main.backgroundColor = new Color (0.92f, 0.92f, 0.86f);
+		Camera.main.backgroundColor = new Color (0.4f, 0.4f, 0.4f);
 		InitScene ();
 	}
 	
@@ -44,7 +44,7 @@ public class MenuScene : MonoBehaviour
 		_canExit = false;
 	
 		DOTween.CompleteAll ();
-		Camera.main.DOColor (new Color (0.17f, 0.17f, 0.17f), 0.7f).OnComplete (AllowExit);
+		Camera.main.DOColor (new Color (0.0f, 0.0f, 0.0f), 0.7f).OnComplete (AllowExit);
 				
 		//set of base colors
 		ColorComponent[] colorComponents = ColorComponent.GetArray ();
