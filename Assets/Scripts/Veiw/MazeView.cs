@@ -75,11 +75,10 @@ public class MazeView : MonoBehaviour
 			
 				NodeData node = _mazeData.GetNode (cellX, cellY);
 				
-				
 				float[] tileRelativePos = new float[2] {
 					(float)cellX / _mazeData.config.width,
 					(float)cellY / _mazeData.config.height
-								};
+					};
 				
 				float tint = 0.3f + 0.7f * (float)node.score / _mazeData.config.maxScore;
 								
@@ -89,7 +88,7 @@ public class MazeView : MonoBehaviour
 				nodeInstance.GetComponent<NodeView> ().Redraw (node, ColorComponent.GetColorAt (tileRelativePos, colorComponents, tint));
 				_nodeInstances.Add (nodeInstance);
 
-				float zOrder = (float)(cellY - cellX) / (_mazeData.config.width + _mazeData.config.height);	
+				float zOrder = 1 + (float)(cellY - cellX) / (_mazeData.config.width + _mazeData.config.height);	
 
 				if (cellX <= _prevMaxX && cellY <= _prevMaxY)
 					nodeInstance.transform.localPosition = new Vector3 (cellX * NODE_SIZE, cellY * NODE_SIZE, zOrder);

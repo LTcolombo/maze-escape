@@ -51,11 +51,12 @@ public class PlayerView : MonoBehaviour
 			}
 			
 			directionIdx += rotateBy;
-			if (directionIdx >= NodeData.DIRECTIONS.Length)
+			if (directionIdx >= NodeData.DIRECTIONS.GetLength(0))
 				directionIdx = 0;
 			
 			if (directionIdx < 0)
-				directionIdx = NodeData.DIRECTIONS.Length-1;
+				directionIdx = NodeData.DIRECTIONS.GetLength(0)-1;
+				
 		}
 	}
 		
