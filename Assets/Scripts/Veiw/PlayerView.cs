@@ -7,17 +7,18 @@ public delegate void PlayerStepComplete ();
 
 public class PlayerView : MonoBehaviour
 {
-	public int cellX;
-	public int cellY;
+	public int cellX { get { return _cellX; } }
 
+	public int cellY { get { return _cellY; } }
 
-	public int directionIdx {get {return _directionIdx;}}
+	public int directionIdx { get { return _directionIdx; } }
+
+	public bool didJustMove { get { return _didJustMove; } }
+	
+	private int _cellX = 2;
+	private int _cellY;
 	private int _directionIdx;
-	
-	public bool didJustMove {get {return _didJustMove;}}
 	private bool _didJustMove;
-	
-	public int rotateBy = 0;
 	
 	public event PlayerStepComplete onStepComplete;
 
@@ -28,6 +29,9 @@ public class PlayerView : MonoBehaviour
 	{
 		_directionIdx = NodeData.DIRECTION_UP_IDX;
 		transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
+		transform.localPosition = new Vector3(MazeView.NODE_SIZE *_cellX, 
+		                                      MazeView.NODE_SIZE *_cellY, 
+		                                      0);
 	}
 
 	public void InvokeAutostartIn (int value)
@@ -35,7 +39,7 @@ public class PlayerView : MonoBehaviour
 		Invoke ("AutoStart", value);
 	}
 	
-	public void Next (float moveTime)
+	public void Next (float moveTime, int rotateBy)
 	{
 		if (moveTime > 0) {
 			_didJustMove = true;
@@ -43,10 +47,10 @@ public class PlayerView : MonoBehaviour
 				NodeData.DIRECTIONS [_directionIdx, 0] * MazeView.NODE_SIZE, 
 				NodeData.DIRECTIONS [_directionIdx, 1] * MazeView.NODE_SIZE, 
 			0
-				), moveTime).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
+			), moveTime).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
 		
-			cellX += NodeData.DIRECTIONS [_directionIdx, 0];
-			cellY += NodeData.DIRECTIONS [_directionIdx, 1];
+			_cellX += NodeData.DIRECTIONS [_directionIdx, 0];
+			_cellY += NodeData.DIRECTIONS [_directionIdx, 1];
 
 		} else {
 			_didJustMove = false;
@@ -56,11 +60,11 @@ public class PlayerView : MonoBehaviour
 			}
 			
 			_directionIdx += rotateBy;
-			if (_directionIdx >= NodeData.DIRECTIONS.GetLength(0))
+			if (_directionIdx >= NodeData.DIRECTIONS.GetLength (0))
 				_directionIdx = 0;
 			
 			if (_directionIdx < 0)
-				_directionIdx = NodeData.DIRECTIONS.GetLength(0)-1;
+				_directionIdx = NodeData.DIRECTIONS.GetLength (0) - 1;
 				
 		}
 	}

@@ -63,15 +63,15 @@ namespace AssemblyCSharp
 					if (processedNeighbour != null) {
 						Merge (processedNeighbour, edgeNode);
 						edgeNode.previousNode = processedNeighbour;
-					}
+					} 
 					
 					//3.3 create the branch
 					CreateBranch (edgeNode, edgeNodes);
 				}
 			}
 
-			if (deadEnds.Count>0)
-				deadEnds[0].AddFlag (NodeData.SPECIALS_EXIT);
+			if (deadEnds.Count > 0)
+				deadEnds [0].AddFlag (NodeData.SPECIALS_EXIT);
 		}
 
 		/**
@@ -92,6 +92,14 @@ namespace AssemblyCSharp
 				if (edgeNodes.Contains (currentNode))
 					edgeNodes.Remove (currentNode);
 				
+				//1.1 append new edge nodes
+				List<NodeData> notProcessedNeighbours = GetNotProcessedNeighboursOf (currentNode);
+				foreach (NodeData nodeData in notProcessedNeighbours) {
+					if (!edgeNodes.Contains (nodeData)) {
+						edgeNodes.Add (nodeData);
+					}
+				}
+				
 				currentNode.AddFlag (NodeData.PROCESSED);
 				
 				//2. go to random direction and get a neighbour
@@ -104,18 +112,11 @@ namespace AssemblyCSharp
 					//3.1 attach it to tree
 					Merge (currentNode, randomNeighbour);
 					
-					//3.2 append new edge nodes
-					List<NodeData> notProcessedNeighbours = GetNotProcessedNeighboursOf (randomNeighbour);
-					foreach (NodeData nodeData in notProcessedNeighbours) {
-						if (!edgeNodes.Contains (nodeData)) 
-							edgeNodes.Add (nodeData);
-					}
-					
-					//3.3 process it on next loop entry
+					//3.2 process it on next loop entry
 					currentNode = randomNeighbour;
 				} else {
 					
-					if (deadEnds.Count > 0 && (currentNode.GetDistance () > deadEnds[0].GetDistance ())) {
+					if (deadEnds.Count > 0 && (currentNode.GetDistance () > deadEnds [0].GetDistance ())) {
 						deadEnds.Insert (0, currentNode);
 					} else
 						deadEnds.Add (currentNode);

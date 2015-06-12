@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using AssemblyCSharp;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public class MazeView : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class MazeView : MonoBehaviour
 	private MazeData _mazeData;
 	
 	//references for cleanup
-	private ArrayList _nodeInstances = new ArrayList ();
+	private List<GameObject> _nodeInstances = new List<GameObject> ();
 	
 	//flag for redrawing
 	private bool _dirty;
@@ -52,12 +53,8 @@ public class MazeView : MonoBehaviour
 	public void DesaturateTileAt (int x, int y)
 	{
 		int index = x * _mazeData.config.width + y;
-		if (index < _nodeInstances.Count) {
-			SpriteRenderer renderer = ((GameObject)_nodeInstances [index]).GetComponent<SpriteRenderer> ();
-			//normalize color
-			float sumColor = renderer.color.r + renderer.color.g + renderer.color.b; 
-			renderer.color = new Color (sumColor / 3, sumColor / 3, sumColor / 3, 1f);
-		}
+		if (index < _nodeInstances.Count) 
+			_nodeInstances [index].GetComponent<NodeView>().Desaturate();
 	}
 		
 	private void Redraw ()

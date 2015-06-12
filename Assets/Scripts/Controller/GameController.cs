@@ -210,7 +210,7 @@ public class GameController : MonoBehaviour
 			_mazeView.ShowWalls (true);
 		}
 		
-		_playerView.rotateBy = 0;
+		int rotateBy = 0;
 		
 		_movesLeft--;
 		if (_movesLeft == 0) {
@@ -234,15 +234,15 @@ public class GameController : MonoBehaviour
 			movesText.color = new Color (0.8f, 0.2f, 0.2f);
 		
 		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
-			_playerView.rotateBy = 1;
+			rotateBy = 1;
 		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
-			_playerView.rotateBy = -1;
+			rotateBy = -1;
 		}
 		
-		if (!node.HasWall (_playerView.directionIdx) && (!_playerView.didJustMove || _playerView.rotateBy == 0)) {
-			_playerView.rotateBy = 0;
+		if (!node.HasWall (_playerView.directionIdx) && (!_playerView.didJustMove || rotateBy == 0)) {
+			rotateBy = 0;
 			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
 			_score += node.score;
 			
@@ -252,13 +252,13 @@ public class GameController : MonoBehaviour
 			}
 			
 			node.score = 0;
-			_playerView.Next (moveTime);
+			_playerView.Next (moveTime, rotateBy);
 			_stuck = false;
 		} else {
 			
-			_playerView.Next (-1);
+			_playerView.Next (-1, rotateBy);
 
-			if (_playerView.rotateBy == 0) {
+			if (rotateBy == 0) {
 				_reduceValue = (int)((float)_score * Time.deltaTime);
 				if (_reduceValue < 1)
 					_reduceValue = 1;
