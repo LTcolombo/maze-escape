@@ -88,7 +88,7 @@ public class MazeView : MonoBehaviour
 				nodeInstance.GetComponent<NodeView> ().Redraw (node, ColorComponent.GetColorAt (tileRelativePos, colorComponents, tint));
 				_nodeInstances.Add (nodeInstance);
 
-				float zOrder = 1 + (float)(cellY - cellX) / (_mazeData.config.width + _mazeData.config.height);	
+				float zOrder = 1 - (float)(cellY + cellX) / (_mazeData.config.width + _mazeData.config.height);	
 
 				if (cellX <= _prevMaxX && cellY <= _prevMaxY)
 					nodeInstance.transform.localPosition = new Vector3 (cellX * NODE_SIZE, cellY * NODE_SIZE, zOrder);

@@ -10,19 +10,24 @@ public class PlayerView : MonoBehaviour
 	public int cellX;
 	public int cellY;
 
-	public int directionIdx;
-	public bool moved;
+
+	public int directionIdx {get {return _directionIdx;}}
+	private int _directionIdx;
+	
+	public bool didJustMove {get {return _didJustMove;}}
+	private bool _didJustMove;
+	
 	public int rotateBy = 0;
 	
 	public event PlayerStepComplete onStepComplete;
 
-	Vector2 _touchStartPoint;
+	private Vector2 _touchStartPoint;
 
 	// Use this for initialization
 	void Start ()
 	{
-		directionIdx = NodeData.DIRECTION_UP_IDX;
-		transform.eulerAngles = new Vector3 (0, 0, -90 * directionIdx);
+		_directionIdx = NodeData.DIRECTION_UP_IDX;
+		transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
 	}
 
 	public void InvokeAutostartIn (int value)
@@ -32,30 +37,30 @@ public class PlayerView : MonoBehaviour
 	
 	public void Next (float moveTime)
 	{
-		moved = moveTime>0;
-	
-		if (moved) {
+		if (moveTime > 0) {
+			_didJustMove = true;
 			transform.DOMove (transform.position + new Vector3 (
-			NodeData.DIRECTIONS [directionIdx, 0] * MazeView.NODE_SIZE, 
-			NodeData.DIRECTIONS [directionIdx, 1] * MazeView.NODE_SIZE, 
+				NodeData.DIRECTIONS [_directionIdx, 0] * MazeView.NODE_SIZE, 
+				NodeData.DIRECTIONS [_directionIdx, 1] * MazeView.NODE_SIZE, 
 			0
 				), moveTime).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
 		
-			cellX += NodeData.DIRECTIONS [directionIdx, 0];
-			cellY += NodeData.DIRECTIONS [directionIdx, 1];
+			cellX += NodeData.DIRECTIONS [_directionIdx, 0];
+			cellY += NodeData.DIRECTIONS [_directionIdx, 1];
 
 		} else {
+			_didJustMove = false;
 			if (rotateBy != 0) {
 				transform.DORotate (transform.rotation.eulerAngles + new Vector3 (
 					0, 0, rotateBy * -90), 0.4f).OnComplete (OnStepCompleted);
 			}
 			
-			directionIdx += rotateBy;
-			if (directionIdx >= NodeData.DIRECTIONS.GetLength(0))
-				directionIdx = 0;
+			_directionIdx += rotateBy;
+			if (_directionIdx >= NodeData.DIRECTIONS.GetLength(0))
+				_directionIdx = 0;
 			
-			if (directionIdx < 0)
-				directionIdx = NodeData.DIRECTIONS.GetLength(0)-1;
+			if (_directionIdx < 0)
+				_directionIdx = NodeData.DIRECTIONS.GetLength(0)-1;
 				
 		}
 	}
@@ -69,7 +74,7 @@ public class PlayerView : MonoBehaviour
 	void OnStepCompleted ()
 	{
 		DOTween.CompleteAll ();
-		transform.eulerAngles = new Vector3 (0, 0, -90 * directionIdx);
+		transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
 		if (onStepComplete != null)
 			onStepComplete ();
 	}
@@ -121,7 +126,7 @@ public class PlayerView : MonoBehaviour
 	
 	public void SetDirection (int value)
 	{
-		directionIdx = value;
+		_directionIdx = value;
 				
 		if (!DOTween.IsTweening (transform)) 
 			OnStepCompleted ();

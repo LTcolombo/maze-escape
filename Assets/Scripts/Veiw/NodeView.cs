@@ -16,13 +16,13 @@ public class NodeView : MonoBehaviour
 		//create a wall		
 		if (node.x > 0 && node.HasWall (NodeData.DIRECTION_LEFT_IDX)) {
 							
-			if (node.HasWall (NodeData.DIRECTION_UP_IDX)) 
-				_wallInstance = (GameObject)Instantiate (Prefabs.WALL_NORTH_WEST);
+			if (node.y > 0 && node.HasWall (NodeData.DIRECTION_DOWN_IDX)) 
+				_wallInstance = (GameObject)Instantiate (Prefabs.WALL_SOUTH_WEST);
 			else
 				_wallInstance = (GameObject)Instantiate (Prefabs.WALL_WEST);
 							
-		} else if (node.HasWall (NodeData.DIRECTION_UP_IDX)) 
-			_wallInstance = (GameObject)Instantiate (Prefabs.WALL_NORTH);
+		} else if (node.y > 0 && node.HasWall (NodeData.DIRECTION_DOWN_IDX)) 
+			_wallInstance = (GameObject)Instantiate (Prefabs.WALL_SOUTH);
 
 		if (_wallInstance) {
 			AddObject(_wallInstance);

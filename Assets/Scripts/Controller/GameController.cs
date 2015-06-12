@@ -241,7 +241,7 @@ public class GameController : MonoBehaviour
 			_playerView.rotateBy = -1;
 		}
 		
-		if (!node.HasWall (_playerView.directionIdx) && (!_playerView.moved || _playerView.rotateBy == 0)) {
+		if (!node.HasWall (_playerView.directionIdx) && (!_playerView.didJustMove || _playerView.rotateBy == 0)) {
 			_playerView.rotateBy = 0;
 			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
 			_score += node.score;

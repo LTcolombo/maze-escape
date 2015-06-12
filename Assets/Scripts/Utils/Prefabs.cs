@@ -11,8 +11,8 @@ namespace AssemblyCSharp
 	
 		public static GameObject NODE;
 		public static GameObject WALL_WEST;
-		public static GameObject WALL_NORTH;
-		public static GameObject WALL_NORTH_WEST;
+		public static GameObject WALL_SOUTH;
+		public static GameObject WALL_SOUTH_WEST;
 		public static GameObject EXIT;
 		public static GameObject SPEED_UP;
 		public static GameObject ROTATOR_CW;
@@ -34,8 +34,8 @@ namespace AssemblyCSharp
 				
 			NODE = (GameObject)(Resources.Load ("Prefabs/Node"));
 			WALL_WEST = (GameObject)(Resources.Load ("Prefabs/WallWest"));
-			WALL_NORTH = (GameObject)(Resources.Load ("Prefabs/WallNorth"));
-			WALL_NORTH_WEST = (GameObject)(Resources.Load ("Prefabs/WallNorthWest"));
+			WALL_SOUTH = (GameObject)(Resources.Load ("Prefabs/WallSouth"));
+			WALL_SOUTH_WEST = (GameObject)(Resources.Load ("Prefabs/WallSouthWest"));
 			EXIT = (GameObject)(Resources.Load ("Prefabs/Exit"));
 			SPEED_UP = (GameObject)(Resources.Load ("Prefabs/SpeedUp"));
 			ROTATOR_CW = (GameObject)(Resources.Load ("Prefabs/RotatorCW"));
