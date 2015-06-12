@@ -5,13 +5,13 @@ namespace AssemblyCSharp
 {
 	public class NodeData
 	{
-		
+		//indexes from direcion array
 		public const int DIRECTION_UP_IDX = 0;
 		public const int DIRECTION_RIGHT_IDX = 1;
 		public const int DIRECTION_DOWN_IDX = 2;
 		public const int DIRECTION_LEFT_IDX = 3;
 				
-		//
+		//used by maze generation
 		public const uint PROCESSED = 1;
 				
 		//walls
@@ -28,11 +28,10 @@ namespace AssemblyCSharp
 		public const uint SPECIALS_SPEEDUP_LEFT = 1 << 9;
 		public const uint SPECIALS_ROTATOR_CW = 1 << 10;
 		public const uint SPECIALS_ROTATOR_CCW = 1 << 11;
-
 		public const uint SPECIALS_HIDE_WALLS = 1 << 12;
 		public const uint SPECIALS_SHOW_WALLS = 1 << 13;
 
-		//direction vectors
+		//direction vectors array
 		public static int[,] DIRECTIONS = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 		
 		//position on grid
@@ -48,12 +47,18 @@ namespace AssemblyCSharp
 		//node state		
 		private uint _data = UP_WALL | RIGHT_WALL | DOWN_WALL | LEFT_WALL;
 
+		/**
+		 * Creates a node data with position specified
+		 */
 		public NodeData (int x, int y)
 		{
 			this.x = x;
 			this.y = y;
 		}
 
+		/**
+		 * Removes a wall flag by direction index
+		 */
 		public void RemoveWall (uint direction_idx)
 		{
 			if (direction_idx == DIRECTION_UP_IDX)
@@ -66,6 +71,9 @@ namespace AssemblyCSharp
 				_data &= ~LEFT_WALL;
 		}
 
+		/**
+		 * Checks for a wall flag by direction index
+		 */
 		public bool HasWall (int direction_idx)
 		{
 			if (direction_idx == DIRECTION_UP_IDX)
@@ -80,16 +88,25 @@ namespace AssemblyCSharp
 			return false;
 		}
 				
+		/**
+		 * Appends a flag into state
+		 */
 		public void AddFlag (uint type)
 		{
 			_data |= type;
 		}
 				
+		/**
+		 * Checks for a flag in state
+		 */
 		public bool HasFlag (uint type)
 		{
 			return (_data & type) > 0;
 		}
 
+		/**
+		 * Compares how many flags match
+		 */
 		public uint MatchCount (uint compared)
 		{
 			uint temp = _data & compared;
@@ -102,10 +119,12 @@ namespace AssemblyCSharp
 
 			return count;
 		}
-		
-		public int GetDirection (NodeData other)
+
+		/**
+		 * Gets a direction index towards another NodeData. Assumes other node is near this |deltaX + deltaY = 1|
+		 */
+		public int GetDirectionTowards (NodeData other)
 		{
-			//presumably nodes are next to each other
 			if (other.x == x) {
 				if (other.y > y)
 					return NodeData.DIRECTION_UP_IDX;
@@ -118,7 +137,10 @@ namespace AssemblyCSharp
 					return NodeData.DIRECTION_LEFT_IDX;
 			}
 		}
-		
+
+		/**
+		 * Gets the number of nodes between this and starting node. Use with caution, as it loops through all chain.
+		 */
 		public uint GetDistance ()
 		{
 			uint distance = 0;

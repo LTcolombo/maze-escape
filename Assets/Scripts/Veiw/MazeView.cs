@@ -100,7 +100,7 @@ public class MazeView : MonoBehaviour
 				//create a tile				
 				GameObject tileInstance = (GameObject)Instantiate (Prefabs.TILE);
 				float tint = 0.3f + 0.7f * (float)node.score / _mazeData.config.maxScore;
-				tileInstance.GetComponent<SpriteRenderer> ().color = ColorComponent.GetColor (tileRelativePos, colorComponents, tint);
+				tileInstance.GetComponent<SpriteRenderer> ().color = ColorComponent.GetColorAt (tileRelativePos, colorComponents, tint);
 				_tileInstances.Add (tileInstance);
 				AddObject (tileInstance, _genericContainer, i, j, 1);
 

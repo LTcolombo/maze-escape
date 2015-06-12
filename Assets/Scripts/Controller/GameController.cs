@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.Cloud.Analytics;
 
-public class GameScene : MonoBehaviour
+public class GameController : MonoBehaviour
 {
 	
 	//container for maze and player
@@ -39,7 +39,7 @@ public class GameScene : MonoBehaviour
 	//score to add after previous interation, depending on bonus moves
 	private uint _increaseValue;
 
-	//scores to to takeoff on ueach update when stuck. approx should drain all score in 1 second
+	//scores to to takeoff on ueach update when stuck. approx should drain all score in 1 secon
 	private int _reduceValue;
 	private static bool FIRST_LOAD = true;
 	private static bool INITED = false;
@@ -210,7 +210,7 @@ public class GameScene : MonoBehaviour
 			_mazeView.ShowWalls (true);
 		}
 		
-		_playerView.ddirection = 0;
+		_playerView.rotateBy = 0;
 		
 		_movesLeft--;
 		if (_movesLeft == 0) {
@@ -234,15 +234,15 @@ public class GameScene : MonoBehaviour
 			movesText.color = new Color (0.8f, 0.2f, 0.2f);
 		
 		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
-			_playerView.ddirection = 1;
+			_playerView.rotateBy = 1;
 		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
-			_playerView.ddirection = -1;
+			_playerView.rotateBy = -1;
 		}
 		
-		if (!node.HasWall (_playerView.directionIdx) && (!_playerView.moved || _playerView.ddirection == 0)) {
-			_playerView.ddirection = 0;
+		if (!node.HasWall (_playerView.directionIdx) && (!_playerView.moved || _playerView.rotateBy == 0)) {
+			_playerView.rotateBy = 0;
 			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
 			_score += node.score;
 			
@@ -258,7 +258,7 @@ public class GameScene : MonoBehaviour
 			
 			_playerView.Next (-1);
 
-			if (_playerView.ddirection == 0) {
+			if (_playerView.rotateBy == 0) {
 				_reduceValue = (int)((float)_score * Time.deltaTime);
 				if (_reduceValue < 1)
 					_reduceValue = 1;
@@ -282,7 +282,7 @@ public class GameScene : MonoBehaviour
 		} else
 			_increaseValue = 0;
 	
-		_mazeData = new MazeData (getNextMazeConfig (), _playerView.cellX, _playerView.cellY);
+		_mazeData = new MazeData (new MazeConfig(_levelNumber), _playerView.cellX, _playerView.cellY);
 		
 		ScoreDecorator.Apply (_mazeData);
 		SpeedUpDecorator.Apply (_mazeData);
@@ -299,36 +299,12 @@ public class GameScene : MonoBehaviour
 		//_playerView.InvokeAutostartIn (1);
 	}
 
-//move to model
-	MazeConfig getNextMazeConfig ()
-	{
-		MazeConfig config = new MazeConfig ();
-		
-		int size = 3 + _levelNumber/4;
-		
-		if (size > 10)
-			size = 10;
-				
-		config.width = size;
-		config.height = size;
-		
-		config.moveTime = 0.5f - 0.01f * Math.Min (30, _levelNumber);
-		
-		config.minScore = 1 + _levelNumber;
-		config.maxScore = 4 + _levelNumber;
-		
-		config.speedUpsCount = _levelNumber / 5;
-		config.rotatorsCount = _levelNumber / 10;
-		config.hidersCount = _levelNumber > 3 ? 1 : 0;
-		
-		return config;
-	}
-	
 	private void Activate ()
 	{
 		_increaseValue = 0;
 		_score += (int)_movesLeft;
-		_movesLeft = _mazeData.movesQuota;
+
+		_movesLeft = (uint)((float)_mazeData.deadEnds[0].GetDistance () * _mazeData.config.bonusRate);
 		_movesLeftCritical = _movesLeft / 10;
 		_activated = true;
 	}

@@ -30,7 +30,7 @@ namespace AssemblyCSharp
 						NodeData.SPECIALS_SPEEDUP_LEFT)) {
 
 						if (previousNode != null) {
-							int direction = previousNode.GetDirection (node);
+							int direction = previousNode.GetDirectionTowards (node);
 
 							if (currentDirection > -1 && currentDirection != direction) {							
 								candidates.Add (node);

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Cloud.Analytics;
 using AssemblyCSharp;
 
-public class MenuScene : MonoBehaviour
+public class MenuController : MonoBehaviour
 {
 
 	private bool _canExit;
@@ -71,7 +71,7 @@ public class MenuScene : MonoBehaviour
 						pos.y += Random.Range (-400, 400);
 					
 					GameObject tileInstance = (GameObject)Instantiate (Prefabs.TILE_SMALL, pos, Quaternion.identity);
-					tileInstance.GetComponent<SpriteRenderer> ().color = ColorComponent.GetColor(tileRelativePos, colorComponents, tint);
+					tileInstance.GetComponent<SpriteRenderer> ().color = ColorComponent.GetColorAt(tileRelativePos, colorComponents, tint);
 				
 					tileInstance.transform.DOMove (new Vector3 (x, y, 0), 0.5f);
 				}	

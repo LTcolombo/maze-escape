@@ -15,6 +15,9 @@ namespace AssemblyCSharp
 		}
 	}
 
+	/**
+	 * Populates maze nodes with speedup flags according to maze configuration
+	 */
 	public class SpeedUpDecorator
 	{
 		public static void Apply (MazeData mazeData)
@@ -45,7 +48,7 @@ namespace AssemblyCSharp
 						break;
 									
 					if (previousNode != null) {
-						int direction = previousNode.GetDirection (node);
+						int direction = previousNode.GetDirectionTowards (node);
 						
 						currentChain.nodes.Add (node);
 						if (currentDirection != direction) {

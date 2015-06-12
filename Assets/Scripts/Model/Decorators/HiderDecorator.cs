@@ -1,5 +1,8 @@
 ﻿namespace AssemblyCSharp
 {
+	/**
+	 * Populates maze nodes with hide/unhide flags according to maze configuration
+	 */
 	public class HiderDecorator
 	{
 		private static System.Random _rnd = new System.Random ();

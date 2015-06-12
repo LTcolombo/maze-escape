@@ -5,14 +5,25 @@ using System.Collections.Generic;
 
 namespace AssemblyCSharp
 {
+	///<summary>
+	/// Incapsulates an array of NodeData and its generation. Provides access by x, y coords. 
+	///</summary>
 	public class MazeData
 	{
-		public uint movesQuota;
+		/**
+		 * Array of NodeData that represent dead ends generated during maze creation.
+		 * Dead ends cant be any others node previos. Sorted by descending distance from starting point
+		 */
 		public List<NodeData> deadEnds = new List<NodeData> ();
-		
+
+		/**
+		 * currect maze config
+		 */
 		public MazeConfig config { get { return _config; } }
 
 		private MazeConfig _config;
+
+		//incapsulated data array
 		private NodeData[] _data;
 		private System.Random _rnd = new System.Random ();
 
@@ -29,8 +40,6 @@ namespace AssemblyCSharp
 			//1. get starting point
 			NodeData startingNode = GetNode (startX, startY);
 			startingNode.AddFlag (NodeData.PROCESSED);
-			
-			NodeData lastNode = startingNode;
 			
 			//2. init edge nodes from its neighbours
 			List<NodeData> edgeNodes = GetNotProcessedNeighboursOf (startingNode);
@@ -54,19 +63,27 @@ namespace AssemblyCSharp
 					if (processedNeighbour != null) {
 						Merge (processedNeighbour, edgeNode);
 						edgeNode.previousNode = processedNeighbour;
-					}
+					}else 
+						UnityEngine.Debug.Log("smth wrong");
 					
 					//3.3 create the branch
-					CreateBranch (edgeNode, edgeNodes, ref lastNode);
+					CreateBranch (edgeNode, edgeNodes);
 				}
 			}
-			
-			lastNode.AddFlag (NodeData.SPECIALS_EXIT);
-			
-			movesQuota = (uint)((float)lastNode.GetDistance () * config.bonusRate);
+
+			if (deadEnds.Count>0)
+				deadEnds[0].AddFlag (NodeData.SPECIALS_EXIT);
+		}
+
+		/**
+		 * Gets the NodeData at provided 2d coordinates 
+		 */
+		public NodeData GetNode (int x, int y)
+		{
+			return _data [x + y * _config.width];
 		}
 		
-		private void CreateBranch (NodeData startNode, List<NodeData> edgeNodes, ref NodeData lastNode)
+		private void CreateBranch (NodeData startNode, List<NodeData> edgeNodes)
 		{
 			NodeData randomNeighbour;
 			NodeData currentNode = startNode;
@@ -99,9 +116,8 @@ namespace AssemblyCSharp
 					currentNode = randomNeighbour;
 				} else {
 					
-					if (currentNode.GetDistance () > lastNode.GetDistance ()) {
+					if (deadEnds.Count > 0 && (currentNode.GetDistance () > deadEnds[0].GetDistance ())) {
 						deadEnds.Insert (0, currentNode);
-						lastNode = currentNode;
 					} else
 						deadEnds.Add (currentNode);
 				}
@@ -109,20 +125,10 @@ namespace AssemblyCSharp
 			} while (randomNeighbour!=null);
 		}
 		
-		public NodeData GetNode (int x, int y)
-		{
-			return _data [x + y * _config.width];
-		}
-		
-		public NodeData GetRandomNode ()
-		{
-			return GetNode (_rnd.Next (0, _config.width), _rnd.Next (0, _config.height));
-		}
-		
 		/**
          * Gets all neighbours of specified node not processed by alghoritm.
          */
-		public List<NodeData> GetNotProcessedNeighboursOf (NodeData target)
+		private List<NodeData> GetNotProcessedNeighboursOf (NodeData target)
 		{
 			List<NodeData> neighbours = new List<NodeData> ();
 			
@@ -140,15 +146,18 @@ namespace AssemblyCSharp
 			return neighbours;
 		}
 		
-		public bool IsInBounds (int x, int y)
+		/**
+		 * Checks if provided 2d coordinates are within 1d data array
+		 */
+		private bool IsInBounds (int x, int y)
 		{
 			return ((x > -1) && (x < _config.width) && (y > -1) && (y < _config.height));
 		}
 		
 		/**
-		 * Finds a random neighbour with specified <code>processed</code> param
+		 * Finds a random neighbour with specified param
 		 */
-		public NodeData GetRandomNeighbour (NodeData target, bool processedNeeded)
+		private NodeData GetRandomNeighbour (NodeData target, bool processedNeeded)
 		{
 			int offset = _rnd.Next (0, 4);
 			for (int i = 0; i < 4; i++) {
@@ -170,7 +179,7 @@ namespace AssemblyCSharp
 		/**
 		 * Removes walls between two specified nodes
 		 */
-		public void Merge (NodeData from, NodeData to)
+		private void Merge (NodeData from, NodeData to)
 		{
 			int dx = to.x - from.x;
 			int dy = to.y - from.y;

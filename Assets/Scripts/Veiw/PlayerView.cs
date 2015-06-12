@@ -11,7 +11,7 @@ public class PlayerView : MonoBehaviour
 	public int cellX;
 	public int cellY;
 	public bool moved;
-	public int ddirection = 0;
+	public int rotateBy = 0;
 	
 	public event PlayerStepComplete onStepComplete;
 
@@ -44,12 +44,12 @@ public class PlayerView : MonoBehaviour
 			cellY += NodeData.DIRECTIONS [directionIdx, 1];
 
 		} else {
-			if (ddirection != 0) {
+			if (rotateBy != 0) {
 				transform.DORotate (transform.rotation.eulerAngles + new Vector3 (
-					0, 0, ddirection * -90), 0.4f).OnComplete (OnStepCompleted);
+					0, 0, rotateBy * -90), 0.4f).OnComplete (OnStepCompleted);
 			}
 			
-			directionIdx += ddirection;
+			directionIdx += rotateBy;
 			if (directionIdx > 3)
 				directionIdx = 0;
 			

@@ -1,6 +1,9 @@
 
 namespace AssemblyCSharp
 {
+	/**
+	 * Populates maze nodes with score values according to maze configuration
+	 */
 	public class ScoreDecorator
 	{
 		public static void Apply (MazeData mazeData)
