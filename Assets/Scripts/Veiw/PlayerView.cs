@@ -34,11 +34,6 @@ public class PlayerView : MonoBehaviour
 		                                      0);
 	}
 
-	public void InvokeAutostartIn (int value)
-	{
-		Invoke ("AutoStart", value);
-	}
-	
 	public void Next (float moveTime, int rotateBy)
 	{
 		if (moveTime > 0) {
@@ -67,12 +62,6 @@ public class PlayerView : MonoBehaviour
 				_directionIdx = NodeData.DIRECTIONS.GetLength (0) - 1;
 				
 		}
-	}
-		
-	void AutoStart ()
-	{
-		if (!DOTween.IsTweening (transform)) 
-			OnStepCompleted ();
 	}
 	
 	void OnStepCompleted ()

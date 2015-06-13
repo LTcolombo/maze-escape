@@ -16,37 +16,38 @@ public class GameController : MonoBehaviour
 	private GameObject _player;
 	
 	//textfields for game state UI
-	private Text scoreText;
-	private Text maxScoreText;
-	private Text movesText;
+	private LerpTextField _scoreText;
+	private LerpTextField _maxScoreText;
+	private LerpTextField _movesText;
+	private LerpTextField _timeBonusText;
 		
 	//view scripts
 	private MazeView _mazeView;
 	private PlayerView _playerView;
-	private int _levelNumber = 0;
 		
 	//current maze data
 	private MazeData _mazeData;
 	
 	//current game state
+	private int _levelNumber = 0;
 	private int _score;
 	private int _maxScore;
 	private uint _movesLeft;
 	private uint _movesLeftCritical;
+	private float _timeBonus;
 	private bool _activated;
 	private bool _stuck;
-	
-	//score to add after previous interation, depending on bonus moves
-	private uint _increaseValue;
 
-	//scores to to takeoff on ueach update when stuck. approx should drain all score in 1 secon
-	private int _reduceValue;
+	//time whick takes off the scure while stuck
+	private static float STUCK_TIME = 2.0f;
+	
+	//Scene state
 	private static bool FIRST_LOAD = true;
 	private static bool INITED = false;
+	
 	// Use this for initialization
 	void Start ()
 	{
-		
 		if (!Debug.isDebugBuild) {
 			GetComponent<Console> ().enabled = false;
 			GetComponent<HUDFPS> ().enabled = false;
@@ -58,6 +59,7 @@ public class GameController : MonoBehaviour
 			FIRST_LOAD = false;
 			return;
 		}
+		
 		DOTween.CompleteAll ();
 		Camera.main.backgroundColor = new Color (0.0f, 0.0f, 0.0f);
 		Camera.main.DOColor (new Color (0.4f, 0.4f, 0.4f), 0.5f);
@@ -73,9 +75,10 @@ public class GameController : MonoBehaviour
 		_playerView = playerObject.GetComponent<PlayerView> ();
 		_playerView.onStepComplete += OnPlayerStepComplete;
 				
-		scoreText = (Text)GameObject.Find ("Canvas/ScoreText").GetComponent<Text> ();
-		maxScoreText = (Text)GameObject.Find ("Canvas/MaxScoreText").GetComponent<Text> ();
-		movesText = (Text)GameObject.Find ("Canvas/MovesText").GetComponent<Text> ();
+		_scoreText = (LerpTextField)GameObject.Find ("Canvas/ScoreText").GetComponent<LerpTextField> ();
+		_maxScoreText = (LerpTextField)GameObject.Find ("Canvas/MaxScoreText").GetComponent<LerpTextField> ();
+		_movesText = (LerpTextField)GameObject.Find ("Canvas/MovesText").GetComponent<LerpTextField> ();
+		_timeBonusText = (LerpTextField)GameObject.Find ("Canvas/TimeBonusText").GetComponent<LerpTextField> ();
 				
 		_movesLeft = 0;
 		_score = 0;
@@ -89,14 +92,15 @@ public class GameController : MonoBehaviour
 	{
 		if (!INITED) 
 			return;
+		_score = (int)_scoreText.GetImmediateValue ();
 		if (_stuck) {
-			scoreText.color = new Color (0.8f, 0.2f, 0.2f);
-			if (_score < _reduceValue) {
+		
+		
+			if (_score == 0) {
 				
 				if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
 					PlayerPrefs.SetInt ("highscore", _maxScore);
 					
-				
 				IDictionary<string, object> eventData = new Dictionary<string, object> ();
 				eventData.Add (new KeyValuePair<string, object> ("Number", _levelNumber));
 				eventData.Add (new KeyValuePair<string, object> ("Score", _score));
@@ -105,48 +109,23 @@ public class GameController : MonoBehaviour
 				UnityAnalytics.CustomEvent ("GameLost", eventData);
 					
 				Application.LoadLevel ("MenuScene");
-			} else {
-				_score -= _reduceValue;
-				scoreText.text = "SCORE: " + _score;
-			}
-		} else
-			if (_increaseValue == 0)
-				scoreText.color = new Color (0.55f, 0.55f, 0.55f);
-		else {
-			if (_increaseValue > 0) {
-				scoreText.color = new Color (0.2f, 0.8f, 0.2f);
-
-				if (_increaseValue > _movesLeft)
-					_increaseValue = _movesLeft;
-			} else {
-				scoreText.color = new Color (0.8f, 0.2f, 0.2f);	
-				
-				if (_increaseValue < _movesLeft)
-					_increaseValue = _movesLeft;
-			}
-			
-			_score += (int)_increaseValue;
-			
+			} 
+		} else {
 			if (_maxScore < _score) {
 				_maxScore = _score;
-				maxScoreText.text = "MAX SCORE: " + _maxScore;
+				_maxScoreText.SetValueImmediate (_maxScore);
 			}
-			
-			_movesLeft -= _increaseValue;
-			scoreText.text = "SCORE: " + _score;
-			movesText.text = "MOVES: " + _movesLeft;
 		}
 	}
 	
 	void OnApplicationPause (bool paused)
 	{
-		
 		IDictionary<string, object> eventData = new Dictionary<string, object> ();
 		eventData.Add (new KeyValuePair<string, object> ("Number", _levelNumber));
 		eventData.Add (new KeyValuePair<string, object> ("Score", _score));
 		eventData.Add (new KeyValuePair<string, object> ("MaxScore", _maxScore));
 		eventData.Add (new KeyValuePair<string, object> ("MovesLeft", _movesLeft));
-		UnityAnalytics.CustomEvent ("GameExited", eventData);
+		UnityAnalytics.CustomEvent ("GamePaused", eventData);
 	
 		if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
 			PlayerPrefs.SetInt ("highscore", _maxScore);
@@ -159,11 +138,16 @@ public class GameController : MonoBehaviour
 	
 		NodeData node = _mazeData.GetNode (_playerView.cellX, _playerView.cellY);
 		
-		scoreText.text = "SCORE: " + _score;
-		movesText.text = "MOVES: " + _movesLeft;
+		_scoreText.SetValueImmediate (_score);
+		_movesText.SetValueImmediate (_movesLeft);
 		
 		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
-			movesText.color = new Color (0.55f, 0.55f, 0.55f);
+			Debug.Log (_score);
+			//TODO _movesText.color = new Color (0.55f, 0.55f, 0.55f);
+			
+			_score += (int)((float)_movesLeft * _timeBonus);
+			_scoreText.SetValue (_score);
+			_movesText.SetValue (0);
 			_levelNumber ++;
 			Next ();
 			return;
@@ -230,8 +214,9 @@ public class GameController : MonoBehaviour
 			return;
 		} 
 		
-		if (_movesLeft < _movesLeftCritical)
-			movesText.color = new Color (0.8f, 0.2f, 0.2f);
+		if (_movesLeft < _movesLeftCritical) {
+			_movesText.color = new Color (0.8f, 0.2f, 0.2f);
+		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
 			rotateBy = 1;
@@ -245,24 +230,26 @@ public class GameController : MonoBehaviour
 			rotateBy = 0;
 			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
 			_score += node.score;
+			_scoreText.SetValueImmediate (_score);
 			
 			if (_maxScore < _score) {
 				_maxScore = _score;
-				maxScoreText.text = "MAX SCORE: " + _maxScore;
+				_maxScoreText.SetValueImmediate (_maxScore);
 			}
 			
 			node.score = 0;
 			_playerView.Next (moveTime, rotateBy);
+			
+			_scoreText.color = new Color (0.55f, 0.55f, 0.55f);
 			_stuck = false;
 		} else {
 			
 			_playerView.Next (-1, rotateBy);
 
 			if (rotateBy == 0) {
-				_reduceValue = (int)((float)_score * Time.deltaTime);
-				if (_reduceValue < 1)
-					_reduceValue = 1;
-
+				_scoreText.SetValue (0, STUCK_TIME);
+				
+				_scoreText.color = new Color (0.8f, 0.2f, 0.2f);
 				_stuck = true;
 			}
 		}
@@ -275,14 +262,7 @@ public class GameController : MonoBehaviour
 	
 		_activated = false;
 	
-		if (_movesLeft > 0) {
-			_increaseValue = (uint)((float)_movesLeft * Time.deltaTime * 2);
-			if (_increaseValue == 0)
-				_increaseValue = 1;
-		} else
-			_increaseValue = 0;
-	
-		_mazeData = new MazeData (new MazeConfig(_levelNumber), _playerView.cellX, _playerView.cellY);
+		_mazeData = new MazeData (new MazeConfig (_levelNumber), _playerView.cellX, _playerView.cellY);
 		
 		ScoreDecorator.Apply (_mazeData);
 		SpeedUpDecorator.Apply (_mazeData);
@@ -296,16 +276,18 @@ public class GameController : MonoBehaviour
 		
 		_mazeView.UpdateMazeData (_mazeData);
 		
-		//_playerView.InvokeAutostartIn (1);
+		_timeBonusText.SetValueImmediate (_mazeData.config.maxTimeBonus);
+		_timeBonusText.SetValue (_mazeData.config.minTimeBonus, _mazeData.config.bonusTime);
 	}
-
+	
 	private void Activate ()
 	{
-		_increaseValue = 0;
-		_score += (int)_movesLeft;
-
-		_movesLeft = (uint)((float)_mazeData.deadEnds[0].GetDistance () * _mazeData.config.bonusRate);
+		_timeBonus = _timeBonusText.GetImmediateValue ();
+		_timeBonusText.SetValueImmediate (_timeBonus);
+			
+		_movesLeft = (uint)((float)_mazeData.deadEnds [0].GetDistance () * _mazeData.config.maxTimeBonus);
 		_movesLeftCritical = _movesLeft / 10;
+		_movesText.color = new Color (0.55f, 0.55f, 0.55f);
 		_activated = true;
 	}
 }

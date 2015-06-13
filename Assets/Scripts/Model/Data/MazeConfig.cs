@@ -8,13 +8,15 @@ namespace AssemblyCSharp
 	{
 		public int width;
 		public int height;
-		public int speedUpsCount = 0;
-		public int rotatorsCount = 0;
-		public int hidersCount = 0;
+		public int speedUpsCount;
+		public int rotatorsCount;
+		public int hidersCount;
 		public int minScore;
 		public int maxScore;
-		public float bonusRate = 2;
-		public float moveTime = 0.5f;
+		public float maxTimeBonus;
+		public float minTimeBonus;
+		public float bonusTime;
+		public float moveTime;
 		
 		//move to model
 		public MazeConfig (int levelNumber)
@@ -27,7 +29,7 @@ namespace AssemblyCSharp
 			width = size;
 			height = size;
 			
-			moveTime = 0.5f - 0.01f * System.Math.Min (30, levelNumber);
+			moveTime = 0.5f - 0.01f * System.Math.Min (20, levelNumber);
 			
 			minScore = 1 + levelNumber;
 			maxScore = 4 + levelNumber;
@@ -35,6 +37,10 @@ namespace AssemblyCSharp
 			speedUpsCount = levelNumber / 5;
 			rotatorsCount = levelNumber / 10;
 			hidersCount = levelNumber > 3 ? 1 : 0;
+			
+			maxTimeBonus = 2;
+			minTimeBonus = 1;
+			bonusTime = 5;
 		}
 	}
 }
