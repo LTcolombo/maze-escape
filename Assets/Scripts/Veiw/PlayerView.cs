@@ -15,7 +15,7 @@ public class PlayerView : MonoBehaviour
 
 	public bool didJustMove { get { return _didJustMove; } }
 	
-	private int _cellX = 2;
+	private int _cellX;
 	private int _cellY;
 	private int _directionIdx;
 	private bool _didJustMove;
