@@ -48,17 +48,26 @@ namespace AssemblyCSharp
 						break;
 									
 					if (previousNode != null) {
+					
+						currentChain.nodes.Add (node);
+					
+						bool hasSpecial = previousNode.HasFlag (
+							NodeData.SPECIALS_ROTATOR_CW |
+							NodeData.SPECIALS_ROTATOR_CCW |
+							NodeData.SPECIALS_HIDE_WALLS |
+							NodeData.SPECIALS_SHOW_WALLS); 
+					
 						int direction = previousNode.GetDirectionTowards (node);
 						
-						currentChain.nodes.Add (node);
-						if (currentDirection != direction) {
+						if ((currentDirection != direction) || hasSpecial) {
 							if (currentChain != null && currentChain.nodes.Count > 1)
 								chains.Add (currentChain);
 								
 							currentChain = new SpeedUpChain ();
 							currentChain.direction = direction;
-						}				
-						currentDirection = direction;
+						}			
+							
+						currentDirection = hasSpecial ? -1 : direction;
 					}
 					node = previousNode;
 				} while (node!=null);
@@ -72,7 +81,7 @@ namespace AssemblyCSharp
 			
 				//mark nodes to contain according speedup flags
 				foreach (NodeData nodeData in chains[i].nodes) {
-					switch (chains[i].direction) {
+					switch (chains [i].direction) {
 					case (NodeData.DIRECTION_UP_IDX):
 						nodeData.AddFlag (NodeData.SPECIALS_SPEEDUP_UP);
 						break;

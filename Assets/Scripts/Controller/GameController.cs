@@ -142,8 +142,7 @@ public class GameController : MonoBehaviour
 		_movesText.SetValueImmediate (_movesLeft);
 		
 		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
-			Debug.Log (_score);
-			//TODO _movesText.color = new Color (0.55f, 0.55f, 0.55f);
+		    _movesText.color = new Color (0.55f, 0.55f, 0.55f);
 			
 			_score += (int)((float)_movesLeft * _timeBonus);
 			_scoreText.SetValue (_score);
@@ -264,10 +263,11 @@ public class GameController : MonoBehaviour
 	
 		_mazeData = new MazeData (new MazeConfig (_levelNumber), _playerView.cellX, _playerView.cellY);
 		
+		ExitDecorator.Apply(_mazeData);
 		ScoreDecorator.Apply (_mazeData);
+		HiderDecorator.Apply (_mazeData);
 		SpeedUpDecorator.Apply (_mazeData);
 		RotatorDecorator.Apply (_mazeData);
-		HiderDecorator.Apply (_mazeData);
 		
 		_container.transform.DOMove (new Vector2 (
 			-(_mazeData.config.width - 1) * MazeView.NODE_SIZE / 2, 

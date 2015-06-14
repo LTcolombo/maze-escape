@@ -27,7 +27,9 @@ namespace AssemblyCSharp
 						NodeData.SPECIALS_SPEEDUP_UP |
 						NodeData.SPECIALS_SPEEDUP_RIGHT |
 						NodeData.SPECIALS_SPEEDUP_DOWN |
-						NodeData.SPECIALS_SPEEDUP_LEFT)) {
+						NodeData.SPECIALS_SPEEDUP_LEFT|
+						NodeData.SPECIALS_HIDE_WALLS |
+						NodeData.SPECIALS_SHOW_WALLS)) {
 
 						if (previousNode != null) {
 							int direction = previousNode.GetDirectionTowards (node);

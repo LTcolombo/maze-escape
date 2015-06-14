@@ -69,9 +69,6 @@ namespace AssemblyCSharp
 					CreateBranch (edgeNode, edgeNodes);
 				}
 			}
-
-			if (deadEnds.Count > 0)
-				deadEnds [0].AddFlag (NodeData.SPECIALS_EXIT);
 		}
 
 		/**
