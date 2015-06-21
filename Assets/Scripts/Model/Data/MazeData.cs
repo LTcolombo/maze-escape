@@ -17,6 +17,11 @@ namespace AssemblyCSharp
 		public List<NodeData> deadEnds = new List<NodeData> ();
 
 		/**
+		 * Array of NodeData that represent nodes with more then 3 exits.
+		 */
+		public List<NodeData> crossRoads = new List<NodeData> ();
+
+		/**
 		 * currect maze config
 		 */
 		public MazeConfig config { get { return _config; } }
@@ -63,6 +68,9 @@ namespace AssemblyCSharp
 					if (processedNeighbour != null) {
 						Merge (processedNeighbour, edgeNode);
 						edgeNode.previousNode = processedNeighbour;
+						
+						if (!crossRoads.Contains (processedNeighbour)) 
+							crossRoads.Add (processedNeighbour);
 					} 
 					
 					//3.3 create the branch

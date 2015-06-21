@@ -31,10 +31,13 @@ namespace AssemblyCSharp
 			
 			moveTime = 0.5f - 0.01f * System.Math.Min (20, levelNumber);
 			
-			minScore = 1 + levelNumber;
-			maxScore = 4 + levelNumber;
+			minScore = 1 + size;
+			maxScore = 4 + size;
 			
 			speedUpsCount = levelNumber / 5;
+			if (speedUpsCount > 4)
+				speedUpsCount = 4;
+				
 			rotatorsCount = levelNumber / 10;
 			hidersCount = levelNumber > 3 ? 1 : 0;
 			

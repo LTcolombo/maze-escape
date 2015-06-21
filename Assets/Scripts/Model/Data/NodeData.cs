@@ -5,7 +5,7 @@ namespace AssemblyCSharp
 {
 	public class NodeData
 	{
-		//indexes from direcion array
+		//indexes from direction array
 		public const int DIRECTION_UP_IDX = 0;
 		public const int DIRECTION_RIGHT_IDX = 1;
 		public const int DIRECTION_DOWN_IDX = 2;
@@ -113,7 +113,7 @@ namespace AssemblyCSharp
 
 			uint count = 0;
 			for (var i = 0; i < sizeof(uint)*8; i++) {
-				if ((temp & 1 << i)>0)
+				if ((temp & 1 << i) > 0)
 					count ++;
 			}
 
