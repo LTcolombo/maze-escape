@@ -1,4 +1,6 @@
 
+using System;
+
 namespace AssemblyCSharp
 {
 	///<summary>
@@ -21,7 +23,7 @@ namespace AssemblyCSharp
 		//move to model
 		public MazeConfig (int levelNumber)
 		{			
-			int size = 3 + levelNumber/4;
+			int size = 3 + levelNumber / 4;
 			
 			if (size > 10)
 				size = 10;
@@ -29,7 +31,7 @@ namespace AssemblyCSharp
 			width = size;
 			height = size;
 			
-			moveTime = 0.5f - 0.01f * System.Math.Min (20, levelNumber);
+			moveTime = 0.5f - 0.01f * System.Math.Min (20, levelNumber) - 0.005f * Math.Max (0, Math.Min (20, levelNumber - 20));
 			
 			minScore = 1 + size;
 			maxScore = 4 + size;
