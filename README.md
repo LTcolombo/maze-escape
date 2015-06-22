@@ -23,10 +23,6 @@ Strict geometric shapes with a rough texture.
 Looks like a chevron on 2 or more lined up and merged cells. Makes the movement in the right direction twice faster and twice slower in the opposite.
 ### Rotator. 
 When the arrow passes through rotator, its direction gets appended by 90 degrees in rotator direction.
-### Spring. 
-Makes a move in current direction ignoring the wall.
-Score modifier. Adds or subtracts (?) score when passing through.
+### Hide/Show Walls. 
+Hodes or show walls while passing through. Great visual memory excersize!
 
-## Implementation
-## Technology
-## Screens
