@@ -77,7 +77,7 @@ public class MazeView : MonoBehaviour
 					(float)cellY / _mazeData.config.height
 					};
 				
-				float tint = 0.3f + 0.7f * (float)node.score / _mazeData.config.maxScore;
+				float tint = 0.6f + 0.4f * (float)(node.score-_mazeData.config.minScore) / (_mazeData.config.maxScore-_mazeData.config.minScore);
 								
 				//create a tile				
 				GameObject nodeInstance = (GameObject)Instantiate (Prefabs.NODE);

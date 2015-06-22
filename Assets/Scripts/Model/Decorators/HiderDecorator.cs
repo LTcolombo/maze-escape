@@ -1,4 +1,6 @@
-﻿namespace AssemblyCSharp
+﻿using System;
+
+namespace AssemblyCSharp
 {
 	/**
 	 * Populates maze nodes with hide/unhide flags according to maze configuration
@@ -17,26 +19,23 @@
 					break;
 
 				int distance = (int)mazeData.deadEnds [i].GetDistance ();
-
-				const int OFFSET = 2;
-
-				//todo
-				int turnOff = _rnd.Next (OFFSET, (int)distance / 2);
-				int turnOn = _rnd.Next (turnOff + 2, turnOff + 6);
-
-				if (turnOff > distance - OFFSET)
-					turnOff = distance - OFFSET;
-
+				
+				if (distance < 4)
+					return;
+				
+				int showIndex = _rnd.Next ((int)distance / 4, (int)distance / 2);
+				int hideIndex = _rnd.Next (showIndex + 2, showIndex + (int)Math.Min((int)(distance / 2), 8));
+				
 				NodeData node = mazeData.deadEnds [i].previousNode;
 				int index = 0;
 				while (node !=null) {
 					index++;
 
-					if (index == turnOff)
+					if (index == showIndex)
 						node.AddFlag (NodeData.SPECIALS_SHOW_WALLS);
 
 					
-					if (index == turnOn)
+					if (index == hideIndex)
 						node.AddFlag (NodeData.SPECIALS_HIDE_WALLS);
 
 					node = node.previousNode;

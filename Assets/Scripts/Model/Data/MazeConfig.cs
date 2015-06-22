@@ -36,14 +36,14 @@ namespace AssemblyCSharp
 			minScore = 1 + size;
 			maxScore = 4 + size;
 			
-			speedUpsCount = levelNumber / 5;
+			speedUpsCount = levelNumber / 6;
 			if (speedUpsCount > 4)
 				speedUpsCount = 4;
 				
 			rotatorsCount = levelNumber / 10;
-			hidersCount = levelNumber > 3 ? 1 : 0;
+			hidersCount = levelNumber > 2 ? 1 : 0;
 			
-			maxTimeBonus = 2;
+			maxTimeBonus = size/2.0f;
 			minTimeBonus = 1;
 			bonusTime = 5;
 		}
