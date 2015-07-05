@@ -37,7 +37,7 @@ public class GameController : MonoBehaviour
 	private bool _activated;
 	private bool _stuck;
 
-	//time whick takes off the scure while stuck
+	//time whick takes off the score while stuck
 	private static float STUCK_TIME = 2.0f;
 	
 	//Scene state
@@ -137,13 +137,12 @@ public class GameController : MonoBehaviour
 	
 		NodeData node = _mazeData.GetNode (_playerView.cellX, _playerView.cellY);
 		
-		
 		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
 		    _movesText.color = new Color (0.55f, 0.55f, 0.55f);
 			
 			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
-			_score += node.score;
-			_score += (int)((float)_movesLeft * _timeBonus);
+			_score += (int)((float)node.score * _timeBonus);
+			_score += (int)((float)_movesLeft * _timeBonus * (_mazeData.config.minScore + _mazeData.config.maxScore) /2);
 			_scoreText.SetValue (_score);
 			_movesText.SetValue (0);
 			_levelNumber ++;
@@ -229,7 +228,7 @@ public class GameController : MonoBehaviour
 		if (!node.HasWall (_playerView.directionIdx) && (!_playerView.didJustMove || rotateBy == 0)) {
 			rotateBy = 0;
 			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
-			_score += node.score;
+			_score += (int)((float)node.score * _timeBonus);
 			_scoreText.SetValueImmediate (_score);
 			
 			if (_maxScore < _score) {

@@ -43,9 +43,9 @@ namespace AssemblyCSharp
 			rotatorsCount = levelNumber / 10;
 			hidersCount = levelNumber > 2 ? 1 : 0;
 			
-			maxTimeBonus = size/2.0f;
+			maxTimeBonus = 1 + size / 10.0f;
 			minTimeBonus = 1;
-			bonusTime = 5;
+			bonusTime = size / 2.0f;
 		}
 	}
 }
