@@ -28,14 +28,7 @@ public class GameController : MonoBehaviour
 	private MazeData _mazeData;
 	
 	//current game state
-	private int _levelNumber = 0;
-	private int _score;
-	private int _maxScore;
-	private uint _movesLeft;
-	private uint _movesLeftCritical;
-	private float _timeBonus;
-	private bool _activated;
-	private bool _stuck;
+	private GameState _gameState;
 
 	//time whick takes off the score while stuck
 	private static float STUCK_TIME = 2.0f;
@@ -47,11 +40,6 @@ public class GameController : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		if (!Debug.isDebugBuild) {
-			GetComponent<Console> ().enabled = false;
-			GetComponent<HUDFPS> ().enabled = false;
-		}
-		
 		if (FIRST_LOAD) {
 			FIRST_LOAD = false;
 			Application.LoadLevel ("MenuScene");
@@ -79,9 +67,9 @@ public class GameController : MonoBehaviour
 		_movesText = (LerpTextField)GameObject.Find ("Canvas/MovesText").GetComponent<LerpTextField> ();
 		_timeBonusText = (LerpTextField)GameObject.Find ("Canvas/TimeBonusText").GetComponent<LerpTextField> ();
 				
-		_movesLeft = 0;
-		_score = 0;
-		_levelNumber = PlayerPrefs.GetInt ("maxlevel", 0) / 2;
+		_gameState.movesLeft = 0;
+		_gameState.score = 0;
+		_gameState.levelNumber = PlayerPrefs.GetInt ("maxlevel", 0) / 2;
 		Next ();
 		INITED = true;
 	}
@@ -91,48 +79,38 @@ public class GameController : MonoBehaviour
 	{
 		if (!INITED) 
 			return;
-		_score = (int)_scoreText.GetImmediateValue ();
-		if (_stuck) {
+		_gameState.score = (int)_scoreText.GetImmediateValue ();
+		if (_gameState.stuck) {
 		
 		
-			if (_score == 0) {
+			if (_gameState.score == 0) {
 				
-				if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
-					PlayerPrefs.SetInt ("highscore", _maxScore);
+				if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
+					PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
 					
-				IDictionary<string, object> eventData = new Dictionary<string, object> ();
-				eventData.Add (new KeyValuePair<string, object> ("Number", _levelNumber));
-				eventData.Add (new KeyValuePair<string, object> ("Score", _score));
-				eventData.Add (new KeyValuePair<string, object> ("MaxScore", _maxScore));
-				eventData.Add (new KeyValuePair<string, object> ("MovesLeft", _movesLeft));
-				Analytics.CustomEvent ("GameLost", eventData);
+				AnalyticsWrapper.ReportGameLost(_gameState);
 					
 				Application.LoadLevel ("MenuScene");
 			} 
 		} else {
-			if (_maxScore < _score) {
-				_maxScore = _score;
-				_maxScoreText.SetValueImmediate (_maxScore);
+			if (_gameState.maxScore < _gameState.score) {
+				_gameState.maxScore = _gameState.score;
+				_maxScoreText.SetValueImmediate (_gameState.maxScore);
 			}
 		}
 	}
 	
 	void OnApplicationPause (bool paused)
 	{
-		IDictionary<string, object> eventData = new Dictionary<string, object> ();
-		eventData.Add (new KeyValuePair<string, object> ("Number", _levelNumber));
-		eventData.Add (new KeyValuePair<string, object> ("Score", _score));
-		eventData.Add (new KeyValuePair<string, object> ("MaxScore", _maxScore));
-		eventData.Add (new KeyValuePair<string, object> ("MovesLeft", _movesLeft));
-		Analytics.CustomEvent ("GamePaused", eventData);
+		AnalyticsWrapper.ReportGamePaused(_gameState);
 	
-		if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
-			PlayerPrefs.SetInt ("highscore", _maxScore);
+		if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
+			PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
 	}
 	
 	private void OnPlayerStepComplete ()
 	{
-		if (!_activated)
+		if (!_gameState.activated)
 			Activate ();
 	
 		NodeData node = _mazeData.GetNode (_playerView.cellX, _playerView.cellY);
@@ -141,11 +119,11 @@ public class GameController : MonoBehaviour
 		    _movesText.color = new Color (0.55f, 0.55f, 0.55f);
 			
 			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
-			_score += (int)((float)node.score * _timeBonus);
-			_score += (int)((float)_movesLeft * _timeBonus * (_mazeData.config.minScore + _mazeData.config.maxScore) /2);
-			_scoreText.SetValue (_score);
+			_gameState.score += (int)((float)node.score * _gameState.timeBonus);
+			_gameState.score += (int)((float)_gameState.movesLeft * _gameState.timeBonus * (_mazeData.config.minScore + _mazeData.config.maxScore) /2);
+			_scoreText.SetValue (_gameState.score);
 			_movesText.SetValue (0);
-			_levelNumber ++;
+			_gameState.levelNumber ++;
 			
 			_player.SetActive(false);
 			Invoke("Next", 0.6f);
@@ -195,25 +173,20 @@ public class GameController : MonoBehaviour
 		
 		int rotateBy = 0;
 		
-		_movesLeft--;
-		_movesText.SetValueImmediate(_movesLeft);
-		if (_movesLeft == 0) {
+		_gameState.movesLeft--;
+		_movesText.SetValueImmediate(_gameState.movesLeft);
+		if (_gameState.movesLeft == 0) {
 			
-			if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
-				PlayerPrefs.SetInt ("highscore", _maxScore);
+			if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
+				PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
 				
-			IDictionary<string, object> eventData = new Dictionary<string, object> ();
-			eventData.Add (new KeyValuePair<string, object> ("Number", _levelNumber));
-			eventData.Add (new KeyValuePair<string, object> ("Score", _score));
-			eventData.Add (new KeyValuePair<string, object> ("MaxScore", _maxScore));
-			eventData.Add (new KeyValuePair<string, object> ("MovesLeft", _movesLeft));
-			Analytics.CustomEvent ("GameLost", eventData);
+			AnalyticsWrapper.ReportGameLost(_gameState);
 				
 			Application.LoadLevel ("MenuScene");
 			return;
 		} 
 		
-		if (_movesLeft < _movesLeftCritical) {
+		if (_gameState.movesLeft < _gameState.movesLeftCritical) {
 			_movesText.color = new Color (0.8f, 0.2f, 0.2f);
 		}
 		
@@ -228,19 +201,19 @@ public class GameController : MonoBehaviour
 		if (!node.HasWall (_playerView.directionIdx) && (!_playerView.didJustMove || rotateBy == 0)) {
 			rotateBy = 0;
 			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
-			_score += (int)((float)node.score * _timeBonus);
-			_scoreText.SetValueImmediate (_score);
+			_gameState.score += (int)((float)node.score * _gameState.timeBonus);
+			_scoreText.SetValueImmediate (_gameState.score);
 			
-			if (_maxScore < _score) {
-				_maxScore = _score;
-				_maxScoreText.SetValueImmediate (_maxScore);
+			if (_gameState.maxScore < _gameState.score) {
+				_gameState.maxScore = _gameState.score;
+				_maxScoreText.SetValueImmediate (_gameState.maxScore);
 			}
 			
 			node.score = 0;
 			_playerView.Next (moveTime, rotateBy);
 			
 			_scoreText.color = new Color (0.55f, 0.55f, 0.55f);
-			_stuck = false;
+			_gameState.stuck = false;
 		} else {
 			
 			_playerView.Next (-1, rotateBy);
@@ -249,19 +222,19 @@ public class GameController : MonoBehaviour
 				_scoreText.SetValue (0, STUCK_TIME);
 				
 				_scoreText.color = new Color (0.8f, 0.2f, 0.2f);
-				_stuck = true;
+				_gameState.stuck = true;
 			}
 		}
 	}
 		
 	private void Next ()
 	{	
-		if (_levelNumber > PlayerPrefs.GetInt ("maxlevel", 0))
-			PlayerPrefs.SetInt ("maxlevel", _levelNumber);
+		if (_gameState.levelNumber > PlayerPrefs.GetInt ("maxlevel", 0))
+			PlayerPrefs.SetInt ("maxlevel", _gameState.levelNumber);
 	
-		_activated = false;
+		_gameState.activated = false;
 	
-		_mazeData = new MazeData (new MazeConfig (_levelNumber), _playerView.cellX, _playerView.cellY);
+		_mazeData = new MazeData (new MazeConfig (_gameState.levelNumber), _playerView.cellX, _playerView.cellY);
 		
 		ExitDecorator.Apply(_mazeData);
 		ScoreDecorator.Apply (_mazeData);
@@ -276,23 +249,23 @@ public class GameController : MonoBehaviour
 		
 		_mazeView.UpdateMazeData (_mazeData);
 		
-		_movesLeft = (uint)((float)_mazeData.deadEnds [0].GetDistance () * _mazeData.config.maxTimeBonus);
-		_movesLeftCritical = _movesLeft / 10;
+		_gameState.movesLeft = (uint)((float)_mazeData.deadEnds [0].GetDistance () * _mazeData.config.maxTimeBonus);
+		_gameState.movesLeftCritical = _gameState.movesLeft / 10;
 		_movesText.color = new Color (0.55f, 0.55f, 0.55f);
 		
 		_timeBonusText.SetValueImmediate (_mazeData.config.maxTimeBonus);
 		_timeBonusText.SetValue (_mazeData.config.minTimeBonus, _mazeData.config.bonusTime);
 		
-		_scoreText.SetValueImmediate (_score);
-		_movesText.SetValueImmediate (_movesLeft);
+		_scoreText.SetValueImmediate (_gameState.score);
+		_movesText.SetValueImmediate (_gameState.movesLeft);
 		
 		_player.SetActive(true);
 	}
 	
 	private void Activate ()
 	{
-		_timeBonus = _timeBonusText.GetImmediateValue ();
-		_timeBonusText.SetValueImmediate (_timeBonus);
-		_activated = true;
+		_gameState.timeBonus = _timeBonusText.GetImmediateValue ();
+		_timeBonusText.SetValueImmediate (_gameState.timeBonus);
+		_gameState.activated = true;
 	}
 }

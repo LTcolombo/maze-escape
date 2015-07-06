@@ -41,6 +41,12 @@ public class Console : MonoBehaviour
 	GUIContent clearLabel = new GUIContent("Clear", "Clear the contents of the console.");
 	GUIContent collapseLabel = new GUIContent("Collapse", "Hide repeated messages.");
 	
+	void Start()
+	{
+		if (!Debug.isDebugBuild) 
+			enabled = false;
+	}
+	
 	void OnEnable ()
 	{
 		Application.logMessageReceived += HandleLog;
