@@ -5,7 +5,7 @@ using DG.Tweening;
 using System;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine.Cloud.Analytics;
+using UnityEngine.Analytics;
 
 public class GameController : MonoBehaviour
 {
@@ -105,7 +105,7 @@ public class GameController : MonoBehaviour
 				eventData.Add (new KeyValuePair<string, object> ("Score", _score));
 				eventData.Add (new KeyValuePair<string, object> ("MaxScore", _maxScore));
 				eventData.Add (new KeyValuePair<string, object> ("MovesLeft", _movesLeft));
-				UnityAnalytics.CustomEvent ("GameLost", eventData);
+				Analytics.CustomEvent ("GameLost", eventData);
 					
 				Application.LoadLevel ("MenuScene");
 			} 
@@ -124,7 +124,7 @@ public class GameController : MonoBehaviour
 		eventData.Add (new KeyValuePair<string, object> ("Score", _score));
 		eventData.Add (new KeyValuePair<string, object> ("MaxScore", _maxScore));
 		eventData.Add (new KeyValuePair<string, object> ("MovesLeft", _movesLeft));
-		UnityAnalytics.CustomEvent ("GamePaused", eventData);
+		Analytics.CustomEvent ("GamePaused", eventData);
 	
 		if (_maxScore > PlayerPrefs.GetInt ("highscore", 0))
 			PlayerPrefs.SetInt ("highscore", _maxScore);
@@ -207,7 +207,7 @@ public class GameController : MonoBehaviour
 			eventData.Add (new KeyValuePair<string, object> ("Score", _score));
 			eventData.Add (new KeyValuePair<string, object> ("MaxScore", _maxScore));
 			eventData.Add (new KeyValuePair<string, object> ("MovesLeft", _movesLeft));
-			UnityAnalytics.CustomEvent ("GameLost", eventData);
+			Analytics.CustomEvent ("GameLost", eventData);
 				
 			Application.LoadLevel ("MenuScene");
 			return;

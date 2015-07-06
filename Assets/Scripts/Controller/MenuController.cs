@@ -2,7 +2,7 @@
 using System.Collections;
 using DG.Tweening;
 using UnityEngine.UI;
-using UnityEngine.Cloud.Analytics;
+using UnityEngine.Analytics;
 using AssemblyCSharp;
 
 public class MenuController : MonoBehaviour
@@ -30,7 +30,6 @@ public class MenuController : MonoBehaviour
 	void Start ()
 	{
 		Prefabs.Init ();
-		UnityAnalytics.StartSDK ("84ec8035-1fc7-4fde-867c-3497cb4b2ace");
 	
 		Text bestScoreText = (Text)GameObject.Find ("Canvas/BestScoreText").GetComponent<Text> ();
 		bestScoreText.text = "BEST SCORE: " + PlayerPrefs.GetInt ("highscore", 0);
