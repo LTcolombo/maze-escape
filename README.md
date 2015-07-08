@@ -1,4 +1,4 @@
-# Maze Escape
+# Maze Pace
 
 ## Synopsis
 Endless maze game based on user reaction aimed to get a constantly moving object towards a subsequent escape by defining its direction.
