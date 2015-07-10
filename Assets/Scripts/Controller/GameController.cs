@@ -47,10 +47,6 @@ public class GameController : MonoBehaviour
 			return;
 		}
 		
-		DOTween.CompleteAll ();
-		Camera.main.backgroundColor = new Color (0.0f, 0.0f, 0.0f);
-		Camera.main.DOColor (new Color (0.4f, 0.4f, 0.4f), 0.5f);
-				
 		_container = GameObject.Find ("GameContainer");
 		
 		GameObject mazeObject = (GameObject)Instantiate (Prefabs.MAZE);
@@ -267,5 +263,6 @@ public class GameController : MonoBehaviour
 		_gameState.timeBonus = _timeBonusText.GetImmediateValue ();
 		_timeBonusText.SetValueImmediate (_gameState.timeBonus);
 		_gameState.activated = true;
+		DOTween.CompleteAll();
 	}
 }
