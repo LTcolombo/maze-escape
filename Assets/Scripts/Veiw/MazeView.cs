@@ -50,15 +50,20 @@ public class MazeView : MonoBehaviour
 			node.GetComponent<NodeView> ().ShowWall (value);
 	}
 	
-	public void DesaturateTileAt (int x, int y)
+	public void DesaturateTileAt (IntPoint pos)
 	{
-		int index = x * _mazeData.config.width + y;
+		int index = pos.x * _mazeData.config.width + pos.y;
 		if (index < _nodeInstances.Count) 
 			_nodeInstances [index].GetComponent<NodeView>().Desaturate();
 	}
 		
 	private void Redraw ()
-	{
+	{	
+		transform.DOMove (new Vector2 (
+			-(_mazeData.config.width - 1) * MazeView.NODE_SIZE / 2, 
+			-(_mazeData.config.height - 1) * MazeView.NODE_SIZE / 2
+			), TRANSITION_TIME);
+	
 		foreach (Object nodeInstance in _nodeInstances)
 			Destroy (nodeInstance);
 		

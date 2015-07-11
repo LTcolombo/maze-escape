@@ -19,6 +19,7 @@ namespace AssemblyCSharp
 		public float minTimeBonus;
 		public float bonusTime;
 		public float moveTime;
+		public float scoreDrainTime;
 		
 		//move to model
 		public MazeConfig (int levelNumber)
@@ -50,6 +51,8 @@ namespace AssemblyCSharp
 			maxTimeBonus = 1 + size / 10.0f;
 			minTimeBonus = 1;
 			bonusTime = size / 2.0f;
+			
+			scoreDrainTime = 1.0f;
 		}
 	}
 }

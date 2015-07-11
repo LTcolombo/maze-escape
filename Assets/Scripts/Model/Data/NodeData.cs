@@ -35,8 +35,7 @@ namespace AssemblyCSharp
 		public static int[,] DIRECTIONS = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 		
 		//position on grid
-		public int x;
-		public int y;
+		public IntPoint pos;
 		
 		//score assigned to node
 		public int score = 0;
@@ -52,8 +51,7 @@ namespace AssemblyCSharp
 		 */
 		public NodeData (int x, int y)
 		{
-			this.x = x;
-			this.y = y;
+			pos = new IntPoint(x, y);
 		}
 
 		/**
@@ -125,13 +123,13 @@ namespace AssemblyCSharp
 		 */
 		public int GetDirectionTowards (NodeData other)
 		{
-			if (other.x == x) {
-				if (other.y > y)
+			if (other.pos.x == pos.x) {
+				if (other.pos.y > pos.y)
 					return NodeData.DIRECTION_UP_IDX;
 				else
 					return NodeData.DIRECTION_DOWN_IDX;
 			} else {
-				if (other.x > x)
+				if (other.pos.x > pos.x)
 					return NodeData.DIRECTION_RIGHT_IDX;
 				else
 					return NodeData.DIRECTION_LEFT_IDX;

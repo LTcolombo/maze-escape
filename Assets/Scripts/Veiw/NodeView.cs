@@ -14,14 +14,14 @@ public class NodeView : MonoBehaviour
 		_tileRenderer.color = color;
 
 		//create a wall		
-		if (node.x > 0 && node.HasWall (NodeData.DIRECTION_LEFT_IDX)) {
+		if (node.pos.x > 0 && node.HasWall (NodeData.DIRECTION_LEFT_IDX)) {
 							
-			if (node.y > 0 && node.HasWall (NodeData.DIRECTION_DOWN_IDX)) 
+			if (node.pos.y > 0 && node.HasWall (NodeData.DIRECTION_DOWN_IDX)) 
 				_wallInstance = (GameObject)Instantiate (Prefabs.WALL_SOUTH_WEST);
 			else
 				_wallInstance = (GameObject)Instantiate (Prefabs.WALL_WEST);
 							
-		} else if (node.y > 0 && node.HasWall (NodeData.DIRECTION_DOWN_IDX)) 
+		} else if (node.pos.y > 0 && node.HasWall (NodeData.DIRECTION_DOWN_IDX)) 
 			_wallInstance = (GameObject)Instantiate (Prefabs.WALL_SOUTH);
 
 		if (_wallInstance) {

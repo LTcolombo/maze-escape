@@ -11,7 +11,6 @@ public class GameController : MonoBehaviour
 {
 	
 	//container for maze and player
-	private GameObject _container;
 	private GameObject _player;
 	
 	//textfields for game state UI
@@ -21,7 +20,6 @@ public class GameController : MonoBehaviour
 	private LerpTextField _timeBonusText;
 		
 	//view scripts
-	private MazeView _mazeView;
 	private PlayerView _playerView;
 		
 	//current maze data
@@ -29,9 +27,6 @@ public class GameController : MonoBehaviour
 	
 	//current game state
 	private GameState _gameState;
-
-	//time whick takes off the score while stuck
-	private static float STUCK_TIME = 2.0f;
 	
 	//Scene state
 	private static bool FIRST_LOAD = true;
@@ -46,15 +41,9 @@ public class GameController : MonoBehaviour
 			FIRST_LOAD = false;
 			return;
 		}
-		
-		_container = GameObject.Find ("GameContainer");
-		
-		GameObject mazeObject = (GameObject)Instantiate (Prefabs.MAZE);
-		mazeObject.transform.parent = _container.transform;
-		_mazeView = mazeObject.GetComponent<MazeView> ();
 				
 		_player = (GameObject)Instantiate (Prefabs.PLAYER);
-		_player.transform.parent = _container.transform;
+		_player.transform.parent = transform;
 		_playerView = _player.GetComponent<PlayerView> ();
 		_playerView.onStepComplete += OnPlayerStepComplete;
 				
@@ -84,7 +73,7 @@ public class GameController : MonoBehaviour
 				if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
 					PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
 					
-				AnalyticsWrapper.ReportGameLost(_gameState);
+				AnalyticsWrapper.ReportGameLost (_gameState);
 					
 				Application.LoadLevel ("MenuScene");
 			} 
@@ -98,7 +87,7 @@ public class GameController : MonoBehaviour
 	
 	void OnApplicationPause (bool paused)
 	{
-		AnalyticsWrapper.ReportGamePaused(_gameState);
+		AnalyticsWrapper.ReportGamePaused (_gameState);
 	
 		if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
 			PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
@@ -107,22 +96,26 @@ public class GameController : MonoBehaviour
 	private void OnPlayerStepComplete ()
 	{
 		if (!_gameState.activated)
-			Activate ();
-	
+			Activate ();	
+		
+		if (_gameState.movesLeft < _gameState.movesLeftCritical) {
+			_movesText.color = new Color (0.8f, 0.2f, 0.2f);
+		}
+		
 		NodeData node = _mazeData.GetNode (_playerView.cellX, _playerView.cellY);
 		
 		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
-		    _movesText.color = new Color (0.55f, 0.55f, 0.55f);
+			_movesText.color = new Color (0.55f, 0.55f, 0.55f);
 			
-			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
+			BroadcastMessage ("DesaturateTileAt", node.pos);
 			_gameState.score += (int)((float)node.score * _gameState.timeBonus);
-			_gameState.score += (int)((float)_gameState.movesLeft * _gameState.timeBonus * (_mazeData.config.minScore + _mazeData.config.maxScore) /2);
+			_gameState.score += (int)((float)_gameState.movesLeft * _gameState.timeBonus * (_mazeData.config.minScore + _mazeData.config.maxScore) / 2);
 			_scoreText.SetValue (_gameState.score);
 			_movesText.SetValue (0);
 			_gameState.levelNumber ++;
 			
-			_player.SetActive(false);
-			Invoke("Next", 0.6f);
+			_player.SetActive (false);
+			Invoke ("Next", 0.6f);
 			return;
 		}
 		
@@ -160,31 +153,27 @@ public class GameController : MonoBehaviour
 		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_HIDE_WALLS)) {
-			_mazeView.ShowWalls (false);
+			BroadcastMessage ("ShowWalls", false);
 		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_SHOW_WALLS)) {
-			_mazeView.ShowWalls (true);
+			BroadcastMessage ("ShowWalls", true);
 		}
 		
 		int rotateBy = 0;
 		
 		_gameState.movesLeft--;
-		_movesText.SetValueImmediate(_gameState.movesLeft);
+		_movesText.SetValueImmediate (_gameState.movesLeft);
 		if (_gameState.movesLeft == 0) {
 			
 			if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
 				PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
 				
-			AnalyticsWrapper.ReportGameLost(_gameState);
+			AnalyticsWrapper.ReportGameLost (_gameState);
 				
 			Application.LoadLevel ("MenuScene");
 			return;
 		} 
-		
-		if (_gameState.movesLeft < _gameState.movesLeftCritical) {
-			_movesText.color = new Color (0.8f, 0.2f, 0.2f);
-		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
 			rotateBy = 1;
@@ -196,7 +185,7 @@ public class GameController : MonoBehaviour
 		
 		if (!node.HasWall (_playerView.directionIdx) && (!_playerView.didJustMove || rotateBy == 0)) {
 			rotateBy = 0;
-			_mazeView.DesaturateTileAt (_playerView.cellX, _playerView.cellY);
+			BroadcastMessage ("DesaturateTileAt", node.pos);
 			_gameState.score += (int)((float)node.score * _gameState.timeBonus);
 			_scoreText.SetValueImmediate (_gameState.score);
 			
@@ -215,7 +204,7 @@ public class GameController : MonoBehaviour
 			_playerView.Next (-1, rotateBy);
 
 			if (rotateBy == 0) {
-				_scoreText.SetValue (0, STUCK_TIME);
+				_scoreText.SetValue (0, _mazeData.config.scoreDrainTime);
 				
 				_scoreText.color = new Color (0.8f, 0.2f, 0.2f);
 				_gameState.stuck = true;
@@ -232,18 +221,13 @@ public class GameController : MonoBehaviour
 	
 		_mazeData = new MazeData (new MazeConfig (_gameState.levelNumber), _playerView.cellX, _playerView.cellY);
 		
-		ExitDecorator.Apply(_mazeData);
+		ExitDecorator.Apply (_mazeData);
 		ScoreDecorator.Apply (_mazeData);
 		HiderDecorator.Apply (_mazeData);
 		SpeedUpDecorator.Apply (_mazeData);
 		RotatorDecorator.Apply (_mazeData);
 		
-		_container.transform.DOMove (new Vector2 (
-			-(_mazeData.config.width - 1) * MazeView.NODE_SIZE / 2, 
-			-(_mazeData.config.height - 1) * MazeView.NODE_SIZE / 2
-		), MazeView.TRANSITION_TIME);
-		
-		_mazeView.UpdateMazeData (_mazeData);
+		BroadcastMessage("UpdateMazeData", _mazeData);
 		
 		_gameState.movesLeft = (uint)((float)_mazeData.deadEnds [0].GetDistance () * _mazeData.config.maxTimeBonus);
 		_gameState.movesLeftCritical = _gameState.movesLeft / 10;
@@ -255,7 +239,7 @@ public class GameController : MonoBehaviour
 		_scoreText.SetValueImmediate (_gameState.score);
 		_movesText.SetValueImmediate (_gameState.movesLeft);
 		
-		_player.SetActive(true);
+		_player.SetActive (true);
 	}
 	
 	private void Activate ()
@@ -263,6 +247,6 @@ public class GameController : MonoBehaviour
 		_gameState.timeBonus = _timeBonusText.GetImmediateValue ();
 		_timeBonusText.SetValueImmediate (_gameState.timeBonus);
 		_gameState.activated = true;
-		DOTween.CompleteAll();
+		DOTween.CompleteAll ();
 	}
 }

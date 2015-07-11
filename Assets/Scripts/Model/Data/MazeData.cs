@@ -139,8 +139,8 @@ namespace AssemblyCSharp
 			
 			for (int i = 0; i < 4; i++) {
 				
-				int x = target.x + NodeData.DIRECTIONS [i, 0];
-				int y = target.y + NodeData.DIRECTIONS [i, 1];
+				int x = target.pos.x + NodeData.DIRECTIONS [i, 0];
+				int y = target.pos.y + NodeData.DIRECTIONS [i, 1];
 				
 				if (IsInBounds (x, y)) {
 					NodeData neighbour = GetNode (x, y);
@@ -168,8 +168,8 @@ namespace AssemblyCSharp
 			for (int i = 0; i < 4; i++) {
 				int dir = (offset + i) % 4;
 				
-				int x = target.x + NodeData.DIRECTIONS [dir, 0];
-				int y = target.y + NodeData.DIRECTIONS [dir, 1];
+				int x = target.pos.x + NodeData.DIRECTIONS [dir, 0];
+				int y = target.pos.y + NodeData.DIRECTIONS [dir, 1];
 				
 				if (IsInBounds (x, y)) {
 					NodeData neighbour = GetNode (x, y);
@@ -186,8 +186,8 @@ namespace AssemblyCSharp
 		 */
 		private void Merge (NodeData from, NodeData to)
 		{
-			int dx = to.x - from.x;
-			int dy = to.y - from.y;
+			int dx = to.pos.x - from.pos.x;
+			int dy = to.pos.y - from.pos.y;
 			
 			if (dx != 0) {
 				if (dx > 0) {
