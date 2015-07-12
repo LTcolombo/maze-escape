@@ -66,8 +66,6 @@ public class GameController : MonoBehaviour
 			return;
 		_gameState.score = (int)_scoreText.GetImmediateValue ();
 		if (_gameState.stuck) {
-		
-		
 			if (_gameState.score == 0) {
 				
 				if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
