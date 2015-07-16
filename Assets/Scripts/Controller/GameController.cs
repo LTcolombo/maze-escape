@@ -7,6 +7,8 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.Analytics;
 
+
+
 public class GameController : MonoBehaviour
 {
 	
@@ -196,7 +198,10 @@ public class GameController : MonoBehaviour
 			_playerView.Next (moveTime, rotateBy);
 			
 			_scoreText.color = new Color (0.55f, 0.55f, 0.55f);
-			_gameState.stuck = false;
+			
+			if (_gameState.stuck){
+				_gameState.stuck = false;
+			}
 		} else {
 			
 			_playerView.Next (-1, rotateBy);

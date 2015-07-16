@@ -22,10 +22,14 @@ public class LerpTextField : MonoBehaviour
 	private float _currentValue = 0;
 	private float _delta;
 	private float _currentLerpTime;
+
+	private AudioSource _audio;
 	
 	void Start ()
 	{
 		_target = GetComponent<Text> ();
+		
+		_audio = GetComponent<AudioSource>();
 		
 		if (_target == null)
 			Debug.LogError ("LerpTextField is assigned to a non text object");
@@ -38,6 +42,9 @@ public class LerpTextField : MonoBehaviour
 	
 	public void SetValueImmediate (float value)
 	{
+		if (_audio!=null && _currentValue < value)
+			_audio.Play();
+	
 		_currentValue = value;
 		_value = value;
 		_target.text = prefix + _currentValue.ToString (format);
@@ -48,9 +55,7 @@ public class LerpTextField : MonoBehaviour
 	
 	public void SetValue (float value)
 	{
-		_currentLerpTime = lerpTime;
-		_delta = value - _currentValue;
-		_value = value;
+		SetValue(value, lerpTime);
 	}
 	
 	public void SetValue (float value, float time)
@@ -58,6 +63,11 @@ public class LerpTextField : MonoBehaviour
 		_currentLerpTime = time;
 		_delta = value - _currentValue;
 		_value = value;
+		
+		if (_audio!=null && _delta>0) {
+			_audio.loop = true;
+			_audio.Play();
+		}
 	}
 	
 	void Update ()
@@ -71,11 +81,13 @@ public class LerpTextField : MonoBehaviour
 		if (hideOnZero && _currentValue == 0)
 			_target.text = "";
 		
-		if (_delta * (_value - _currentValue) < 0)
+		if (_delta * (_value - _currentValue) < 0){
 			_currentValue = _value;
-		else 
+			if (_audio!=null) 
+				_audio.loop = false;
+		} else 
 			_currentValue += _delta * Time.deltaTime / _currentLerpTime;
-		
+			
 		_target.text = prefix + _currentValue.ToString (format);
 	}
 }

@@ -23,6 +23,8 @@ public class PlayerView : MonoBehaviour
 	public event PlayerStepComplete onStepComplete;
 
 	private Vector2 _touchStartPoint;
+	
+	private AudioSource _audio;
 
 	// Use this for initialization
 	void Start ()
@@ -32,6 +34,8 @@ public class PlayerView : MonoBehaviour
 		transform.localPosition = new Vector3(MazeView.NODE_SIZE *_cellX, 
 		                                      MazeView.NODE_SIZE *_cellY, 
 		                                      0);
+		                                      
+		_audio = GetComponent<AudioSource>();
 	}
 
 	public void Next (float moveTime, int rotateBy)
@@ -68,6 +72,7 @@ public class PlayerView : MonoBehaviour
 	{
 		DOTween.CompleteAll ();
 		transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
+		_audio.Play();
 		if (onStepComplete != null)
 			onStepComplete ();
 	}
