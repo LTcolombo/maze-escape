@@ -9,16 +9,12 @@ public class PlayerController : MonoBehaviour
 {
 	public IntPoint cellPosition { get { return _cellPosition; } }
 
-	public int directionIdx { get { return _directionIdx; } }
-
-	public bool didJustMove { get { return _didJustMove; } }
-	
 	private IntPoint _cellPosition;
 	private int _directionIdx;
 	private bool _didJustMove;
-
+	private float _moveTime;
 	private Vector2 _touchStartPoint;
-	
+	private SpriteRenderer _renderer;
 	private AudioSource _audio;
 
 	// Use this for initialization
@@ -28,11 +24,18 @@ public class PlayerController : MonoBehaviour
 
 		_directionIdx = NodeData.DIRECTION_UP_IDX;
 		transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
-		transform.localPosition = new Vector3(MazeView.NODE_SIZE * _cellPosition.x, 
-		                                      MazeView.NODE_SIZE * _cellPosition.y, 
+		transform.localPosition = new Vector3 (MazeController.NODE_SIZE * _cellPosition.x, 
+		                                      MazeController.NODE_SIZE * _cellPosition.y, 
 		                                      0);
 		                                      
-		_audio = GetComponent<AudioSource>();
+		_renderer = GetComponent<SpriteRenderer> ();
+		_audio = GetComponent<AudioSource> ();
+	}
+	
+	void UpdateMazeData (MazeData data)
+	{
+		_renderer.enabled = true;
+		_moveTime = data.config.moveTime;
 	}
 
 	public void Next (float moveTime, int rotateBy)
@@ -40,8 +43,8 @@ public class PlayerController : MonoBehaviour
 		if (moveTime > 0) {
 			_didJustMove = true;
 			transform.DOMove (transform.position + new Vector3 (
-				NodeData.DIRECTIONS [_directionIdx, 0] * MazeView.NODE_SIZE, 
-				NodeData.DIRECTIONS [_directionIdx, 1] * MazeView.NODE_SIZE, 
+				NodeData.DIRECTIONS [_directionIdx, 0] * MazeController.NODE_SIZE, 
+				NodeData.DIRECTIONS [_directionIdx, 1] * MazeController.NODE_SIZE, 
 			0
 			), moveTime).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
 		
@@ -69,56 +72,48 @@ public class PlayerController : MonoBehaviour
 	{
 		DOTween.CompleteAll ();
 		transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
-		_audio.Play();
-		SendMessageUpwards ("onStepComplete", _cellPosition);
+		_audio.Play ();
+		SendMessageUpwards ("OnStepComplete", _cellPosition);
 	}
 
-	void onNodeReached (NodeData node){
+	void onNodeReached (NodeData node)
+	{
 		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
-			SendMessageUpwards("onExit", cellPosition);
-			SetActive (false);
+			_renderer.enabled = false;
 			return;
 		}
 		
-		float moveTime = _mazeData.config.moveTime;
+		float moveTime = _moveTime;
 		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_UP)) {
-			if (directionIdx == NodeData.DIRECTION_UP_IDX)
+			if (_directionIdx == NodeData.DIRECTION_UP_IDX)
 				moveTime /= 2;
 			
-			if (directionIdx == NodeData.DIRECTION_DOWN_IDX)
+			if (_directionIdx == NodeData.DIRECTION_DOWN_IDX)
 				moveTime *= 2;
 		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_RIGHT)) {
-			if (directionIdx == NodeData.DIRECTION_RIGHT_IDX)
+			if (_directionIdx == NodeData.DIRECTION_RIGHT_IDX)
 				moveTime /= 2;
 			
-			if (directionIdx == NodeData.DIRECTION_LEFT_IDX)
+			if (_directionIdx == NodeData.DIRECTION_LEFT_IDX)
 				moveTime *= 2;
 		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_DOWN)) {
-			if (directionIdx == NodeData.DIRECTION_DOWN_IDX)
+			if (_directionIdx == NodeData.DIRECTION_DOWN_IDX)
 				moveTime /= 2;
 			
-			if (directionIdx == NodeData.DIRECTION_UP_IDX)
+			if (_directionIdx == NodeData.DIRECTION_UP_IDX)
 				moveTime *= 2;
 		}
 		
 		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_LEFT)) {
-			if (directionIdx == NodeData.DIRECTION_LEFT_IDX)
+			if (_directionIdx == NodeData.DIRECTION_LEFT_IDX)
 				moveTime /= 2;
 			
-			if (directionIdx == NodeData.DIRECTION_RIGHT_IDX)
+			if (_directionIdx == NodeData.DIRECTION_RIGHT_IDX)
 				moveTime *= 2;
-		}
-		
-		if (node.HasFlag (NodeData.SPECIALS_HIDE_WALLS)) {
-			BroadcastMessage ("ShowWalls", false);
-		}
-		
-		if (node.HasFlag (NodeData.SPECIALS_SHOW_WALLS)) {
-			BroadcastMessage ("ShowWalls", true);
 		}
 		
 		int rotateBy = 0;
@@ -131,7 +126,7 @@ public class PlayerController : MonoBehaviour
 			rotateBy = -1;
 		}
 		
-		if (!node.HasWall (directionIdx) && (!didJustMove || rotateBy == 0)) {
+		if (!node.HasWall (_directionIdx) && (!_didJustMove || rotateBy == 0)) {
 			rotateBy = 0;
 			
 			node.score = 0;
@@ -141,7 +136,7 @@ public class PlayerController : MonoBehaviour
 			Next (-1, rotateBy);
 			
 			if (rotateBy == 0) {
-				SendMessageUpwards("onStuck");
+				SendMessageUpwards ("onStuck");
 			}
 		}
 	}
@@ -149,6 +144,8 @@ public class PlayerController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (!_renderer.isVisible)//todo make it not binded to renderer
+			return;
 		//keyboard input
 		
 		if (Input.GetKeyDown (KeyCode.UpArrow)) {

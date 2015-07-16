@@ -7,8 +7,6 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.Analytics;
 
-
-
 public class GameController : MonoBehaviour
 {
 	//textfields for game state UI
@@ -22,38 +20,28 @@ public class GameController : MonoBehaviour
 	
 	//current game state
 	GameState _gameState;
-	
-	//Scene state
-	static bool FIRST_LOAD = true;
-	static bool INITED = false;
+
+	//starting point of the maze
+	IntPoint _mazeStartPos;
 	
 	// Use this for initialization
 	void Start ()
 	{
-		if (FIRST_LOAD) {
-			FIRST_LOAD = false;
-			Application.LoadLevel ("MenuScene");
-			FIRST_LOAD = false;
-			return;
-		}
-				
 		_scoreText = (LerpTextField)GameObject.Find ("Canvas/ScoreText").GetComponent<LerpTextField> ();
 		_maxScoreText = (LerpTextField)GameObject.Find ("Canvas/MaxScoreText").GetComponent<LerpTextField> ();
 		_movesText = (LerpTextField)GameObject.Find ("Canvas/MovesText").GetComponent<LerpTextField> ();
 		_timeBonusText = (LerpTextField)GameObject.Find ("Canvas/TimeBonusText").GetComponent<LerpTextField> ();
 				
+		_mazeStartPos = new IntPoint (0, 0);
 		_gameState.movesLeft = 0;
 		_gameState.score = 0;
 		_gameState.levelNumber = PlayerPrefs.GetInt ("maxlevel", 0) / 2;
 		Next ();
-		INITED = true;
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-		if (!INITED) 
-			return;
 		_gameState.score = (int)_scoreText.GetImmediateValue ();
 		if (_gameState.stuck) {
 			if (_gameState.score == 0) {
@@ -81,7 +69,7 @@ public class GameController : MonoBehaviour
 			PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
 	}
 	
-	void OnPlayerStepComplete (IntPoint cellPosition)
+	void OnStepComplete (IntPoint cellPosition)
 	{
 		if (!_gameState.activated)
 			Activate ();	
@@ -103,11 +91,9 @@ public class GameController : MonoBehaviour
 
 		_scoreText.color = new Color (0.55f, 0.55f, 0.55f);
 		
-		if (_gameState.stuck){
+		if (_gameState.stuck) {
 			_gameState.stuck = false;
 		}
-		
-		BroadcastMessage ("DesaturateTileAt", node.pos);
 		
 		_gameState.movesLeft--;
 		_movesText.SetValueImmediate (_gameState.movesLeft);
@@ -126,7 +112,8 @@ public class GameController : MonoBehaviour
 		BroadcastMessage ("onNodeReached", node);
 	}
 
-	void onExit()  {
+	void onExit (IntPoint pos)
+	{
 		_movesText.color = new Color (0.55f, 0.55f, 0.55f);
 
 		_gameState.score += (int)((float)_gameState.movesLeft * _gameState.timeBonus * (_mazeData.config.minScore + _mazeData.config.maxScore) / 2);
@@ -134,10 +121,12 @@ public class GameController : MonoBehaviour
 		_movesText.SetValue (0);
 		_gameState.levelNumber ++;
 
+		_mazeStartPos = pos;
 		Invoke ("Next", 0.6f);
 	}
 
-	void onStuck(){		
+	void onStuck ()
+	{		
 		_scoreText.SetValue (0, _mazeData.config.scoreDrainTime);
 		
 		_scoreText.color = new Color (0.8f, 0.2f, 0.2f);
@@ -151,7 +140,7 @@ public class GameController : MonoBehaviour
 	
 		_gameState.activated = false;
 	
-		_mazeData = new MazeData (new MazeConfig (_gameState.levelNumber), cellPosition.x, cellPosition.y);
+		_mazeData = new MazeData (new MazeConfig (_gameState.levelNumber), _mazeStartPos.x, _mazeStartPos.y);
 		
 		ExitDecorator.Apply (_mazeData);
 		ScoreDecorator.Apply (_mazeData);
@@ -159,7 +148,7 @@ public class GameController : MonoBehaviour
 		SpeedUpDecorator.Apply (_mazeData);
 		RotatorDecorator.Apply (_mazeData);
 		
-		BroadcastMessage("UpdateMazeData", _mazeData);
+		BroadcastMessage ("UpdateMazeData", _mazeData);
 		
 		_gameState.movesLeft = (uint)((float)_mazeData.deadEnds [0].GetDistance () * _mazeData.config.maxTimeBonus);
 		_gameState.movesLeftCritical = _gameState.movesLeft / 10;
@@ -170,8 +159,6 @@ public class GameController : MonoBehaviour
 		
 		_scoreText.SetValueImmediate (_gameState.score);
 		_movesText.SetValueImmediate (_gameState.movesLeft);
-		
-		_player.SetActive (true);
 	}
 	
 	void Activate ()
