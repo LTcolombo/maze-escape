@@ -5,22 +5,17 @@ using AssemblyCSharp;
 
 public delegate void PlayerStepComplete ();
 
-public class PlayerView : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
-	public int cellX { get { return _cellX; } }
-
-	public int cellY { get { return _cellY; } }
+	public IntPoint cellPosition { get { return _cellPosition; } }
 
 	public int directionIdx { get { return _directionIdx; } }
 
 	public bool didJustMove { get { return _didJustMove; } }
 	
-	private int _cellX;
-	private int _cellY;
+	private IntPoint _cellPosition;
 	private int _directionIdx;
 	private bool _didJustMove;
-	
-	public event PlayerStepComplete onStepComplete;
 
 	private Vector2 _touchStartPoint;
 	
@@ -29,10 +24,12 @@ public class PlayerView : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		_cellPosition = new IntPoint (0, 0);
+
 		_directionIdx = NodeData.DIRECTION_UP_IDX;
 		transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
-		transform.localPosition = new Vector3(MazeView.NODE_SIZE *_cellX, 
-		                                      MazeView.NODE_SIZE *_cellY, 
+		transform.localPosition = new Vector3(MazeView.NODE_SIZE * _cellPosition.x, 
+		                                      MazeView.NODE_SIZE * _cellPosition.y, 
 		                                      0);
 		                                      
 		_audio = GetComponent<AudioSource>();
@@ -48,8 +45,8 @@ public class PlayerView : MonoBehaviour
 			0
 			), moveTime).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
 		
-			_cellX += NodeData.DIRECTIONS [_directionIdx, 0];
-			_cellY += NodeData.DIRECTIONS [_directionIdx, 1];
+			_cellPosition.x += NodeData.DIRECTIONS [_directionIdx, 0];
+			_cellPosition.y += NodeData.DIRECTIONS [_directionIdx, 1];
 
 		} else {
 			_didJustMove = false;
@@ -73,10 +70,82 @@ public class PlayerView : MonoBehaviour
 		DOTween.CompleteAll ();
 		transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
 		_audio.Play();
-		if (onStepComplete != null)
-			onStepComplete ();
+		SendMessageUpwards ("onStepComplete", _cellPosition);
 	}
-	
+
+	void onNodeReached (NodeData node){
+		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
+			SendMessageUpwards("onExit", cellPosition);
+			SetActive (false);
+			return;
+		}
+		
+		float moveTime = _mazeData.config.moveTime;
+		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_UP)) {
+			if (directionIdx == NodeData.DIRECTION_UP_IDX)
+				moveTime /= 2;
+			
+			if (directionIdx == NodeData.DIRECTION_DOWN_IDX)
+				moveTime *= 2;
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_RIGHT)) {
+			if (directionIdx == NodeData.DIRECTION_RIGHT_IDX)
+				moveTime /= 2;
+			
+			if (directionIdx == NodeData.DIRECTION_LEFT_IDX)
+				moveTime *= 2;
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_DOWN)) {
+			if (directionIdx == NodeData.DIRECTION_DOWN_IDX)
+				moveTime /= 2;
+			
+			if (directionIdx == NodeData.DIRECTION_UP_IDX)
+				moveTime *= 2;
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_SPEEDUP_LEFT)) {
+			if (directionIdx == NodeData.DIRECTION_LEFT_IDX)
+				moveTime /= 2;
+			
+			if (directionIdx == NodeData.DIRECTION_RIGHT_IDX)
+				moveTime *= 2;
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_HIDE_WALLS)) {
+			BroadcastMessage ("ShowWalls", false);
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_SHOW_WALLS)) {
+			BroadcastMessage ("ShowWalls", true);
+		}
+		
+		int rotateBy = 0;
+		
+		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CW)) {
+			rotateBy = 1;
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_ROTATOR_CCW)) {
+			rotateBy = -1;
+		}
+		
+		if (!node.HasWall (directionIdx) && (!didJustMove || rotateBy == 0)) {
+			rotateBy = 0;
+			
+			node.score = 0;
+			Next (moveTime, rotateBy);
+		} else {
+			
+			Next (-1, rotateBy);
+			
+			if (rotateBy == 0) {
+				SendMessageUpwards("onStuck");
+			}
+		}
+	}
+
 	// Update is called once per frame
 	void Update ()
 	{
