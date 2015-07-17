@@ -2,7 +2,7 @@
 using DG.Tweening;
 using AssemblyCSharp;
 
-public class AnimatedLogoView : MonoBehaviour {
+public class AnimatedLogoMediator : MonoBehaviour {
 
 	//writing matrix
 	private static int[,] LOGO_MATRIX = new int[,] {

@@ -32,19 +32,14 @@ public class GameController : MonoBehaviour
 		Next ();
 	}
 	
-	void Activate ()
-	{
-		_gameState.activated = true;
-		_HUD.BroadcastMessage("OnGameStateUpdated", _gameState);
-	}
-	
 	// Update is called once per frame
 	void Update ()
 	{
-		if (_gameState.stuck) {
-			
-			_gameState.score -= (int)(Time.deltaTime * _scoreOnStuck / _mazeData.config.scoreDrainTime);
-			_HUD.BroadcastMessage("OnGameStateUpdated", _gameState);
+	
+	//todo if not activated - drain timebonus;
+	//if ended - transfer moves to score in 0.5 seconds
+		if (_gameState.state == GameState.STATE_STUCK) {
+			_gameState.score -= 1 + (int)(Time.deltaTime * _scoreOnStuck / _mazeData.config.scoreDrainTime);
 			if (_gameState.score <= 0) {
 				_gameState.score = 0;
 				if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
@@ -54,6 +49,7 @@ public class GameController : MonoBehaviour
 				
 				Application.LoadLevel ("MenuScene");
 			} 
+			_HUD.BroadcastMessage("OnGameStateUpdated", _gameState);
 		} else {
 			if (_gameState.maxScore < _gameState.score) {
 				_gameState.maxScore = _gameState.score;
@@ -73,25 +69,15 @@ public class GameController : MonoBehaviour
 	
 	void OnStepComplete (IntPoint pos)
 	{
-		if (!_gameState.activated)
-			Activate ();	
+		if (_gameState.state == GameState.STATE_INITED || _gameState.state == GameState.STATE_STUCK)
+			_gameState.state = GameState.STATE_ACTIVATED;	
 		
 		NodeData node = _mazeData.GetNode (pos.x, pos.y);
-		
-		
-		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
-			onExit(pos);
-			return;
-		}
 		
 		_gameState.score += (int)((float)node.score * _gameState.timeBonus);
 		
 		if (_gameState.maxScore < _gameState.score) {
 			_gameState.maxScore = _gameState.score;
-		}
-
-		if (_gameState.stuck) {
-			_gameState.stuck = false;
 		}
 		
 		_gameState.movesLeft--;
@@ -109,6 +95,11 @@ public class GameController : MonoBehaviour
 
 		BroadcastMessage ("onNodeReached", node);
 		_HUD.BroadcastMessage("OnGameStateUpdated", _gameState);
+		
+		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
+			onExit(pos);
+			return;
+		}
 	}
 
 	void onExit (IntPoint pos)
@@ -123,7 +114,7 @@ public class GameController : MonoBehaviour
 
 	void onStuck ()
 	{	
-		_gameState.stuck = true;
+		_gameState.state = GameState.STATE_STUCK;
 		_scoreOnStuck = _gameState.score;
 	}
 	
@@ -132,7 +123,7 @@ public class GameController : MonoBehaviour
 		if (_gameState.levelNumber > PlayerPrefs.GetInt ("maxlevel", 0))
 			PlayerPrefs.SetInt ("maxlevel", _gameState.levelNumber);
 	
-		_gameState.activated = false;
+		_gameState.state = GameState.STATE_INITED;
 	
 		_mazeData = new MazeData (new MazeConfig (_gameState.levelNumber), _mazeStartPos.x, _mazeStartPos.y);
 		

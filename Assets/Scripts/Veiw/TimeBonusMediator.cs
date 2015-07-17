@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class TimeBonusController : MonoBehaviour {
+public class TimeBonusMediator : MonoBehaviour {
 	
 	public string prefix = "TIME BONUS: ";
 	public string format = "F1";
