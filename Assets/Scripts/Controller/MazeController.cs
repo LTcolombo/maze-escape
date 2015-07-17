@@ -58,7 +58,6 @@ public class MazeController : MonoBehaviour
 			_nodeInstances [index].GetComponent<NodeController>().Desaturate();
 	
 		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
-			SendMessageUpwards ("onExit", node.pos);
 			return;
 		}
 		

@@ -72,7 +72,8 @@ public class NodeController : MonoBehaviour
 		float sumColor = _tileRenderer.color.r + _tileRenderer.color.g + _tileRenderer.color.b; 
 		_tileRenderer.color = new Color (sumColor / 3, sumColor / 3, sumColor / 3, 1f);
 	}
-
+	
+	//move these to specific elements
 	public void ShowWall (bool value)
 	{
 		if (_wallInstance != null)
