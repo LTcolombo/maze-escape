@@ -19,11 +19,14 @@ public class MazeController : MonoBehaviour
 	private bool _dirty;
 	private int _prevMaxX = 0;
 	private int _prevMaxY = 0;
+
+	AudioSource _audio;
 		
 	// Use this for initialization
 	void Start ()
 	{
 		Prefabs.Init();
+		_audio = GetComponent<AudioSource>();
 	}		
 	
 	// Update is called once per frame
@@ -58,6 +61,7 @@ public class MazeController : MonoBehaviour
 			_nodeInstances [index].GetComponent<NodeController>().Desaturate();
 	
 		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
+			_audio.Play();
 			return;
 		}
 		

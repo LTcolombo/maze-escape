@@ -15,7 +15,8 @@ public class PlayerController : MonoBehaviour
 	private float _moveTime;
 	private Vector2 _touchStartPoint;
 	private SpriteRenderer _renderer;
-	private AudioSource _audio;
+	private AudioSource _audioStep;
+	private AudioSource _audioTick;
 
 	// Use this for initialization
 	void Start ()
@@ -29,7 +30,8 @@ public class PlayerController : MonoBehaviour
 		                                      0);
 		                                      
 		_renderer = GetComponent<SpriteRenderer> ();
-		_audio = GetComponent<AudioSource> ();
+		_audioStep = GetComponents<AudioSource> ()[0];
+		_audioTick = GetComponents<AudioSource> ()[1];
 	}
 	
 	void UpdateMazeData (MazeData data)
@@ -72,7 +74,7 @@ public class PlayerController : MonoBehaviour
 	{
 		DOTween.CompleteAll ();
 		transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
-		_audio.Play ();
+		_audioStep.Play ();
 		SendMessageUpwards ("OnStepComplete", _cellPosition);
 	}
 
@@ -136,6 +138,7 @@ public class PlayerController : MonoBehaviour
 			Next (-1, rotateBy);
 			
 			if (rotateBy == 0) {
+				_audioTick.Play ();
 				SendMessageUpwards ("onStuck");
 			}
 		}
