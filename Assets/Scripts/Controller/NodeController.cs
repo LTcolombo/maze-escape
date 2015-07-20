@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using AssemblyCSharp;
 
-public class NodeView : MonoBehaviour
+public class NodeController : MonoBehaviour
 {
 	private SpriteRenderer _tileRenderer;
 	private GameObject _wallInstance;
@@ -72,11 +72,12 @@ public class NodeView : MonoBehaviour
 		float sumColor = _tileRenderer.color.r + _tileRenderer.color.g + _tileRenderer.color.b; 
 		_tileRenderer.color = new Color (sumColor / 3, sumColor / 3, sumColor / 3, 1f);
 	}
-
+	
+	//move these to specific elements
 	public void ShowWall (bool value)
 	{
 		if (_wallInstance != null)
-			_wallInstance.transform.localPosition = new Vector3 (0, 0, value ? -0.5f : 0.5f);
+			_wallInstance.SetActive(value);
 	}
 	
 	private void AddObject (GameObject instance)

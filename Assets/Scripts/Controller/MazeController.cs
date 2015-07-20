@@ -4,7 +4,7 @@ using AssemblyCSharp;
 using DG.Tweening;
 using System.Collections.Generic;
 
-public class MazeView : MonoBehaviour
+public class MazeController : MonoBehaviour
 {
 	public static int NODE_SIZE = 128;
 	public static float TRANSITION_TIME = 0.5f;
@@ -19,10 +19,14 @@ public class MazeView : MonoBehaviour
 	private bool _dirty;
 	private int _prevMaxX = 0;
 	private int _prevMaxY = 0;
+
+	AudioSource _audio;
 		
 	// Use this for initialization
 	void Start ()
 	{
+		Prefabs.Init();
+		_audio = GetComponent<AudioSource>();
 	}		
 	
 	// Update is called once per frame
@@ -47,21 +51,34 @@ public class MazeView : MonoBehaviour
 	public void ShowWalls (bool value)
 	{
 		foreach (GameObject node in _nodeInstances)
-			node.GetComponent<NodeView> ().ShowWall (value);
+			node.GetComponent<NodeController> ().ShowWall (value);
 	}
 	
-	public void DesaturateTileAt (IntPoint pos)
+	void onNodeReached (NodeData node)
 	{
-		int index = pos.x * _mazeData.config.width + pos.y;
+		int index = node.pos.x * _mazeData.config.width + node.pos.y;
 		if (index < _nodeInstances.Count) 
-			_nodeInstances [index].GetComponent<NodeView>().Desaturate();
+			_nodeInstances [index].GetComponent<NodeController>().Desaturate();
+	
+		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
+			_audio.Play();
+			return;
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_HIDE_WALLS)) {
+			ShowWalls(false);
+		}
+		
+		if (node.HasFlag (NodeData.SPECIALS_SHOW_WALLS)) {
+			ShowWalls(true);
+		}		
 	}
 		
 	private void Redraw ()
 	{	
-		transform.DOMove (new Vector2 (
-			-(_mazeData.config.width - 1) * MazeView.NODE_SIZE / 2, 
-			-(_mazeData.config.height - 1) * MazeView.NODE_SIZE / 2
+		transform.parent.DOMove (new Vector2 (
+			-(_mazeData.config.width - 1) * MazeController.NODE_SIZE / 2, 
+			-(_mazeData.config.height - 1) * MazeController.NODE_SIZE / 2
 			), TRANSITION_TIME);
 	
 		foreach (Object nodeInstance in _nodeInstances)
@@ -87,7 +104,7 @@ public class MazeView : MonoBehaviour
 				//create a tile				
 				GameObject nodeInstance = (GameObject)Instantiate (Prefabs.NODE);
 				nodeInstance.transform.parent = transform;
-				nodeInstance.GetComponent<NodeView> ().Redraw (node, ColorComponent.GetColorAt (tileRelativePos, colorComponents, tint));
+				nodeInstance.GetComponent<NodeController> ().Redraw (node, ColorComponent.GetColorAt (tileRelativePos, colorComponents, tint));
 				_nodeInstances.Add (nodeInstance);
 
 				float zOrder = 1 - (float)(cellY + cellX) / (_mazeData.config.width + _mazeData.config.height);	
