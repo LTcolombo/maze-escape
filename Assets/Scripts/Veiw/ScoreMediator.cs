@@ -29,7 +29,7 @@ public class ScoreMediator : MonoBehaviour
 			if (state.state == GameState.STATE_STUCK)
 				_target.color = new Color (0.8f, 0.2f, 0.2f);
 			else if (state.state == GameState.STATE_ENDED)
-				_target.color = new Color (0.2f, 0.2f, 0.8f);
+				_target.color = new Color (0.2f, 0.8f, 0.2f);
 			else
 				_target.color = new Color (0.56f, 0.56f, 0.56f);
 				
