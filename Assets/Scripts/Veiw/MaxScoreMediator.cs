@@ -6,18 +6,20 @@ public class MaxScoreMediator : MonoBehaviour {
 	public string prefix = "MAX SCORE: ";
 	public string format = "F0";
 	
-	private Text _target;
+	Text _target;
+	int _previousValue;
 	
 	void Awake(){
 		_target = GetComponent<Text> ();
+		_previousValue = 0;
 	}
 	
 	// Update is called once per frame
 	void OnGameStateUpdated (GameState state) {
-		if (_target == null) {
-			Debug.Log("MaxScoreController assigned to an object without UI.Text component");
+		if (_previousValue == state.maxScore)
 			return;
-		}
+			
+		_previousValue = state.maxScore;
 		_target.text = prefix + state.maxScore.ToString (format);
 	}
 }

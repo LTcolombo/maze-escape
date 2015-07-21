@@ -15,15 +15,14 @@ public class ScoreMediator : MonoBehaviour
 	{
 		_target = GetComponent<Text> ();
 		_audio = GetComponent<AudioSource> ();
+		_previousValue = 0;
 	}
 	
 	// Update is called once per frame
 	void OnGameStateUpdated (GameState state)
 	{
-		if (_target == null) {
-			Debug.Log ("ScoreController assigned to an object without UI.Text component");
+		if (_previousValue == state.score)
 			return;
-		}
 		
 		if (state.state != _previousState) {
 			if (state.state == GameState.STATE_STUCK)

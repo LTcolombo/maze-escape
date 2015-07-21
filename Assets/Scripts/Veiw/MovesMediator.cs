@@ -16,6 +16,7 @@ public class MovesMediator : MonoBehaviour
 	{
 		_target = GetComponent<Text> ();
 		_audio = GetComponent<AudioSource> ();
+		_previousValue = 0;
 	}
 	
 	// Update is called once per frame
