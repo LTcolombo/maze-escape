@@ -17,7 +17,6 @@ public class GameController : MonoBehaviour
 
 	//starting point of the maze
 	IntPoint _mazeStartPos;
-	
 	DelayedValue _scoreDelayed;
 	DelayedValue _movesDelayed;
 	DelayedValue _timeBonusDelayed;
@@ -37,21 +36,20 @@ public class GameController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-	
 		switch (_gameState.state) {
 		//if not activated - drain timebonus;
 		case (GameState.STATE_INITED): 
-			_gameState.timeBonus = _timeBonusDelayed.GetCurrentValue(); 
+			_gameState.timeBonus = _timeBonusDelayed.GetCurrentValue (); 
 			_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
 			break;
 		//if stuck - drain score
 		case(GameState.STATE_STUCK):
-			_gameState.score = _scoreDelayed.GetCurrentValueAsInt();
+			_gameState.score = _scoreDelayed.GetCurrentValueAsInt ();
 			if (_gameState.score <= 0) {
 				_gameState.score = 0;
 				if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
 					PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
-					
+						
 				AnalyticsWrapper.ReportGameLost (_gameState);
 				Application.LoadLevel ("MenuScene");
 			} 
@@ -59,8 +57,8 @@ public class GameController : MonoBehaviour
 			break;
 		//if ended - transfer moves to score in 0.5 seconds
 		case(GameState.STATE_ENDED):
-			_gameState.score = _scoreDelayed.GetCurrentValueAsInt();
-			_gameState.movesLeft = _movesDelayed.GetCurrentValueAsUInt();
+			_gameState.score = _scoreDelayed.GetCurrentValueAsInt ();
+			_gameState.movesLeft = _movesDelayed.GetCurrentValueAsUInt ();
 			_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
 			break;
 		}
@@ -112,9 +110,9 @@ public class GameController : MonoBehaviour
 	void onExit (IntPoint pos)
 	{
 		_gameState.state = GameState.STATE_ENDED;
-		_movesDelayed = new DelayedValue(_gameState.movesLeft, 0, 0.5f);
+		_movesDelayed = new DelayedValue (_gameState.movesLeft, 0, 0.5f);
 		var avgScore = (_mazeData.config.minScore + _mazeData.config.maxScore) / 2;
-		_scoreDelayed = new DelayedValue(_gameState.score, _gameState.score + _gameState.movesLeft * _gameState.timeBonus * avgScore, 0.5f);
+		_scoreDelayed = new DelayedValue (_gameState.score, _gameState.score + _gameState.movesLeft * _gameState.timeBonus * avgScore, 0.5f);
 		_gameState.levelNumber ++;
 		_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
 
@@ -125,7 +123,7 @@ public class GameController : MonoBehaviour
 	void onStuck ()
 	{	
 		_gameState.state = GameState.STATE_STUCK;
-		_scoreDelayed = new DelayedValue(_gameState.score, 0, _mazeData.config.scoreDrainTime);
+		_scoreDelayed = new DelayedValue (_gameState.score, 0, _mazeData.config.scoreDrainTime);
 	}
 	
 	void Next ()
@@ -146,7 +144,7 @@ public class GameController : MonoBehaviour
 		BroadcastMessage ("UpdateMazeData", _mazeData);
 		
 		_gameState.timeBonus = _mazeData.config.maxTimeBonus;
-		_timeBonusDelayed = new DelayedValue(_mazeData.config.maxTimeBonus, _mazeData.config.minTimeBonus, _mazeData.config.bonusTime);
+		_timeBonusDelayed = new DelayedValue (_mazeData.config.maxTimeBonus, _mazeData.config.minTimeBonus, _mazeData.config.bonusTime);
 		_gameState.movesLeft = (uint)((float)_mazeData.deadEnds [0].GetDistance () * _mazeData.config.maxTimeBonus);
 		
 		_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);

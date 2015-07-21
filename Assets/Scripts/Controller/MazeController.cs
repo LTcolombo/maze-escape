@@ -19,14 +19,11 @@ public class MazeController : MonoBehaviour
 	private bool _dirty;
 	private int _prevMaxX = 0;
 	private int _prevMaxY = 0;
-
-	AudioSource _audio;
 		
 	// Use this for initialization
 	void Start ()
 	{
 		Prefabs.Init();
-		_audio = GetComponent<AudioSource>();
 	}		
 	
 	// Update is called once per frame
@@ -58,13 +55,8 @@ public class MazeController : MonoBehaviour
 	{
 		int index = node.pos.x * _mazeData.config.width + node.pos.y;
 		if (index < _nodeInstances.Count) 
-			_nodeInstances [index].GetComponent<NodeController>().Desaturate();
+			_nodeInstances [index].GetComponent<NodeController>().onReached();
 	
-		if (node.HasFlag (NodeData.SPECIALS_EXIT)) {
-			_audio.Play();
-			return;
-		}
-		
 		if (node.HasFlag (NodeData.SPECIALS_HIDE_WALLS)) {
 			ShowWalls(false);
 		}

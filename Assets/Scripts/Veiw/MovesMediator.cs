@@ -1,24 +1,40 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class MovesMediator : MonoBehaviour {
+public class MovesMediator : MonoBehaviour
+{
 	
 	public string prefix = "MOVES: ";
 	public string format = "F0";
+	Text _target;
+	AudioSource _audio;
+	uint _previousValue;
+
+	const int CRITICAL_MOVES = 5;
 	
-	private Text _target;
-	
-	void Awake(){
+	void Awake ()
+	{
 		_target = GetComponent<Text> ();
+		_audio = GetComponent<AudioSource> ();
 	}
 	
 	// Update is called once per frame
-	void OnGameStateUpdated (GameState state) {
-		if (_target == null) {
-			Debug.Log("MovesController assigned to an object without UI.Text component");
+	void OnGameStateUpdated (GameState state)
+	{
+		if (state.movesLeft == _previousValue)
 			return;
-		}
 		
+		if (!_audio.isPlaying)
+			_audio.Play ();
+			
+		_previousValue = state.movesLeft;
+			
+		
+		if (_previousValue < CRITICAL_MOVES && state.state != GameState.STATE_ENDED)
+			_target.color = new Color (0.8f, 0.2f, 0.2f);
+		else
+			_target.color = new Color (0.56f, 0.56f, 0.56f);
+			
 		_target.text = prefix + state.movesLeft.ToString (format);
 	}
 }
