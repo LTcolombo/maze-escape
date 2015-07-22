@@ -8,7 +8,8 @@ using System.Collections.Generic;
 using UnityEngine.Analytics;
 using Utils;
 
-namespace Controllers {
+namespace Controllers
+{
 	public class GameController : MonoBehaviour
 	{
 		GameObject _HUD;
@@ -28,6 +29,7 @@ namespace Controllers {
 		// Use this for initialization
 		void Start ()
 		{
+			Prefabs.Init ();
 			_HUD = (GameObject)GameObject.Find ("HUD");
 		
 			_mazeStartPos = new IntPoint (0, 0);
