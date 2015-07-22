@@ -1,16 +1,17 @@
+using Models;
 
-namespace AssemblyCSharp
+namespace Models.Decorators
 {
 	/**
 	 * Populates maze nodes with score values according to maze configuration
 	 */
 	public class ScoreDecorator
 	{
-		public static void Apply (MazeData mazeData)
+		public static void Apply (MazeModel mazeData)
 		{
-			foreach (NodeData deadEnd in mazeData.deadEnds) {
+			foreach (NodeModel deadEnd in mazeData.deadEnds) {
 				
-				NodeData node = deadEnd;
+				NodeModel node = deadEnd;
 				int currentScore = mazeData.config.minScore;
 				int ds = 1;
 				

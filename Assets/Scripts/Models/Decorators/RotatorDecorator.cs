@@ -1,15 +1,16 @@
-﻿
+
 using System.Collections.Generic;
 using System;
+using Models;
 
-namespace AssemblyCSharp
+namespace Models.Decorators
 {
 	class RotatorCandidate
 	{
-		public NodeData node;
+		public NodeModel node;
 		public int exitDirection;
 		
-		public RotatorCandidate (NodeData node, int exitDirection)
+		public RotatorCandidate (NodeModel node, int exitDirection)
 		{
 			this.node = node;
 			this.exitDirection = exitDirection;
@@ -18,13 +19,13 @@ namespace AssemblyCSharp
 
 	public class RotatorDecorator
 	{
-		public static void Apply (MazeData mazeData)
+		public static void Apply (MazeModel mazeData)
 		{
 			if (mazeData.config.rotatorsCount == 0)
 				return;
 			
-			List<NodeData> exitChain = new List<NodeData> ();
-			NodeData exitChainNode = mazeData.deadEnds [0];
+			List<NodeModel> exitChain = new List<NodeModel> ();
+			NodeModel exitChainNode = mazeData.deadEnds [0];
 			while (exitChainNode!=null) {
 				exitChain.Add (exitChainNode);
 				exitChainNode = exitChainNode.previousNode;
@@ -32,16 +33,16 @@ namespace AssemblyCSharp
 				
 			List<RotatorCandidate> candidates = new List<RotatorCandidate> ();
 
-			foreach (NodeData node in mazeData.crossRoads) {
+			foreach (NodeModel node in mazeData.crossRoads) {
 			
 				//make sure there are no special flags yet
 				if (node.HasFlag (
-					NodeData.SPECIALS_SPEEDUP_UP |
-					NodeData.SPECIALS_SPEEDUP_RIGHT |
-					NodeData.SPECIALS_SPEEDUP_DOWN |
-					NodeData.SPECIALS_SPEEDUP_LEFT |
-					NodeData.SPECIALS_HIDE_WALLS |
-					NodeData.SPECIALS_SHOW_WALLS))
+					NodeModel.SPECIALS_SPEEDUP_UP |
+					NodeModel.SPECIALS_SPEEDUP_RIGHT |
+					NodeModel.SPECIALS_SPEEDUP_DOWN |
+					NodeModel.SPECIALS_SPEEDUP_LEFT |
+					NodeModel.SPECIALS_HIDE_WALLS |
+					NodeModel.SPECIALS_SHOW_WALLS))
 					continue;
 					
 				//make sure its not the start node
@@ -77,19 +78,19 @@ namespace AssemblyCSharp
 						delta += 4;
 						
 					if (delta == -1)
-						type = NodeData.SPECIALS_ROTATOR_CCW;
+						type = NodeModel.SPECIALS_ROTATOR_CCW;
 					else if (delta == 1)
-						type = NodeData.SPECIALS_ROTATOR_CW;
+						type = NodeModel.SPECIALS_ROTATOR_CW;
 					
 				} else {
 					//try to make a rotation not in the wall
 					int randomTurnIndex = (i % 2 == 0) ? 1 : -1;
 					if (!candidates [i].node.HasWall (NormaliseDirection (prevDirection + randomTurnIndex)))
-						type = (randomTurnIndex == 1) ? NodeData.SPECIALS_ROTATOR_CW : NodeData.SPECIALS_ROTATOR_CCW;
+						type = (randomTurnIndex == 1) ? NodeModel.SPECIALS_ROTATOR_CW : NodeModel.SPECIALS_ROTATOR_CCW;
 					else if (!candidates [i].node.HasWall (NormaliseDirection (prevDirection - randomTurnIndex)))
-						type = (randomTurnIndex == 1) ? NodeData.SPECIALS_ROTATOR_CCW : NodeData.SPECIALS_ROTATOR_CW;
+						type = (randomTurnIndex == 1) ? NodeModel.SPECIALS_ROTATOR_CCW : NodeModel.SPECIALS_ROTATOR_CW;
 					else 
-						type = i % 2 == 0 ? NodeData.SPECIALS_ROTATOR_CW : NodeData.SPECIALS_ROTATOR_CCW;
+						type = i % 2 == 0 ? NodeModel.SPECIALS_ROTATOR_CW : NodeModel.SPECIALS_ROTATOR_CCW;
 				}
 				
 				if (type > 0)

@@ -1,12 +1,12 @@
-
+using Models;
 using System.Collections.Generic;
 using UnityEngine.Analytics;
 
-namespace AssemblyCSharp
+namespace Utils
 {
 	public class AnalyticsWrapper
 	{
-		public static void ReportGameLost (GameState gameState)
+		public static void ReportGameLost (GameStateModel gameState)
 		{
 			IDictionary<string, object> eventData = new Dictionary<string, object> ();
 			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber));
@@ -16,7 +16,7 @@ namespace AssemblyCSharp
 			Analytics.CustomEvent ("GameLost", eventData);
 		}
 		
-		public static void ReportGamePaused (GameState gameState)
+		public static void ReportGamePaused (GameStateModel gameState)
 		{
 			IDictionary<string, object> eventData = new Dictionary<string, object> ();
 			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber));

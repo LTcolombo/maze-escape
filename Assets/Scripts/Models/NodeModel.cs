@@ -1,9 +1,10 @@
 
 using System;
+using Models.Data;
 
-namespace AssemblyCSharp
+namespace Models
 {
-	public class NodeData
+	public class NodeModel
 	{
 		//indexes from direction array
 		public const int DIRECTION_UP_IDX = 0;
@@ -41,7 +42,7 @@ namespace AssemblyCSharp
 		public int score = 0;
 		
 		//previous node during maze generation
-		public NodeData previousNode;
+		public NodeModel previousNode;
 
 		//node state		
 		private uint _data = UP_WALL | RIGHT_WALL | DOWN_WALL | LEFT_WALL;
@@ -49,7 +50,7 @@ namespace AssemblyCSharp
 		/**
 		 * Creates a node data with position specified
 		 */
-		public NodeData (int x, int y)
+		public NodeModel (int x, int y)
 		{
 			pos = new IntPoint(x, y);
 		}
@@ -121,18 +122,18 @@ namespace AssemblyCSharp
 		/**
 		 * Gets a direction index towards another NodeData. Assumes other node is near this |deltaX + deltaY = 1|
 		 */
-		public int GetDirectionTowards (NodeData other)
+		public int GetDirectionTowards (NodeModel other)
 		{
 			if (other.pos.x == pos.x) {
 				if (other.pos.y > pos.y)
-					return NodeData.DIRECTION_UP_IDX;
+					return NodeModel.DIRECTION_UP_IDX;
 				else
-					return NodeData.DIRECTION_DOWN_IDX;
+					return NodeModel.DIRECTION_DOWN_IDX;
 			} else {
 				if (other.pos.x > pos.x)
-					return NodeData.DIRECTION_RIGHT_IDX;
+					return NodeModel.DIRECTION_RIGHT_IDX;
 				else
-					return NodeData.DIRECTION_LEFT_IDX;
+					return NodeModel.DIRECTION_LEFT_IDX;
 			}
 		}
 
@@ -142,7 +143,7 @@ namespace AssemblyCSharp
 		public uint GetDistance ()
 		{
 			uint distance = 0;
-			NodeData node = previousNode;
+			NodeModel node = previousNode;
 			while (node != null) {
 				distance++;
 				node = node.previousNode;

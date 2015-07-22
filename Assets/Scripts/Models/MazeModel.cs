@@ -2,24 +2,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Models.Data;
 
-namespace AssemblyCSharp
+namespace Models
 {
 	///<summary>
 	/// Incapsulates an array of NodeData and its generation. Provides access by x, y coords. 
 	///</summary>
-	public class MazeData
+	public class MazeModel
 	{
 		/**
 		 * Array of NodeData that represent dead ends generated during maze creation.
 		 * Dead ends cant be any others node previos. Sorted by descending distance from starting point
 		 */
-		public List<NodeData> deadEnds = new List<NodeData> ();
+		public List<NodeModel> deadEnds = new List<NodeModel> ();
 
 		/**
 		 * Array of NodeData that represent nodes with more then 3 exits.
 		 */
-		public List<NodeData> crossRoads = new List<NodeData> ();
+		public List<NodeModel> crossRoads = new List<NodeModel> ();
 
 		/**
 		 * currect maze config
@@ -29,27 +30,27 @@ namespace AssemblyCSharp
 		private MazeConfig _config;
 
 		//incapsulated data array
-		private NodeData[] _data;
+		private NodeModel[] _data;
 		private System.Random _rnd = new System.Random ();
 
-		public MazeData (MazeConfig config, int startX, int startY)
+		public MazeModel (MazeConfig config, int startX, int startY)
 		{			
 			_config = config;
 			
-			_data = new NodeData[_config.width * _config.height];
+			_data = new NodeModel[_config.width * _config.height];
 			
 			for (int j = 0; j < _config.width; j++)
 				for (int i = 0; i < _config.height; i++)
-					_data [i + j * _config.height] = new NodeData (i, j);
+					_data [i + j * _config.height] = new NodeModel (i, j);
 								
 			//1. get starting point
-			NodeData startingNode = GetNode (startX, startY);
-			startingNode.AddFlag (NodeData.PROCESSED);
+			NodeModel startingNode = GetNode (startX, startY);
+			startingNode.AddFlag (NodeModel.PROCESSED);
 			
 			//2. init edge nodes from its neighbours
-			List<NodeData> edgeNodes = GetNotProcessedNeighboursOf (startingNode);
+			List<NodeModel> edgeNodes = GetNotProcessedNeighboursOf (startingNode);
 			
-			foreach (NodeData nodeData in edgeNodes) {
+			foreach (NodeModel nodeData in edgeNodes) {
 				nodeData.previousNode = startingNode;
 			}
 			
@@ -58,13 +59,13 @@ namespace AssemblyCSharp
 				
 				//3.1 find a random edge node and remove it from array
 				int idx = _rnd.Next (0, edgeNodes.Count);
-				NodeData edgeNode = edgeNodes [idx];
+				NodeModel edgeNode = edgeNodes [idx];
 				edgeNodes.RemoveAt (idx);
 				
-				if (!edgeNode.HasFlag (NodeData.PROCESSED)) {
+				if (!edgeNode.HasFlag (NodeModel.PROCESSED)) {
 					
 					//3.2 attach it to current tree
-					NodeData processedNeighbour = GetRandomNeighbour (edgeNode, true);
+					NodeModel processedNeighbour = GetRandomNeighbour (edgeNode, true);
 					if (processedNeighbour != null) {
 						Merge (processedNeighbour, edgeNode);
 						edgeNode.previousNode = processedNeighbour;
@@ -82,15 +83,15 @@ namespace AssemblyCSharp
 		/**
 		 * Gets the NodeData at provided 2d coordinates 
 		 */
-		public NodeData GetNode (int x, int y)
+		public NodeModel GetNode (int x, int y)
 		{
 			return _data [x + y * _config.width];
 		}
 		
-		private void CreateBranch (NodeData startNode, List<NodeData> edgeNodes)
+		private void CreateBranch (NodeModel startNode, List<NodeModel> edgeNodes)
 		{
-			NodeData randomNeighbour;
-			NodeData currentNode = startNode;
+			NodeModel randomNeighbour;
+			NodeModel currentNode = startNode;
 			
 			do {
 				//1. if node exists in edge nodes, remove it
@@ -98,14 +99,14 @@ namespace AssemblyCSharp
 					edgeNodes.Remove (currentNode);
 				
 				//1.1 append new edge nodes
-				List<NodeData> notProcessedNeighbours = GetNotProcessedNeighboursOf (currentNode);
-				foreach (NodeData nodeData in notProcessedNeighbours) {
+				List<NodeModel> notProcessedNeighbours = GetNotProcessedNeighboursOf (currentNode);
+				foreach (NodeModel nodeData in notProcessedNeighbours) {
 					if (!edgeNodes.Contains (nodeData)) {
 						edgeNodes.Add (nodeData);
 					}
 				}
 				
-				currentNode.AddFlag (NodeData.PROCESSED);
+				currentNode.AddFlag (NodeModel.PROCESSED);
 				
 				//2. go to random direction and get a neighbour
 				randomNeighbour = GetRandomNeighbour (currentNode, false);
@@ -133,18 +134,18 @@ namespace AssemblyCSharp
 		/**
          * Gets all neighbours of specified node not processed by alghoritm.
          */
-		private List<NodeData> GetNotProcessedNeighboursOf (NodeData target)
+		private List<NodeModel> GetNotProcessedNeighboursOf (NodeModel target)
 		{
-			List<NodeData> neighbours = new List<NodeData> ();
+			List<NodeModel> neighbours = new List<NodeModel> ();
 			
 			for (int i = 0; i < 4; i++) {
 				
-				int x = target.pos.x + NodeData.DIRECTIONS [i, 0];
-				int y = target.pos.y + NodeData.DIRECTIONS [i, 1];
+				int x = target.pos.x + NodeModel.DIRECTIONS [i, 0];
+				int y = target.pos.y + NodeModel.DIRECTIONS [i, 1];
 				
 				if (IsInBounds (x, y)) {
-					NodeData neighbour = GetNode (x, y);
-					if (!neighbour.HasFlag (NodeData.PROCESSED))
+					NodeModel neighbour = GetNode (x, y);
+					if (!neighbour.HasFlag (NodeModel.PROCESSED))
 						neighbours.Add (neighbour);
 				}
 			}
@@ -162,18 +163,18 @@ namespace AssemblyCSharp
 		/**
 		 * Finds a random neighbour with specified param
 		 */
-		private NodeData GetRandomNeighbour (NodeData target, bool processedNeeded)
+		private NodeModel GetRandomNeighbour (NodeModel target, bool processedNeeded)
 		{
 			int offset = _rnd.Next (0, 4);
 			for (int i = 0; i < 4; i++) {
 				int dir = (offset + i) % 4;
 				
-				int x = target.pos.x + NodeData.DIRECTIONS [dir, 0];
-				int y = target.pos.y + NodeData.DIRECTIONS [dir, 1];
+				int x = target.pos.x + NodeModel.DIRECTIONS [dir, 0];
+				int y = target.pos.y + NodeModel.DIRECTIONS [dir, 1];
 				
 				if (IsInBounds (x, y)) {
-					NodeData neighbour = GetNode (x, y);
-					if ((neighbour.HasFlag (NodeData.PROCESSED) && processedNeeded) || (!neighbour.HasFlag (NodeData.PROCESSED) && !processedNeeded))
+					NodeModel neighbour = GetNode (x, y);
+					if ((neighbour.HasFlag (NodeModel.PROCESSED) && processedNeeded) || (!neighbour.HasFlag (NodeModel.PROCESSED) && !processedNeeded))
 						return neighbour;
 				}
 			}
@@ -184,26 +185,26 @@ namespace AssemblyCSharp
 		/**
 		 * Removes walls between two specified nodes
 		 */
-		private void Merge (NodeData from, NodeData to)
+		private void Merge (NodeModel from, NodeModel to)
 		{
 			int dx = to.pos.x - from.pos.x;
 			int dy = to.pos.y - from.pos.y;
 			
 			if (dx != 0) {
 				if (dx > 0) {
-					to.RemoveWall (NodeData.DIRECTION_LEFT_IDX);
-					from.RemoveWall (NodeData.DIRECTION_RIGHT_IDX);
+					to.RemoveWall (NodeModel.DIRECTION_LEFT_IDX);
+					from.RemoveWall (NodeModel.DIRECTION_RIGHT_IDX);
 				} else {
-					to.RemoveWall (NodeData.DIRECTION_RIGHT_IDX);
-					from.RemoveWall (NodeData.DIRECTION_LEFT_IDX);
+					to.RemoveWall (NodeModel.DIRECTION_RIGHT_IDX);
+					from.RemoveWall (NodeModel.DIRECTION_LEFT_IDX);
 				}
 			} else if (dy != 0) {
 				if (dy > 0) {
-					to.RemoveWall (NodeData.DIRECTION_DOWN_IDX);
-					from.RemoveWall (NodeData.DIRECTION_UP_IDX);
+					to.RemoveWall (NodeModel.DIRECTION_DOWN_IDX);
+					from.RemoveWall (NodeModel.DIRECTION_UP_IDX);
 				} else {
-					to.RemoveWall (NodeData.DIRECTION_UP_IDX);
-					from.RemoveWall (NodeData.DIRECTION_DOWN_IDX);
+					to.RemoveWall (NodeModel.DIRECTION_UP_IDX);
+					from.RemoveWall (NodeModel.DIRECTION_DOWN_IDX);
 				}
 			}
 		}

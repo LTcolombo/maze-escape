@@ -1,7 +1,7 @@
 
 using System;
 
-namespace AssemblyCSharp
+namespace Models.Data
 {
 	///<summary>
 	/// A structure that specifies the params of level

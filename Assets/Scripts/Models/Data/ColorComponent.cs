@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AssemblyCSharp
+namespace Models.Data
 {
 	///<summary>
 	/// A structure that contains a color and its relative position [0..1; 0..1]

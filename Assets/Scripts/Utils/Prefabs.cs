@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AssemblyCSharp
+namespace Utils
 {
 	/**
 	 * A prefab decpriptors static storage class

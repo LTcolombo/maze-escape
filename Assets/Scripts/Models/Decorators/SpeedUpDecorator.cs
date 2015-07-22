@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System;
-using UnityEngine;
+using Models;
 
-namespace AssemblyCSharp
+namespace Models.Decorators
 {
 	class SpeedUpChain: IComparable
 	{
-		public List<NodeData> nodes = new List<NodeData> ();
+		public List<NodeModel> nodes = new List<NodeModel> ();
 		public int direction;
 		
 		int IComparable.CompareTo (object other)
@@ -20,21 +20,21 @@ namespace AssemblyCSharp
 	 */
 	public class SpeedUpDecorator
 	{
-		public static void Apply (MazeData mazeData)
+		public static void Apply (MazeModel mazeData)
 		{
 			if (mazeData.config.speedUpsCount == 0)
 				return;
 				
 			List<SpeedUpChain> chains = new List<SpeedUpChain> ();
 				
-			foreach (NodeData deadEnd in mazeData.deadEnds) {
+			foreach (NodeModel deadEnd in mazeData.deadEnds) {
 				
-				NodeData node = deadEnd;
+				NodeModel node = deadEnd;
 				int currentDirection = -1;
 				SpeedUpChain currentChain = new SpeedUpChain ();
 				
 				do {
-					NodeData previousNode = node.previousNode;
+					NodeModel previousNode = node.previousNode;
 			
 					bool nodeHasSpeedUp = false;
 					foreach (SpeedUpChain chain in chains) {
@@ -52,10 +52,10 @@ namespace AssemblyCSharp
 						currentChain.nodes.Add (node);
 					
 						bool hasSpecial = previousNode.HasFlag (
-							NodeData.SPECIALS_ROTATOR_CW |
-							NodeData.SPECIALS_ROTATOR_CCW |
-							NodeData.SPECIALS_HIDE_WALLS |
-							NodeData.SPECIALS_SHOW_WALLS); 
+							NodeModel.SPECIALS_ROTATOR_CW |
+							NodeModel.SPECIALS_ROTATOR_CCW |
+							NodeModel.SPECIALS_HIDE_WALLS |
+							NodeModel.SPECIALS_SHOW_WALLS); 
 					
 						int direction = previousNode.GetDirectionTowards (node);
 						
@@ -80,22 +80,22 @@ namespace AssemblyCSharp
 					break;
 			
 				//mark nodes to contain according speedup flags
-				foreach (NodeData nodeData in chains[i].nodes) {
+				foreach (NodeModel nodeData in chains[i].nodes) {
 					switch (chains [i].direction) {
-					case (NodeData.DIRECTION_UP_IDX):
-						nodeData.AddFlag (NodeData.SPECIALS_SPEEDUP_UP);
+					case (NodeModel.DIRECTION_UP_IDX):
+						nodeData.AddFlag (NodeModel.SPECIALS_SPEEDUP_UP);
 						break;
 						
-					case (NodeData.DIRECTION_RIGHT_IDX):
-						nodeData.AddFlag (NodeData.SPECIALS_SPEEDUP_RIGHT);
+					case (NodeModel.DIRECTION_RIGHT_IDX):
+						nodeData.AddFlag (NodeModel.SPECIALS_SPEEDUP_RIGHT);
 						break;
 						
-					case (NodeData.DIRECTION_DOWN_IDX):
-						nodeData.AddFlag (NodeData.SPECIALS_SPEEDUP_DOWN);
+					case (NodeModel.DIRECTION_DOWN_IDX):
+						nodeData.AddFlag (NodeModel.SPECIALS_SPEEDUP_DOWN);
 						break;
 						
-					case (NodeData.DIRECTION_LEFT_IDX):
-						nodeData.AddFlag (NodeData.SPECIALS_SPEEDUP_LEFT);
+					case (NodeModel.DIRECTION_LEFT_IDX):
+						nodeData.AddFlag (NodeModel.SPECIALS_SPEEDUP_LEFT);
 						break;
 					}
 				}

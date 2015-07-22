@@ -1,6 +1,7 @@
-﻿using System;
+using System;
+using Models;
 
-namespace AssemblyCSharp
+namespace Models.Decorators
 {
 	/**
 	 * Populates maze nodes with hide/unhide flags according to maze configuration
@@ -9,7 +10,7 @@ namespace AssemblyCSharp
 	{
 		private static System.Random _rnd = new System.Random ();
 
-		public static void Apply (MazeData mazeData)
+		public static void Apply (MazeModel mazeData)
 		{
 			if (mazeData.config.hidersCount == 0)
 				return;
@@ -26,17 +27,17 @@ namespace AssemblyCSharp
 				int showIndex = _rnd.Next ((int)distance / 4, (int)distance / 2);
 				int hideIndex = _rnd.Next (showIndex + 2, showIndex + (int)Math.Min((int)(distance / 2), 8));
 				
-				NodeData node = mazeData.deadEnds [i].previousNode;
+				NodeModel node = mazeData.deadEnds [i].previousNode;
 				int index = 0;
 				while (node !=null) {
 					index++;
 
 					if (index == showIndex)
-						node.AddFlag (NodeData.SPECIALS_SHOW_WALLS);
+						node.AddFlag (NodeModel.SPECIALS_SHOW_WALLS);
 
 					
 					if (index == hideIndex)
-						node.AddFlag (NodeData.SPECIALS_HIDE_WALLS);
+						node.AddFlag (NodeModel.SPECIALS_HIDE_WALLS);
 
 					node = node.previousNode;
 				}
