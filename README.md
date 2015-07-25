@@ -1,28 +1,13 @@
 # Maze Pace
 
-## Synopsis
-Endless maze game based on user reaction aimed to get a constantly moving object towards a subsequent escape by defining its direction.
-## GamePlay
-### Basic concept
-A maze of certain size with one exit point is generated.
-User defines the direction of a constantly moving arrow, which is placed into the maze. 
-If the arrow hits a wall - the game is lost.
-If the arrow reaches the exit - maze is regenerated.
-### Key features
+## Short Description
+Maze Pace is a fast visual game. Find a way out of the maze and avoid the walls.
+## Description
+Maze Pace is an endless maze game.
 
-**Complexity and focus.** Although the maze is relatively small, the fact that the arrow starts moving instantly (or after a short period of time after maze generation) doesn’t allow the user to look through and find the optimal path, as he needs to focus on the arrow.
+You need to get to the end of the maze by defining arrow direction with swipes.
+Your arrow never stops, so be careful with walls!
+When you reach the exit a new maze is created. 
+It gradually grows in size and your arrow gets faster, but the score you get for passing a cell also gets bigger.
 
-**Competitivity.** 
-User performance is measured by score, which is appended each time he passes a cell. Its also altered when exit is reached depending how different from optimal his path was.
-
-**Graphical style.** 
-Strict geometric shapes with a rough texture.
-
-## Special cells
-### Speedup area. 
-Looks like a chevron on 2 or more lined up and merged cells. Makes the movement in the right direction twice faster and twice slower in the opposite.
-### Rotator. 
-When the arrow passes through rotator, its direction gets appended by 90 degrees in rotator direction.
-### Hide/Show Walls. 
-Hides or show walls while passing through. Great visual memory excersize!
-
+Get the highest score you can, open new bigger and more complicated mazes!
