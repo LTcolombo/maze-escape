@@ -23,9 +23,6 @@ namespace Views {
 		// Update is called once per frame
 		void OnGameStateUpdated (GameStateModel state)
 		{
-			if (_previousValue == state.score)
-				return;
-			
 			if (state.state != _previousState) {
 				if (state.state == GameStateModel.STATE_STUCK)
 					_target.color = new Color (0.8f, 0.2f, 0.2f);
@@ -36,6 +33,9 @@ namespace Views {
 					
 				_previousState = state.state;
 			}
+			
+			if (_previousValue == state.score)
+				return;
 			
 			_target.text = prefix + state.score.ToString (format);
 			

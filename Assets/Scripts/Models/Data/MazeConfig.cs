@@ -32,7 +32,7 @@ namespace Models.Data
 			width = size;
 			height = size;
 			
-			moveTime = 0.5f - 0.01f * System.Math.Min (20, levelNumber) - 0.005f * Math.Max (0, Math.Min (20, levelNumber - 20));
+			moveTime = 0.4f - 0.01f * System.Math.Min (15, levelNumber) - 0.005f * Math.Max (0, Math.Min (10, levelNumber - 15));
 			
 			minScore = 1 + size;
 			maxScore = 4 + size;
@@ -41,7 +41,9 @@ namespace Models.Data
 			if (speedUpsCount > 4)
 				speedUpsCount = 4;
 				
-			rotatorsCount = levelNumber / 10;
+			rotatorsCount = levelNumber > 3 ? 1 : 0;;
+			rotatorsCount += levelNumber / 10;
+			
 			hidersCount = levelNumber > 2 ? 1 : 0;
 			
 			maxTimeBonus = 1 + size / 10.0f;

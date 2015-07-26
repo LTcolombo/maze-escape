@@ -64,6 +64,8 @@ namespace Controllers
 			//if ended - transfer moves to score in 0.5 seconds
 			case(GameStateModel.STATE_ENDED):
 				_gameState.score = _scoreDelayed.GetCurrentValueAsInt ();
+				if (_gameState.maxScore < _gameState.score)
+					_gameState.maxScore = _gameState.score;
 				_gameState.movesLeft = _movesDelayed.GetCurrentValueAsUInt ();
 				_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
 				break;
@@ -151,7 +153,7 @@ namespace Controllers
 			
 			_gameState.timeBonus = _mazeData.config.maxTimeBonus;
 			_timeBonusDelayed = new DelayedValue (_mazeData.config.maxTimeBonus, _mazeData.config.minTimeBonus, _mazeData.config.bonusTime);
-			_gameState.movesLeft = (uint)((float)_mazeData.deadEnds [0].GetDistance () * _mazeData.config.maxTimeBonus);
+			_gameState.movesLeft = _mazeData.deadEnds [0].GetDistance () * 2;
 			
 			_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
 		}
