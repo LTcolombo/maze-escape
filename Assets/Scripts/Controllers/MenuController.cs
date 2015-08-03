@@ -26,6 +26,7 @@ namespace Controllers {
 		
 		void AllowExit ()
 		{
+			TappxManagerUnity.instance.interstitialShow();
 			_canExit = true;
 		}
 		
