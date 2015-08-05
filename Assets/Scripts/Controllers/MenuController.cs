@@ -8,8 +8,9 @@ using Utils;
 namespace Controllers {
 	public class MenuController : MonoBehaviour
 	{
-		bool _canExit;
-		Text _tipText;
+
+		private bool _canExit;
+		
 		
 		// Use this for initialization
 		void Start ()
@@ -19,8 +20,6 @@ namespace Controllers {
 			Text bestScoreText = (Text)GameObject.Find ("Canvas/BestScoreText").GetComponent<Text> ();
 			bestScoreText.text = "BEST SCORE: " + PlayerPrefs.GetInt ("highscore", 0);
 			
-			_tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
-			
 			_canExit = false;
 			Invoke("AllowExit", 1);
 		}
@@ -28,7 +27,6 @@ namespace Controllers {
 		void AllowExit ()
 		{
 			_canExit = true;
-			_tipText.text = "Tap Anywhere To Play";
 		}
 		
 		// Update is called once per frame
@@ -50,7 +48,8 @@ namespace Controllers {
 		}
 
 		void ExitToGame() {		
-			_tipText.text = "Loading...";
+			Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
+			tipText.text = "Loading...";
 			_canExit = false;
 			Application.LoadLevel ("GameScene");
 		}
