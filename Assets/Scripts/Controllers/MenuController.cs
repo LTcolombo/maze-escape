@@ -27,7 +27,6 @@ namespace Controllers {
 		
 		void AllowExit ()
 		{
-			TappxManagerUnity.instance.interstitialShow();
 			_canExit = true;
 			_tipText.text = "Tap Anywhere To Play";
 		}
