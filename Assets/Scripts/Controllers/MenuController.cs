@@ -26,6 +26,8 @@ namespace Controllers {
 		
 		void AllowExit ()
 		{
+			Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
+			tipText.text = "TAP ANYWHERE TO PLAY";
 			_canExit = true;
 		}
 		
@@ -49,7 +51,7 @@ namespace Controllers {
 
 		void ExitToGame() {		
 			Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
-			tipText.text = "Loading...";
+			tipText.text = "LOADING...";
 			_canExit = false;
 			Application.LoadLevel ("GameScene");
 		}

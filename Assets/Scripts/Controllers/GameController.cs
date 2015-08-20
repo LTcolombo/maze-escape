@@ -114,6 +114,11 @@ namespace Controllers
 				return;
 			}
 		}
+		
+		public void onExitClick(){
+			AnalyticsWrapper.ReportGameExit (_gameState);
+			Application.LoadLevel ("MenuScene");
+		}
 
 		void onExit (IntPoint pos)
 		{

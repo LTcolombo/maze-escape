@@ -25,6 +25,16 @@ namespace Utils
 			eventData.Add (new KeyValuePair<string, object> ("MovesLeft", gameState.movesLeft));
 			Analytics.CustomEvent ("GamePaused", eventData);
 		}
+		
+		public static void ReportGameExit (GameStateModel gameState)
+		{
+			IDictionary<string, object> eventData = new Dictionary<string, object> ();
+			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber));
+			eventData.Add (new KeyValuePair<string, object> ("Score", gameState.score));
+			eventData.Add (new KeyValuePair<string, object> ("MaxScore", gameState.maxScore));
+			eventData.Add (new KeyValuePair<string, object> ("MovesLeft", gameState.movesLeft));
+			Analytics.CustomEvent ("GameExit", eventData);
+		}
 	}
 }
 
