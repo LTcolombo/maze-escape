@@ -13,6 +13,7 @@ namespace Utils
 			eventData.Add (new KeyValuePair<string, object> ("Score", gameState.score));
 			eventData.Add (new KeyValuePair<string, object> ("MaxScore", gameState.maxScore));
 			eventData.Add (new KeyValuePair<string, object> ("MovesLeft", gameState.movesLeft));
+			
 			Analytics.CustomEvent ("GameLost", eventData);
 		}
 		

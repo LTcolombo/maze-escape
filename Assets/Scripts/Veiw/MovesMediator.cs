@@ -5,7 +5,6 @@ using Models;
 namespace Views {
 	public class MovesMediator : MonoBehaviour
 	{
-		
 		public string prefix = "MOVES: ";
 		public string format = "F0";
 		Text _target;

@@ -20,6 +20,7 @@ namespace Models.Data
 		public float bonusTime;
 		public float moveTime;
 		public float scoreDrainTime;
+		public bool isTutorial;
 		
 		//move to model
 		public MazeConfig (int levelNumber)
@@ -41,7 +42,8 @@ namespace Models.Data
 			if (speedUpsCount > 4)
 				speedUpsCount = 4;
 				
-			rotatorsCount = levelNumber > 3 ? 1 : 0;;
+			rotatorsCount = levelNumber > 3 ? 1 : 0;
+			
 			rotatorsCount += levelNumber / 10;
 			
 			hidersCount = levelNumber > 2 ? 1 : 0;
@@ -51,6 +53,8 @@ namespace Models.Data
 			bonusTime = size / 2.0f;
 			
 			scoreDrainTime = 1.0f;
+			
+			isTutorial = true;// levelNumber <= 3;
 		}
 	}
 }

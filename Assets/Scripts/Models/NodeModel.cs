@@ -41,8 +41,9 @@ namespace Models
 		//score assigned to node
 		public int score = 0;
 		
-		//previous node during maze generation
+		//previous/next node during maze generation
 		public NodeModel previousNode;
+		public NodeModel nextNode;
 
 		//node state		
 		private uint _data = UP_WALL | RIGHT_WALL | DOWN_WALL | LEFT_WALL;

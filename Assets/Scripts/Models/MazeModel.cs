@@ -11,6 +11,8 @@ namespace Models
 	///</summary>
 	public class MazeModel
 	{
+		public NodeModel startingNode;
+	
 		/**
 		 * Array of NodeData that represent dead ends generated during maze creation.
 		 * Dead ends cant be any others node previos. Sorted by descending distance from starting point
@@ -44,14 +46,14 @@ namespace Models
 					_data [i + j * _config.height] = new NodeModel (i, j);
 								
 			//1. get starting point
-			NodeModel startingNode = GetNode (startX, startY);
+			startingNode = GetNode (startX, startY);
 			startingNode.AddFlag (NodeModel.PROCESSED);
 			
 			//2. init edge nodes from its neighbours
 			List<NodeModel> edgeNodes = GetNotProcessedNeighboursOf (startingNode);
 			
 			foreach (NodeModel nodeData in edgeNodes) {
-				nodeData.previousNode = startingNode;
+				Link (startingNode, nodeData);
 			}
 			
 			//3. create branches from edge nodes
@@ -68,7 +70,7 @@ namespace Models
 					NodeModel processedNeighbour = GetRandomNeighbour (edgeNode, true);
 					if (processedNeighbour != null) {
 						Merge (processedNeighbour, edgeNode);
-						edgeNode.previousNode = processedNeighbour;
+						Link (processedNeighbour, edgeNode);
 						
 						if (!crossRoads.Contains (processedNeighbour)) 
 							crossRoads.Add (processedNeighbour);
@@ -113,7 +115,7 @@ namespace Models
 				
 				//3. if it exists (didn't got a dead end) - expand the maze
 				if (randomNeighbour != null) {
-					randomNeighbour.previousNode = currentNode;
+					Link (currentNode, randomNeighbour);
 					
 					//3.1 attach it to tree
 					Merge (currentNode, randomNeighbour);
@@ -207,6 +209,14 @@ namespace Models
 					from.RemoveWall (NodeModel.DIRECTION_DOWN_IDX);
 				}
 			}
+		}
+		
+		/*
+		* Sets previous and next references to each other
+		*/
+		private void Link(NodeModel previous, NodeModel next){
+			next.previousNode = previous;
+			previous.nextNode = next;
 		}
 	}
 }
