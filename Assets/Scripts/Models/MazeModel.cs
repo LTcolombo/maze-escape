@@ -157,7 +157,7 @@ namespace Models
 		/**
 		 * Checks if provided 2d coordinates are within 1d data array
 		 */
-		private bool IsInBounds (int x, int y)
+		public bool IsInBounds (int x, int y)
 		{
 			return ((x > -1) && (x < _config.width) && (y > -1) && (y < _config.height));
 		}

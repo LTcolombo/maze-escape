@@ -172,7 +172,6 @@ namespace Controllers {
 						if (delta.magnitude == 0)
 							continue;
 						
-						
 						if (Mathf.Abs (delta.x) > Mathf.Abs (delta.y)) {
 							if (delta.x > 0) 
 								SetDirection (NodeModel.DIRECTION_RIGHT_IDX);
@@ -184,7 +183,6 @@ namespace Controllers {
 							else
 								SetDirection (NodeModel.DIRECTION_DOWN_IDX);
 						}
-						
 					}
 				}
 			}

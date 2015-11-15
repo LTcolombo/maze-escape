@@ -1,6 +1,7 @@
 namespace Models{
 	public struct GameStateModel 
 	{
+		public const int STATE_INVALID = -1;
 		public const int STATE_INITED = 0;
 		public const int STATE_ACTIVATED = 1;
 		public const int STATE_STUCK = 2;

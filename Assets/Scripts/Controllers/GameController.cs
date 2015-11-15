@@ -47,6 +47,7 @@ namespace Controllers
 			case (GameStateModel.STATE_INITED): 
 				_gameState.timeBonus = _timeBonusDelayed.GetCurrentValue (); 
 				_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
+				BroadcastMessage ("OnGameStateUpdated", _gameState);
 				break;
 			//if stuck - drain score
 			case(GameStateModel.STATE_STUCK):
@@ -60,6 +61,7 @@ namespace Controllers
 					Application.LoadLevel ("MenuScene");
 				} 
 				_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
+				BroadcastMessage ("OnGameStateUpdated", _gameState);
 				break;
 			//if ended - transfer moves to score in 0.5 seconds
 			case(GameStateModel.STATE_ENDED):
@@ -68,6 +70,7 @@ namespace Controllers
 					_gameState.maxScore = _gameState.score;
 				_gameState.movesLeft = _movesDelayed.GetCurrentValueAsUInt ();
 				_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
+				BroadcastMessage ("OnGameStateUpdated", _gameState);
 				break;
 			}
 		}
@@ -81,10 +84,7 @@ namespace Controllers
 		}
 		
 		void OnStepComplete (IntPoint pos)
-		{
-			if (_gameState.state == GameStateModel.STATE_INITED || _gameState.state == GameStateModel.STATE_STUCK)
-				_gameState.state = GameStateModel.STATE_ACTIVATED;	
-			
+		{			
 			NodeModel node = _mazeData.GetNode (pos.x, pos.y);
 			
 			_gameState.score += (int)((float)node.score * _gameState.timeBonus);
@@ -107,7 +107,13 @@ namespace Controllers
 			} 
 
 			BroadcastMessage ("onNodeReached", node);
+			
+			if (_gameState.state == GameStateModel.STATE_INITED || _gameState.state == GameStateModel.STATE_STUCK){
+				_gameState.state = GameStateModel.STATE_ACTIVATED;	
+			}
+			
 			_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
+			BroadcastMessage ("OnGameStateUpdated", _gameState);
 			
 			if (node.HasFlag (NodeModel.SPECIALS_EXIT)) {
 				onExit (pos);
@@ -115,7 +121,8 @@ namespace Controllers
 			}
 		}
 		
-		public void onExitClick(){
+		public void onExitClick ()
+		{
 			AnalyticsWrapper.ReportGameExit (_gameState);
 			Application.LoadLevel ("MenuScene");
 		}
@@ -128,6 +135,7 @@ namespace Controllers
 			_scoreDelayed = new DelayedValue (_gameState.score, _gameState.score + _gameState.movesLeft * _gameState.timeBonus * avgScore, 0.5f);
 			_gameState.levelNumber ++;
 			_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
+			BroadcastMessage ("OnGameStateUpdated", _gameState);
 
 			_mazeStartPos = pos;
 			Invoke ("Next", 0.6f);
@@ -161,6 +169,7 @@ namespace Controllers
 			_gameState.movesLeft = _mazeData.deadEnds [0].GetDistance () * 2;
 			
 			_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
+			BroadcastMessage ("OnGameStateUpdated", _gameState);
 		}
 	}
 }
