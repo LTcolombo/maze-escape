@@ -7,11 +7,11 @@ namespace Models
 	public class NodeModel
 	{
 		//indexes from direction array
-		public const int DIRECTION_INVALID_IDX = 0;
-		public const int DIRECTION_UP_IDX = 1;
-		public const int DIRECTION_RIGHT_IDX = 2;
-		public const int DIRECTION_DOWN_IDX = 3;
-		public const int DIRECTION_LEFT_IDX = 4;
+		public const int DIRECTION_INVALID_IDX = -1;
+		public const int DIRECTION_UP_IDX = 0;
+		public const int DIRECTION_RIGHT_IDX = 1;
+		public const int DIRECTION_DOWN_IDX = 2;
+		public const int DIRECTION_LEFT_IDX = 3;
 				
 		//used by maze generation
 		public const uint PROCESSED = 1;

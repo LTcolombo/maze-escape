@@ -33,8 +33,15 @@ namespace Views
 			onNodeReached (mazeData.startingNode);
 			
 			_directionsToExit = new int[mazeData.config.width, mazeData.config.height];
+			for (int x = 0; x < mazeData.config.width; x++) {
+				for (int y = 0; y < mazeData.config.width; y++) {
+					_directionsToExit [x, y] = NodeModel.DIRECTION_INVALID_IDX;
+				}
+			}
+			
+			
 			var time = Time.realtimeSinceStartup;
-			setDirectionTo (mazeData, mazeData.deadEnds [0]);
+			findDirectionsTo (mazeData, mazeData.deadEnds [0]);
 			Debug.Log (Time.realtimeSinceStartup - time);
 			for (int y = 0; y < _directionsToExit.GetLength(0); y++) {
 				string str = "";
@@ -45,7 +52,7 @@ namespace Views
 			}
 		}
 		
-		void setDirectionTo (MazeModel maze, NodeModel node)
+		void findDirectionsTo (MazeModel maze, NodeModel node)
 		{
 			for (int directionIdx = NodeModel.DIRECTION_UP_IDX; directionIdx <=NodeModel.DIRECTION_LEFT_IDX; directionIdx++) {
 				int x = node.pos.x;
@@ -79,7 +86,7 @@ namespace Views
 				}
 				if (maze.IsInBounds (x, y) && _directionsToExit [x, y] == NodeModel.DIRECTION_INVALID_IDX) {
 					_directionsToExit [x, y] = directionToExit;
-					setDirectionTo (maze, maze.GetNode(x, y));
+					findDirectionsTo (maze, maze.GetNode (x, y));
 				}
 			}
 		}
