@@ -18,6 +18,7 @@ namespace Views {
 			_target = GetComponent<Text> ();
 			_audio = GetComponent<AudioSource> ();
 			_previousValue = 0;
+			NotificationManager.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
 		}
 		
 		// Update is called once per frame
@@ -38,6 +39,10 @@ namespace Views {
 				_target.color = new Color (0.56f, 0.56f, 0.56f);
 				
 			_target.text = prefix + state.movesLeft.ToString (format);
+		}
+		
+		void OnDestroy(){
+			NotificationManager.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }

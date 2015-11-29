@@ -11,9 +11,7 @@ using Utils;
 namespace Controllers
 {
 	public class GameController : MonoBehaviour
-	{
-		GameObject _HUD;
-					
+	{				
 		//current maze data
 		MazeModel _mazeData;
 		
@@ -30,8 +28,6 @@ namespace Controllers
 		void Start ()
 		{
 			Prefabs.Init ();
-			_HUD = (GameObject)GameObject.Find ("HUD");
-		
 			_mazeStartPos = new IntPoint (0, 0);
 			_gameState.movesLeft = 0;
 			_gameState.score = 0;
@@ -46,8 +42,8 @@ namespace Controllers
 			//if not activated - drain timebonus;
 			case (GameStateModel.STATE_INITED): 
 				_gameState.timeBonus = _timeBonusDelayed.GetCurrentValue (); 
-				_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
 				BroadcastMessage ("OnGameStateUpdated", _gameState);
+				NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
 				break;
 			//if stuck - drain score
 			case(GameStateModel.STATE_STUCK):
@@ -60,7 +56,7 @@ namespace Controllers
 					AnalyticsWrapper.ReportGameLost (_gameState);
 					Application.LoadLevel ("MenuScene");
 				} 
-				_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
+				NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
 				BroadcastMessage ("OnGameStateUpdated", _gameState);
 				break;
 			//if ended - transfer moves to score in 0.5 seconds
@@ -69,7 +65,7 @@ namespace Controllers
 				if (_gameState.maxScore < _gameState.score)
 					_gameState.maxScore = _gameState.score;
 				_gameState.movesLeft = _movesDelayed.GetCurrentValueAsUInt ();
-				_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
+				NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
 				BroadcastMessage ("OnGameStateUpdated", _gameState);
 				break;
 			}
@@ -112,7 +108,7 @@ namespace Controllers
 				_gameState.state = GameStateModel.STATE_ACTIVATED;	
 			}
 			
-			_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
+			NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
 			BroadcastMessage ("OnGameStateUpdated", _gameState);
 			
 			if (node.HasFlag (NodeModel.SPECIALS_EXIT)) {
@@ -134,7 +130,7 @@ namespace Controllers
 			var avgScore = (_mazeData.config.minScore + _mazeData.config.maxScore) / 2;
 			_scoreDelayed = new DelayedValue (_gameState.score, _gameState.score + _gameState.movesLeft * _gameState.timeBonus * avgScore, 0.5f);
 			_gameState.levelNumber ++;
-			_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
+			NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
 			BroadcastMessage ("OnGameStateUpdated", _gameState);
 
 			_mazeStartPos = pos;
@@ -168,7 +164,7 @@ namespace Controllers
 			_timeBonusDelayed = new DelayedValue (_mazeData.config.maxTimeBonus, _mazeData.config.minTimeBonus, _mazeData.config.bonusTime);
 			_gameState.movesLeft = _mazeData.deadEnds [0].GetDistance () * 2;
 			
-			_HUD.BroadcastMessage ("OnGameStateUpdated", _gameState);
+			NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
 			BroadcastMessage ("OnGameStateUpdated", _gameState);
 		}
 	}
