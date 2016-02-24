@@ -20,7 +20,7 @@ namespace Utils {
 			{
 				float scale = (float)Screen.height/MinHeight;
 				float widthShrinkedBy = Mathf.Max(1, scale*(float)MinWidth/Screen.width);
-				Camera.main.orthographicSize = widthShrinkedBy * MinHeight/2;//
+				Camera.main.orthographicSize = widthShrinkedBy * MinHeight/2;
 				_lastHeight = Screen.height;
 			}
 		}

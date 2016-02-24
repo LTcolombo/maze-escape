@@ -197,6 +197,8 @@ namespace Controllers {
 					
 			if (!DOTween.IsTweening (transform)) 
 				OnStepCompleted ();
+
+			NotificationManager.PLAYER_DIRECTION_UPDATED.Dispatch (_directionIdx);
 		}
 
 		public void OnDestroy(){

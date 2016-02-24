@@ -9,6 +9,7 @@ namespace Notifications {
 	public class NodePassed : Notification1<NodeModel> {}
 	public class StepCompleted : Notification1<IntPoint> {}
 	public class PlayerStuck : Notification0 {}
+	public class PlayerDirectionUpdated : Notification1<int> {}
 
 	public class NotificationManager
 	{
@@ -17,5 +18,7 @@ namespace Notifications {
 		public static NodePassed NODE_PASSED = new NodePassed();
 		public static StepCompleted PLAYER_STEP_COMPLETED = new StepCompleted();
 		public static PlayerStuck PLAYER_STUCK = new PlayerStuck();
+		public static PlayerDirectionUpdated PLAYER_DIRECTION_UPDATED = new PlayerDirectionUpdated();
+
 	}
 }
