@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Notifications;
 using Models;
 using Models.Data;
 using Models.Decorators;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.Analytics;
 using Utils;
+using UnityEngine.SceneManagement;
 
 namespace Controllers
 {
@@ -29,10 +31,15 @@ namespace Controllers
 		{
 			Prefabs.Init ();
 			_mazeStartPos = new IntPoint (0, 0);
+
+			_gameState.state = GameStateModel.STATE_INVALID;
 			_gameState.movesLeft = 0;
 			_gameState.score = 0;
 			_gameState.levelNumber = PlayerPrefs.GetInt ("maxlevel", 0) / 2;
 			Next ();
+
+			NotificationManager.PLAYER_STEP_COMPLETED.Add (OnStepComplete);
+			NotificationManager.PLAYER_STUCK.Add (OnStuck);
 		}
 		
 		// Update is called once per frame
@@ -42,7 +49,6 @@ namespace Controllers
 			//if not activated - drain timebonus;
 			case (GameStateModel.STATE_INITED): 
 				_gameState.timeBonus = _timeBonusDelayed.GetCurrentValue (); 
-				BroadcastMessage ("OnGameStateUpdated", _gameState);
 				NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
 				break;
 			//if stuck - drain score
@@ -50,14 +56,10 @@ namespace Controllers
 				_gameState.score = _scoreDelayed.GetCurrentValueAsInt ();
 				if (_gameState.score <= 0) {
 					_gameState.score = 0;
-					if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
-						PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
-							
 					AnalyticsWrapper.ReportGameLost (_gameState);
-					Application.LoadLevel ("MenuScene");
+					SceneManager.LoadScene ("MenuScene");
 				} 
 				NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
-				BroadcastMessage ("OnGameStateUpdated", _gameState);
 				break;
 			//if ended - transfer moves to score in 0.5 seconds
 			case(GameStateModel.STATE_ENDED):
@@ -66,7 +68,6 @@ namespace Controllers
 					_gameState.maxScore = _gameState.score;
 				_gameState.movesLeft = _movesDelayed.GetCurrentValueAsUInt ();
 				NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
-				BroadcastMessage ("OnGameStateUpdated", _gameState);
 				break;
 			}
 		}
@@ -80,7 +81,7 @@ namespace Controllers
 		}
 		
 		void OnStepComplete (IntPoint pos)
-		{			
+		{		
 			NodeModel node = _mazeData.GetNode (pos.x, pos.y);
 			
 			_gameState.score += (int)((float)node.score * _gameState.timeBonus);
@@ -98,32 +99,30 @@ namespace Controllers
 				
 				AnalyticsWrapper.ReportGameLost (_gameState);
 				
-				Application.LoadLevel ("MenuScene");
+				SceneManager.LoadScene ("MenuScene");
 				return;
 			} 
-
-			BroadcastMessage ("onNodeReached", node);
-			
+				
 			if (_gameState.state == GameStateModel.STATE_INITED || _gameState.state == GameStateModel.STATE_STUCK){
 				_gameState.state = GameStateModel.STATE_ACTIVATED;	
 			}
 			
 			NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
-			BroadcastMessage ("OnGameStateUpdated", _gameState);
 			
 			if (node.HasFlag (NodeModel.SPECIALS_EXIT)) {
-				onExit (pos);
-				return;
+				OnExit (pos);
+			} else {
+				NotificationManager.NODE_PASSED.Dispatch (node);
 			}
 		}
 		
-		public void onExitClick ()
+		public void OnExitClick ()
 		{
 			AnalyticsWrapper.ReportGameExit (_gameState);
-			Application.LoadLevel ("MenuScene");
+			SceneManager.LoadScene ("MenuScene");
 		}
 
-		void onExit (IntPoint pos)
+		void OnExit (IntPoint pos)
 		{
 			_gameState.state = GameStateModel.STATE_ENDED;
 			_movesDelayed = new DelayedValue (_gameState.movesLeft, 0, 0.5f);
@@ -131,13 +130,12 @@ namespace Controllers
 			_scoreDelayed = new DelayedValue (_gameState.score, _gameState.score + _gameState.movesLeft * _gameState.timeBonus * avgScore, 0.5f);
 			_gameState.levelNumber ++;
 			NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
-			BroadcastMessage ("OnGameStateUpdated", _gameState);
 
 			_mazeStartPos = pos;
 			Invoke ("Next", 0.6f);
 		}
 
-		void onStuck ()
+		void OnStuck ()
 		{	
 			_gameState.state = GameStateModel.STATE_STUCK;
 			_scoreDelayed = new DelayedValue (_gameState.score, 0, _mazeData.config.scoreDrainTime);
@@ -148,24 +146,26 @@ namespace Controllers
 			if (_gameState.levelNumber > PlayerPrefs.GetInt ("maxlevel", 0))
 				PlayerPrefs.SetInt ("maxlevel", _gameState.levelNumber);
 		
-			_gameState.state = GameStateModel.STATE_INITED;
-		
 			_mazeData = new MazeModel (new MazeConfig (_gameState.levelNumber), _mazeStartPos.x, _mazeStartPos.y);
-			
 			ExitDecorator.Apply (_mazeData);
 			ScoreDecorator.Apply (_mazeData);
 			HiderDecorator.Apply (_mazeData);
 			SpeedUpDecorator.Apply (_mazeData);
 			RotatorDecorator.Apply (_mazeData);
-			
-			BroadcastMessage ("UpdateMazeData", _mazeData);
-			
+
+			NotificationManager.MAZE_DATA_UPDATED.Dispatch (_mazeData);
+
+			_gameState.state = GameStateModel.STATE_INITED;
 			_gameState.timeBonus = _mazeData.config.maxTimeBonus;
 			_timeBonusDelayed = new DelayedValue (_mazeData.config.maxTimeBonus, _mazeData.config.minTimeBonus, _mazeData.config.bonusTime);
 			_gameState.movesLeft = _mazeData.deadEnds [0].GetDistance () * 2;
-			
+
 			NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
-			BroadcastMessage ("OnGameStateUpdated", _gameState);
+		}
+
+		public void OnDestroy(){
+			NotificationManager.PLAYER_STEP_COMPLETED.Remove (OnStepComplete);
+			NotificationManager.PLAYER_STUCK.Remove (OnStuck);
 		}
 	}
 }

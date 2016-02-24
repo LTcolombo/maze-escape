@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Models;
+using Notifications;
 
 namespace Views {
 	public class TimeBonusMediator : MonoBehaviour {
@@ -14,6 +15,7 @@ namespace Views {
 		void Awake(){
 			_target = GetComponent<Text> ();
 			_previousValue = 0;
+			NotificationManager.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
 		}
 		
 		// Update is called once per frame
@@ -24,6 +26,10 @@ namespace Views {
 				
 			_previousValue = state.timeBonus;
 			_target.text = prefix + state.timeBonus.ToString (format);
+		}
+		
+		void OnDestroy(){
+			NotificationManager.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }

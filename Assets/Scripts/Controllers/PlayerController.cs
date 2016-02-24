@@ -3,6 +3,7 @@ using System.Collections;
 using DG.Tweening;
 using Models;
 using Models.Data;
+using Notifications;
 
 public delegate void PlayerStepComplete ();
 
@@ -32,9 +33,12 @@ namespace Controllers {
 			                                      
 			_renderer = GetComponent<SpriteRenderer> ();
 			_audio = GetComponent<AudioSource> ();
+
+			NotificationManager.MAZE_DATA_UPDATED.Add (onMazeDataUpdated);
+			NotificationManager.NODE_PASSED.Add (onNodePassed);
 		}
 		
-		void UpdateMazeData (MazeModel data)
+		void onMazeDataUpdated (MazeModel data)
 		{
 			_renderer.enabled = true;
 			_moveTime = data.config.moveTime;
@@ -74,10 +78,10 @@ namespace Controllers {
 		{
 			DOTween.CompleteAll ();
 			transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
-			SendMessageUpwards ("OnStepComplete", _cellPosition);
+			NotificationManager.PLAYER_STEP_COMPLETED.Dispatch (_cellPosition);
 		}
 
-		void onNodeReached (NodeModel node)
+		void onNodePassed (NodeModel node)
 		{
 			if (node.HasFlag (NodeModel.SPECIALS_EXIT)) {
 				_renderer.enabled = false;
@@ -133,12 +137,11 @@ namespace Controllers {
 				node.score = 0;
 				Next (moveTime, rotateBy);
 			} else {
-				
 				Next (-1, rotateBy);
 				
 				if (rotateBy == 0) {
 					_audio.Play ();
-					SendMessageUpwards ("onStuck");
+					NotificationManager.PLAYER_STUCK.Dispatch ();
 				}
 			}
 		}
@@ -194,6 +197,11 @@ namespace Controllers {
 					
 			if (!DOTween.IsTweening (transform)) 
 				OnStepCompleted ();
+		}
+
+		public void OnDestroy(){
+			NotificationManager.MAZE_DATA_UPDATED.Remove (onMazeDataUpdated);
+			NotificationManager.NODE_PASSED.Remove (onNodePassed);
 		}
 	}
 }

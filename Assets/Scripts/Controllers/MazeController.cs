@@ -5,6 +5,7 @@ using Models.Data;
 using Utils;
 using DG.Tweening;
 using System.Collections.Generic;
+using Notifications;
 
 namespace Controllers {
 	public class MazeController : MonoBehaviour
@@ -23,6 +24,11 @@ namespace Controllers {
 		private int _prevMaxX = 0;
 		private int _prevMaxY = 0;
 				
+		void Start(){
+			NotificationManager.MAZE_DATA_UPDATED.Add (UpdateMazeData);
+			NotificationManager.NODE_PASSED.Add (onNodePassed);
+		}
+
 		// Update is called once per frame
 		void Update ()
 		{
@@ -48,7 +54,7 @@ namespace Controllers {
 				node.GetComponent<NodeController> ().ShowWall (value);
 		}
 		
-		void onNodeReached (NodeModel node)
+		void onNodePassed (NodeModel node)
 		{
 			int index = node.pos.x * _mazeData.config.width + node.pos.y;
 			if (index < _nodeInstances.Count) 
@@ -106,6 +112,11 @@ namespace Controllers {
 					}
 				}
 			}
+		}
+
+		public void OnDestroy(){
+			NotificationManager.MAZE_DATA_UPDATED.Remove (UpdateMazeData);
+			NotificationManager.NODE_PASSED.Remove (onNodePassed);
 		}
 	}
 }

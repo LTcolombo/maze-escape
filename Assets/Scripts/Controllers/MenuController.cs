@@ -4,6 +4,7 @@ using DG.Tweening;
 using UnityEngine.UI;
 using UnityEngine.Analytics;
 using Utils;
+using UnityEngine.SceneManagement;
 
 namespace Controllers {
 	public class MenuController : MonoBehaviour
@@ -53,7 +54,7 @@ namespace Controllers {
 			Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
 			tipText.text = "LOADING...";
 			_canExit = false;
-			Application.LoadLevel ("GameScene");
+			SceneManager.LoadScene ("GameScene");
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using Models;
+using Notifications;
 
 namespace Views {
 	public class MovesMediator : MonoBehaviour
@@ -20,8 +21,7 @@ namespace Views {
 			_previousValue = 0;
 			NotificationManager.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
 		}
-		
-		// Update is called once per frame
+
 		void OnGameStateUpdated (GameStateModel state)
 		{
 			if (state.movesLeft == _previousValue)

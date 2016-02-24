@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Models;
+using Notifications;
 
 namespace Views {
 	public class ScoreMediator : MonoBehaviour
@@ -18,6 +19,7 @@ namespace Views {
 			_target = GetComponent<Text> ();
 			_audio = GetComponent<AudioSource> ();
 			_previousValue = 0;
+			NotificationManager.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
 		}
 		
 		// Update is called once per frame
@@ -43,6 +45,10 @@ namespace Views {
 				_audio.Play();
 			
 			_previousValue = state.score;
+		}
+		
+		void OnDestroy(){
+			NotificationManager.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }

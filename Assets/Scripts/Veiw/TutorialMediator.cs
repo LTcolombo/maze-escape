@@ -3,6 +3,7 @@ using System.Collections;
 using Models;
 using UnityEngine.UI;
 using DG.Tweening;
+using Notifications;
 
 namespace Views
 {
@@ -25,6 +26,7 @@ namespace Views
 			_handRenderer = _handObject.GetComponent<SpriteRenderer> ();
 			
 			_previousState = GameStateModel.STATE_INVALID;
+			NotificationManager.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
 		}
 	
 		public void UpdateMazeData (MazeModel mazeData)
@@ -172,6 +174,10 @@ namespace Views
 		
 			_playerDirection = value;
 			//_handObject.SetActive (_playerDirection != _correctDirection);
+		}
+		
+		void OnDestroy(){
+			NotificationManager.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }
