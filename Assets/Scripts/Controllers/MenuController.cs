@@ -9,15 +9,11 @@ using UnityEngine.SceneManagement;
 namespace Controllers {
 	public class MenuController : MonoBehaviour
 	{
-
 		private bool _canExit;
-		
-		
+
 		// Use this for initialization
 		void Start ()
 		{
-			Prefabs.Init ();
-			
 			Text bestScoreText = (Text)GameObject.Find ("Canvas/BestScoreText").GetComponent<Text> ();
 			bestScoreText.text = "BEST SCORE: " + PlayerPrefs.GetInt ("highscore", 0);
 			

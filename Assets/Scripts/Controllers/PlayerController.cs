@@ -34,27 +34,13 @@ namespace Controllers {
 
 			NotificationManager.MAZE_DATA_UPDATED.Add (onMazeDataUpdated);
 			NotificationManager.PROCEED.Add (Proceed);
-			NotificationManager.EXIT_REACHED.Add (OnExit);
+			NotificationManager.EXIT_REACHED.Add (OnExitReached);
 			NotificationManager.PLAYER_STUCK.Add (OnStuck);
 		}
 		
 		void onMazeDataUpdated (MazeModel data)
 		{
 			_renderer.enabled = true;
-		}
-
-		public void Next (float moveTime)
-		{
-			if (moveTime > 0) {
-				transform.DOMove (transform.position + new Vector3 (
-					NodeModel.DIRECTIONS [_directionIdx, 0] * MazeController.NODE_SIZE, 
-					NodeModel.DIRECTIONS [_directionIdx, 1] * MazeController.NODE_SIZE, 
-				0
-				), moveTime).OnComplete (OnReadyToProceed).SetEase (Ease.Linear);
-			
-				_cellPosition.x += NodeModel.DIRECTIONS [_directionIdx, 0];
-				_cellPosition.y += NodeModel.DIRECTIONS [_directionIdx, 1];
-			}
 		}
 		
 		void OnReadyToProceed ()
@@ -66,10 +52,19 @@ namespace Controllers {
 
 		void Proceed (NodeModel node, float moveTime)
 		{
-			Next (moveTime);
+			if (moveTime > 0) {
+				transform.DOMove (transform.position + new Vector3 (
+					NodeModel.DIRECTIONS [_directionIdx, 0] * MazeController.NODE_SIZE, 
+					NodeModel.DIRECTIONS [_directionIdx, 1] * MazeController.NODE_SIZE, 
+					0
+				), moveTime).OnComplete (OnReadyToProceed).SetEase (Ease.Linear);
+
+				_cellPosition.x += NodeModel.DIRECTIONS [_directionIdx, 0];
+				_cellPosition.y += NodeModel.DIRECTIONS [_directionIdx, 1];
+			};
 		}
 
-		void OnExit(){
+		void OnExitReached(){
 			_renderer.enabled = false;
 		}
 
@@ -135,7 +130,7 @@ namespace Controllers {
 		public void OnDestroy(){
 			NotificationManager.MAZE_DATA_UPDATED.Remove (onMazeDataUpdated);
 			NotificationManager.PROCEED.Remove (Proceed);
-			NotificationManager.EXIT_REACHED.Remove (OnExit);
+			NotificationManager.EXIT_REACHED.Remove (OnExitReached);
 			NotificationManager.PLAYER_STUCK.Remove (OnStuck);
 		}
 	}

@@ -23,7 +23,6 @@ namespace Views {
 
 		// Use this for initialization
 		void Start () {
-			Prefabs.Init ();
 			//set of base colors
 			ColorComponent[] colorComponents = ColorComponent.GetArray ();
 			

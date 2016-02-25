@@ -29,7 +29,6 @@ namespace Controllers
 		// Use this for initialization
 		void Start ()
 		{
-			Prefabs.Init ();
 			_mazeStartPos = new IntPoint (0, 0);
 
 			_gameState.state = GameStateModel.STATE_INVALID;

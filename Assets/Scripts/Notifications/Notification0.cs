@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Notifications.Base {
+namespace Notifications {
 	public class Notification0
 	{
 		public delegate void Notification0Callback ();
