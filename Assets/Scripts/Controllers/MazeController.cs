@@ -26,7 +26,7 @@ namespace Controllers {
 				
 		void Start(){
 			NotificationManager.MAZE_DATA_UPDATED.Add (UpdateMazeData);
-			NotificationManager.NODE_PASSED.Add (onNodePassed);
+			NotificationManager.PROCEED.Add (Proceed);
 		}
 
 		// Update is called once per frame
@@ -54,7 +54,7 @@ namespace Controllers {
 				node.GetComponent<NodeController> ().ShowWall (value);
 		}
 		
-		void onNodePassed (NodeModel node)
+		void Proceed (NodeModel node, float moveSpeed)
 		{
 			int index = node.pos.x * _mazeData.config.width + node.pos.y;
 			if (index < _nodeInstances.Count) 
@@ -116,7 +116,7 @@ namespace Controllers {
 
 		public void OnDestroy(){
 			NotificationManager.MAZE_DATA_UPDATED.Remove (UpdateMazeData);
-			NotificationManager.NODE_PASSED.Remove (onNodePassed);
+			NotificationManager.PROCEED.Remove (Proceed);
 		}
 	}
 }

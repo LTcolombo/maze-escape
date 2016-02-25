@@ -38,7 +38,7 @@ namespace Controllers
 			_gameState.levelNumber = PlayerPrefs.GetInt ("maxlevel", 0) / 2;
 			Next ();
 
-			NotificationManager.PLAYER_STEP_COMPLETED.Add (OnStepComplete);
+			NotificationManager.PLAYER_READY_TO_PROCEED.Add (OnReadyToProceed);
 			NotificationManager.PLAYER_STUCK.Add (OnStuck);
 		}
 		
@@ -80,7 +80,7 @@ namespace Controllers
 				PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
 		}
 		
-		void OnStepComplete (IntPoint pos)
+		void OnReadyToProceed (IntPoint pos, int directionIdx)
 		{		
 			NodeModel node = _mazeData.GetNode (pos.x, pos.y);
 			
@@ -112,7 +112,44 @@ namespace Controllers
 			if (node.HasFlag (NodeModel.SPECIALS_EXIT)) {
 				OnExit (pos);
 			} else {
-				NotificationManager.NODE_PASSED.Dispatch (node);
+				float moveTime = _mazeData.config.moveTime;
+				if (node.HasFlag (NodeModel.SPECIALS_SPEEDUP_UP)) {
+					if (directionIdx == NodeModel.DIRECTION_UP_IDX)
+						moveTime /= 2;
+
+					if (directionIdx == NodeModel.DIRECTION_DOWN_IDX)
+						moveTime *= 2;
+				}
+
+				if (node.HasFlag (NodeModel.SPECIALS_SPEEDUP_RIGHT)) {
+					if (directionIdx == NodeModel.DIRECTION_RIGHT_IDX)
+						moveTime /= 2;
+
+					if (directionIdx == NodeModel.DIRECTION_LEFT_IDX)
+						moveTime *= 2;
+				}
+
+				if (node.HasFlag (NodeModel.SPECIALS_SPEEDUP_DOWN)) {
+					if (directionIdx == NodeModel.DIRECTION_DOWN_IDX)
+						moveTime /= 2;
+
+					if (directionIdx == NodeModel.DIRECTION_UP_IDX)
+						moveTime *= 2;
+				}
+
+				if (node.HasFlag (NodeModel.SPECIALS_SPEEDUP_LEFT)) {
+					if (directionIdx == NodeModel.DIRECTION_LEFT_IDX)
+						moveTime /= 2;
+
+					if (directionIdx == NodeModel.DIRECTION_RIGHT_IDX)
+						moveTime *= 2;
+				}
+
+				if (!node.HasWall (directionIdx)) {
+					NotificationManager.PROCEED.Dispatch (node, moveTime);
+				} else {
+					NotificationManager.PLAYER_STUCK.Dispatch ();
+				}
 			}
 		}
 		
@@ -132,6 +169,7 @@ namespace Controllers
 			NotificationManager.GAME_STATE_UPDATED.Dispatch(_gameState);
 
 			_mazeStartPos = pos;
+			NotificationManager.EXIT_REACHED.Dispatch ();
 			Invoke ("Next", 0.6f);
 		}
 
@@ -164,7 +202,7 @@ namespace Controllers
 		}
 
 		public void OnDestroy(){
-			NotificationManager.PLAYER_STEP_COMPLETED.Remove (OnStepComplete);
+			NotificationManager.PLAYER_READY_TO_PROCEED.Remove (OnReadyToProceed);
 			NotificationManager.PLAYER_STUCK.Remove (OnStuck);
 		}
 	}

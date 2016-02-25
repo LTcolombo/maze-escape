@@ -28,7 +28,7 @@ namespace Views
 			_lastState = GameStateModel.STATE_INVALID;
 			_correctDirection = NodeModel.DIRECTION_INVALID_IDX;
 			NotificationManager.GAME_STATE_UPDATED.Add (OnGameStateUpdated);
-			NotificationManager.NODE_PASSED.Add (OnNodePassed);
+			NotificationManager.PROCEED.Add (OnNodePassed);
 			NotificationManager.MAZE_DATA_UPDATED.Add (OnMazeDataUpdated);
 			NotificationManager.PLAYER_DIRECTION_UPDATED.Add (OnPlayerDirectionUpdated);
 		}
@@ -36,7 +36,7 @@ namespace Views
 		public void OnMazeDataUpdated (MazeModel mazeData)
 		{
 			enabled = mazeData.config.isTutorial;
-			OnNodePassed (mazeData.startingNode);
+			OnNodePassed (mazeData.startingNode, 0);
 			
 			_directionsToExit = new int[mazeData.config.width, mazeData.config.height];
 			for (int x = 0; x < mazeData.config.width; x++) {
@@ -59,7 +59,9 @@ namespace Views
 		{
 			for (int directionIdx = NodeModel.DIRECTION_UP_IDX; directionIdx <= NodeModel.DIRECTION_LEFT_IDX; directionIdx++) {
 				int x = node.pos.x;
+				int nextX = node.pos.x;
 				int y = node.pos.y;
+				int nextY = node.pos.y;
 				int directionToExit = NodeModel.DIRECTION_INVALID_IDX;
 				
 				if (node.HasWall (directionIdx)) {
@@ -69,32 +71,32 @@ namespace Views
 				switch (directionIdx) {
 				case (NodeModel.DIRECTION_UP_IDX):
 					directionToExit = NodeModel.DIRECTION_DOWN_IDX;
-					y++;
+					nextY++;
 					break;
 					
 				case (NodeModel.DIRECTION_RIGHT_IDX):
 					directionToExit = NodeModel.DIRECTION_LEFT_IDX;
-					x++;
+					nextX++;
 					break;
 					
 				case (NodeModel.DIRECTION_DOWN_IDX):
 					directionToExit = NodeModel.DIRECTION_UP_IDX;
-					y--;
+					nextY--;
 					break;
 					
 				case (NodeModel.DIRECTION_LEFT_IDX):
 					directionToExit = NodeModel.DIRECTION_RIGHT_IDX;
-					x--;
+					nextX--;
 					break;
 				}
-				if (maze.IsInBounds (x, y) && _directionsToExit [x, y] == NodeModel.DIRECTION_INVALID_IDX) {
+				if (maze.IsInBounds (nextX, nextY) && _directionsToExit [nextX, nextY] == NodeModel.DIRECTION_INVALID_IDX) {
 					_directionsToExit [x, y] = directionToExit;
-					findDirectionsTo (maze, maze.GetNode (x, y));
+					findDirectionsTo (maze, maze.GetNode (nextX, nextY));
 				}
 			}
 		}
 
-		void OnNodePassed (NodeModel node)
+		void OnNodePassed (NodeModel node, float moveSpeed)
 		{
 			if (_lastState != GameStateModel.STATE_ACTIVATED) {
 				if (node.nextNode != null) {
@@ -186,7 +188,7 @@ namespace Views
 		void OnDestroy ()
 		{
 			NotificationManager.GAME_STATE_UPDATED.Remove (OnGameStateUpdated);
-			NotificationManager.NODE_PASSED.Remove (OnNodePassed);
+			NotificationManager.PROCEED.Remove (OnNodePassed);
 			NotificationManager.MAZE_DATA_UPDATED.Remove (OnMazeDataUpdated);
 			NotificationManager.PLAYER_DIRECTION_UPDATED.Remove (OnPlayerDirectionUpdated);
 		}

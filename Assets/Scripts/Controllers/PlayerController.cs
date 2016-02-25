@@ -14,8 +14,6 @@ namespace Controllers {
 
 		private IntPoint _cellPosition;
 		private int _directionIdx;
-		private bool _didJustMove;
-		private float _moveTime;
 		private Vector2 _touchStartPoint;
 		private SpriteRenderer _renderer;
 		private AudioSource _audio;
@@ -35,115 +33,48 @@ namespace Controllers {
 			_audio = GetComponent<AudioSource> ();
 
 			NotificationManager.MAZE_DATA_UPDATED.Add (onMazeDataUpdated);
-			NotificationManager.NODE_PASSED.Add (onNodePassed);
+			NotificationManager.PROCEED.Add (Proceed);
+			NotificationManager.EXIT_REACHED.Add (OnExit);
+			NotificationManager.PLAYER_STUCK.Add (OnStuck);
 		}
 		
 		void onMazeDataUpdated (MazeModel data)
 		{
 			_renderer.enabled = true;
-			_moveTime = data.config.moveTime;
 		}
 
-		public void Next (float moveTime, int rotateBy)
+		public void Next (float moveTime)
 		{
 			if (moveTime > 0) {
-				_didJustMove = true;
 				transform.DOMove (transform.position + new Vector3 (
 					NodeModel.DIRECTIONS [_directionIdx, 0] * MazeController.NODE_SIZE, 
 					NodeModel.DIRECTIONS [_directionIdx, 1] * MazeController.NODE_SIZE, 
 				0
-				), moveTime).OnComplete (OnStepCompleted).SetEase (Ease.Linear);
+				), moveTime).OnComplete (OnReadyToProceed).SetEase (Ease.Linear);
 			
 				_cellPosition.x += NodeModel.DIRECTIONS [_directionIdx, 0];
 				_cellPosition.y += NodeModel.DIRECTIONS [_directionIdx, 1];
-
-			} else {
-				_didJustMove = false;
-				if (rotateBy != 0) {
-					transform.DORotate (transform.rotation.eulerAngles + new Vector3 (
-						0, 0, rotateBy * -90), 0.4f).OnComplete (OnStepCompleted);
-				}
-				
-				_directionIdx += rotateBy;
-				if (_directionIdx >= NodeModel.DIRECTIONS.GetLength (0))
-					_directionIdx = 0;
-				
-				if (_directionIdx < 0)
-					_directionIdx = NodeModel.DIRECTIONS.GetLength (0) - 1;
-					
 			}
 		}
 		
-		void OnStepCompleted ()
+		void OnReadyToProceed ()
 		{
 			DOTween.CompleteAll ();
 			transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
-			NotificationManager.PLAYER_STEP_COMPLETED.Dispatch (_cellPosition);
+			NotificationManager.PLAYER_READY_TO_PROCEED.Dispatch (_cellPosition, _directionIdx);
 		}
 
-		void onNodePassed (NodeModel node)
+		void Proceed (NodeModel node, float moveTime)
 		{
-			if (node.HasFlag (NodeModel.SPECIALS_EXIT)) {
-				_renderer.enabled = false;
-				return;
-			}
-			
-			float moveTime = _moveTime;
-			if (node.HasFlag (NodeModel.SPECIALS_SPEEDUP_UP)) {
-				if (_directionIdx == NodeModel.DIRECTION_UP_IDX)
-					moveTime /= 2;
-				
-				if (_directionIdx == NodeModel.DIRECTION_DOWN_IDX)
-					moveTime *= 2;
-			}
-			
-			if (node.HasFlag (NodeModel.SPECIALS_SPEEDUP_RIGHT)) {
-				if (_directionIdx == NodeModel.DIRECTION_RIGHT_IDX)
-					moveTime /= 2;
-				
-				if (_directionIdx == NodeModel.DIRECTION_LEFT_IDX)
-					moveTime *= 2;
-			}
-			
-			if (node.HasFlag (NodeModel.SPECIALS_SPEEDUP_DOWN)) {
-				if (_directionIdx == NodeModel.DIRECTION_DOWN_IDX)
-					moveTime /= 2;
-				
-				if (_directionIdx == NodeModel.DIRECTION_UP_IDX)
-					moveTime *= 2;
-			}
-			
-			if (node.HasFlag (NodeModel.SPECIALS_SPEEDUP_LEFT)) {
-				if (_directionIdx == NodeModel.DIRECTION_LEFT_IDX)
-					moveTime /= 2;
-				
-				if (_directionIdx == NodeModel.DIRECTION_RIGHT_IDX)
-					moveTime *= 2;
-			}
-			
-			int rotateBy = 0;
-			
-			if (node.HasFlag (NodeModel.SPECIALS_ROTATOR_CW)) {
-				rotateBy = 1;
-			}
-			
-			if (node.HasFlag (NodeModel.SPECIALS_ROTATOR_CCW)) {
-				rotateBy = -1;
-			}
-			
-			if (!node.HasWall (_directionIdx) && (!_didJustMove || rotateBy == 0)) {
-				rotateBy = 0;
-				
-				node.score = 0;
-				Next (moveTime, rotateBy);
-			} else {
-				Next (-1, rotateBy);
-				
-				if (rotateBy == 0) {
-					_audio.Play ();
-					NotificationManager.PLAYER_STUCK.Dispatch ();
-				}
-			}
+			Next (moveTime);
+		}
+
+		void OnExit(){
+			_renderer.enabled = false;
+		}
+
+		void OnStuck(){
+			_audio.Play ();
 		}
 
 		// Update is called once per frame
@@ -196,14 +127,16 @@ namespace Controllers {
 			_directionIdx = value;
 					
 			if (!DOTween.IsTweening (transform)) 
-				OnStepCompleted ();
+				OnReadyToProceed ();
 
 			NotificationManager.PLAYER_DIRECTION_UPDATED.Dispatch (_directionIdx);
 		}
 
 		public void OnDestroy(){
 			NotificationManager.MAZE_DATA_UPDATED.Remove (onMazeDataUpdated);
-			NotificationManager.NODE_PASSED.Remove (onNodePassed);
+			NotificationManager.PROCEED.Remove (Proceed);
+			NotificationManager.EXIT_REACHED.Remove (OnExit);
+			NotificationManager.PLAYER_STUCK.Remove (OnStuck);
 		}
 	}
 }
