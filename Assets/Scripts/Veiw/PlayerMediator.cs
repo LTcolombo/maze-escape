@@ -23,16 +23,15 @@ namespace View
 			_renderer = GetComponent<SpriteRenderer> ();
 			_audio = GetComponent<AudioSource> ();
 
-			MazePaceNotifications.MAZE_RECREATED.Add (OnMazeDataUpdated);
+			MazePaceNotifications.MAZE_RECREATED.Add (OnMazeRecreated);
 			MazePaceNotifications.EXIT_REACHED.Add (OnExitReached);
 			MazePaceNotifications.PLAYER_STUCK.Add (OnStuck);
 		}
 
-		void OnMazeDataUpdated (MazeModel data)
+		void OnMazeRecreated (MazeModel data)
 		{
 			_renderer.enabled = true;
 		}
-
 
 		void OnExitReached ()
 		{
@@ -46,7 +45,7 @@ namespace View
 
 		public void OnDestroy ()
 		{
-			MazePaceNotifications.MAZE_RECREATED.Remove (OnMazeDataUpdated);
+			MazePaceNotifications.MAZE_RECREATED.Remove (OnMazeRecreated);
 			MazePaceNotifications.EXIT_REACHED.Remove (OnExitReached);
 			MazePaceNotifications.PLAYER_STUCK.Remove (OnStuck);
 		}

@@ -3,7 +3,7 @@ using DG.Tweening;
 using Utils;
 using Model.Data;
 
-namespace Views {
+namespace View {
 	public class AnimatedLogoMediator : MonoBehaviour {
 
 		//writing matrix

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using Model;
 using Notifications;
 
-namespace Views {
+namespace View {
 	public class MovesMediator : MonoBehaviour
 	{
 		public string prefix = "MOVES: ";

@@ -10,7 +10,7 @@ using UnityEngine.Analytics;
 using Utils;
 using UnityEngine.SceneManagement;
 
-namespace Controllers
+namespace View
 {
 	public class GameController : MonoBehaviour
 	{				
@@ -144,8 +144,16 @@ namespace Controllers
 						moveTime *= 2;
 				}
 
+				if (node.HasFlag (NodeVO.SPECIALS_HIDE_WALLS)) {
+					MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Dispatch(false);
+				}
+
+				if (node.HasFlag (NodeVO.SPECIALS_SHOW_WALLS)) {
+					MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Dispatch(true);
+				}		
+
 				if (!node.HasWall (directionIdx)) {
-					MazePaceNotifications.PROCEED.Dispatch (node, moveTime);
+					MazePaceNotifications.NODE_REACHED.Dispatch (node, moveTime);
 				} else {
 					MazePaceNotifications.PLAYER_STUCK.Dispatch ();
 				}

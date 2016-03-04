@@ -4,7 +4,7 @@ using Model.Data;
 using Utils;
 using System.Collections.Generic;
 
-namespace Controllers {
+namespace View {
 	public class NodeController : MonoBehaviour
 	{
 		SpriteRenderer _tileRenderer;
@@ -90,8 +90,7 @@ namespace Controllers {
 					audio.Play ();
 			}
 		}
-		
-		//move these to specific elements
+
 		public void ShowWall (bool value)
 		{
 			if (_wallInstance != null)

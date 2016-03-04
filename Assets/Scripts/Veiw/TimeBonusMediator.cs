@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using Model;
 using Notifications;
 
-namespace Views {
+namespace View {
 	public class TimeBonusMediator : MonoBehaviour {
 		
 		public string prefix = "TIME BONUS: ";

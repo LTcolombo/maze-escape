@@ -87,8 +87,7 @@ namespace View {
 					audio.Play ();
 			}
 		}
-		
-		//move these to specific elements
+
 		public void ShowWall (bool value)
 		{
 			if (_wallInstance != null)

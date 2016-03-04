@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Notifications;
 
-namespace Views
+namespace View
 {
 	public class TutorialMediator : MonoBehaviour
 	{
@@ -29,7 +29,7 @@ namespace Views
 			_lastState = GameStateModel.STATE_INVALID;
 			_correctDirection = NodeVO.DIRECTION_INVALID_IDX;
 			MazePaceNotifications.GAME_STATE_UPDATED.Add (OnGameStateUpdated);
-			MazePaceNotifications.PROCEED.Add (OnNodePassed);
+			MazePaceNotifications.NODE_REACHED.Add (OnNodePassed);
 			MazePaceNotifications.MAZE_RECREATED.Add (OnMazeDataUpdated);
 			MazePaceNotifications.PLAYER_DIRECTION_UPDATED.Add (OnPlayerDirectionUpdated);
 		}
@@ -189,7 +189,7 @@ namespace Views
 		void OnDestroy ()
 		{
 			MazePaceNotifications.GAME_STATE_UPDATED.Remove (OnGameStateUpdated);
-			MazePaceNotifications.PROCEED.Remove (OnNodePassed);
+			MazePaceNotifications.NODE_REACHED.Remove (OnNodePassed);
 			MazePaceNotifications.MAZE_RECREATED.Remove (OnMazeDataUpdated);
 			MazePaceNotifications.PLAYER_DIRECTION_UPDATED.Remove (OnPlayerDirectionUpdated);
 		}

@@ -7,7 +7,7 @@ using Notifications;
 
 public delegate void PlayerStepComplete ();
 
-namespace Controllers {
+namespace View {
 	public class PlayerController : MonoBehaviour
 	{
 		private Vector2 _touchStartPoint;
@@ -26,7 +26,7 @@ namespace Controllers {
 			_audio = GetComponent<AudioSource> ();
 
 			MazePaceNotifications.MAZE_RECREATED.Add (onMazeDataUpdated);
-			MazePaceNotifications.PROCEED.Add (Proceed);
+			MazePaceNotifications.NODE_REACHED.Add (Proceed);
 			MazePaceNotifications.EXIT_REACHED.Add (OnExitReached);
 			MazePaceNotifications.PLAYER_STUCK.Add (OnStuck);
 		}
@@ -122,7 +122,7 @@ namespace Controllers {
 
 		public void OnDestroy(){
 			MazePaceNotifications.MAZE_RECREATED.Remove (onMazeDataUpdated);
-			MazePaceNotifications.PROCEED.Remove (Proceed);
+			MazePaceNotifications.NODE_REACHED.Remove (Proceed);
 			MazePaceNotifications.EXIT_REACHED.Remove (OnExitReached);
 			MazePaceNotifications.PLAYER_STUCK.Remove (OnStuck);
 		}
