@@ -2,10 +2,10 @@ using UnityEngine;
 
 namespace Utils
 {
-	public class Interpolatable<T>
+	public class Interpolatable
 	{
-		T _from;
-		T _to;
+		float _from;
+		float _to;
 		float _time;
 		float _startTime;
 		bool _static;
@@ -14,7 +14,7 @@ namespace Utils
 		{
 		}
 
-		public void SetValue (T start, T end, float time)
+		public void SetValue (float start, float end, float time)
 		{
 			_from = start;
 			_to = end;
@@ -23,23 +23,23 @@ namespace Utils
 			_static = false;
 		}
 
-		public void SetValue (T value)
+		public void SetValue (float value)
 		{
 			_from = value;
 			_static = true;
 		}
 
-		public void inc(T value){
-//			_from += value;
-//			_to += value;
+		public void inc(float value){
+			_from += value;
+			_to += value;
 		}
 
-		public void dec(T value){
-//			_from -= value;
-//			_to -= value;
+		public void dec(float value){
+			_from -= value;
+			_to -= value;
 		}
 
-		public static implicit operator T(Interpolatable<T> value)
+		public static implicit operator float(Interpolatable value)
 		{
 			if (value._static) {
 				return value._from;
@@ -48,7 +48,15 @@ namespace Utils
 			var progress = (Time.time - value._startTime) / value._time;
 			if (progress > 1.0f)
 				return value._to;
-			return value._from;// + (value._to - value._from) * progress;
+			return value._from + (value._to - value._from) * progress;
+		}
+
+		public static implicit operator int (Interpolatable value){
+			return (int)(float)value;
+		}
+
+		public static implicit operator uint (Interpolatable value){
+			return (uint)(float)value;
 		}
 	}
 }

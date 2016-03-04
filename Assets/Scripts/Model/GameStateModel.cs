@@ -14,9 +14,9 @@ namespace Model
 		public int maxScore;
 		public int state;
 
-		public Interpolatable<int> score;
-		public Interpolatable<uint> movesLeft;
-		public Interpolatable<float> timeBonus;
+		public Interpolatable score;
+		public Interpolatable movesLeft;
+		public Interpolatable timeBonus;
 
 		private static GameStateModel _instance;
 
