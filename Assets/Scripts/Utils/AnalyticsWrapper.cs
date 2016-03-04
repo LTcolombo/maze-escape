@@ -1,4 +1,4 @@
-using Models;
+using Model;
 using System.Collections.Generic;
 using UnityEngine.Analytics;
 

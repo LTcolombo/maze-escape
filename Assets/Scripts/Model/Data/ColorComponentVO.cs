@@ -1,12 +1,12 @@
 using System;
 using UnityEngine;
 
-namespace Models.Data
+namespace Model.Data
 {
 	///<summary>
 	/// A structure that contains a color and its relative position [0..1; 0..1]
 	///</summary>
-	public class ColorComponent
+	public class ColorComponentVO
 	{
 		public Color color;
 		public float[] position;
@@ -28,7 +28,7 @@ namespace Models.Data
 			new float[] {0.0f, 1.0f}
 		};
 		
-		public ColorComponent (Color color, float[] position)
+		public ColorComponentVO (Color color, float[] position)
 		{
 			this.color = color;
 			this.position = position;
@@ -37,14 +37,14 @@ namespace Models.Data
 		///<summary>
 		/// Resurns an array of color components with subsequent colors starting with a random index
 		///</summary>
-		public static ColorComponent[] GetArray ()
+		public static ColorComponentVO[] GetArray ()
 		{
-			ColorComponent[] colorComponents = new ColorComponent[POSITIONS.Length];
+			ColorComponentVO[] colorComponents = new ColorComponentVO[POSITIONS.Length];
 			
 			int index = UnityEngine.Random.Range (0, BASE_COLORS.Length);
 
 			for (int i = 0; i < colorComponents.Length; i++) 
-				colorComponents [i] = new ColorComponent (BASE_COLORS [(index + i)%BASE_COLORS.Length], POSITIONS[i]);
+				colorComponents [i] = new ColorComponentVO (BASE_COLORS [(index + i)%BASE_COLORS.Length], POSITIONS[i]);
 
 			return colorComponents;
 		}
@@ -52,14 +52,14 @@ namespace Models.Data
 		///<summary>
 		/// Resurns color value on a specifier position, which corresponds to specified colorComponents
 		///</summary>
-		public static Color GetColorAt (float[] tileRelativePos, ColorComponent[] colorComponents, float tint)
+		public static Color GetColorAt (float[] tileRelativePos, ColorComponentVO[] colorComponents, float tint)
 		{
 			float r = 0;
 			float g = 0;
 			float b = 0;
 			
 			for (int colorIdx = 0; colorIdx < 3; colorIdx++) {
-				ColorComponent colorComponent = colorComponents [colorIdx];
+				ColorComponentVO colorComponent = colorComponents [colorIdx];
 				float distance = (Mathf.Abs (tileRelativePos [0] - colorComponent.position [0]) + Mathf.Abs (tileRelativePos [1] - colorComponent.position [1])) / 2;
 				
 				r += colorComponent.color.r - (colorComponent.color.r * distance);			

@@ -1,13 +1,15 @@
 
 using System;
 
-namespace Models.Data
+namespace Model
 {
 	///<summary>
 	/// A structure that specifies the params of level
 	///</summary>
-	public class MazeConfig
+	public class LevelModel
 	{
+		public static int NODE_SIZE = 128;
+
 		public int width;
 		public int height;
 		public int speedUpsCount;
@@ -21,9 +23,20 @@ namespace Models.Data
 		public float moveTime;
 		public float scoreDrainTime;
 		public bool isTutorial;
-		
-		//move to model
-		public MazeConfig (int levelNumber)
+
+		private static LevelModel _instance;
+
+		public static LevelModel Instance ()
+		{
+			if (_instance == null)
+				_instance = new LevelModel ();
+
+			return _instance;
+		}
+
+		private LevelModel (){}
+
+		public void SetNumber(int levelNumber){
 		{			
 			int size = 3 + levelNumber / 4;
 			
@@ -55,6 +68,7 @@ namespace Models.Data
 			scoreDrainTime = 1.0f;
 			
 			isTutorial = true;// levelNumber <= 3;
-		}
+			}	
+	}
 	}
 }

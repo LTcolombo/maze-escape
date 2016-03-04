@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System;
-using Models;
+using Model.Data;
 
-namespace Models.Decorators
+namespace Model.Decorators
 {
 	class SpeedUpChain: IComparable
 	{
-		public List<NodeModel> nodes = new List<NodeModel> ();
+		public List<NodeVO> nodes = new List<NodeVO> ();
 		public int direction;
 		
 		int IComparable.CompareTo (object other)
@@ -22,19 +22,19 @@ namespace Models.Decorators
 	{
 		public static void Apply (MazeModel mazeData)
 		{
-			if (mazeData.config.speedUpsCount == 0)
+			if (LevelModel.Instance().speedUpsCount == 0)
 				return;
 				
 			List<SpeedUpChain> chains = new List<SpeedUpChain> ();
 				
-			foreach (NodeModel deadEnd in mazeData.deadEnds) {
+			foreach (NodeVO deadEnd in mazeData.deadEnds) {
 				
-				NodeModel node = deadEnd;
+				NodeVO node = deadEnd;
 				int currentDirection = -1;
 				SpeedUpChain currentChain = new SpeedUpChain ();
 				
 				do {
-					NodeModel previousNode = node.previousNode;
+					NodeVO previousNode = node.previousNode;
 			
 					bool nodeHasSpeedUp = false;
 					foreach (SpeedUpChain chain in chains) {
@@ -52,10 +52,10 @@ namespace Models.Decorators
 						currentChain.nodes.Add (node);
 					
 						bool hasSpecial = previousNode.HasFlag (
-							NodeModel.SPECIALS_ROTATOR_CW |
-							NodeModel.SPECIALS_ROTATOR_CCW |
-							NodeModel.SPECIALS_HIDE_WALLS |
-							NodeModel.SPECIALS_SHOW_WALLS); 
+							NodeVO.SPECIALS_ROTATOR_CW |
+							NodeVO.SPECIALS_ROTATOR_CCW |
+							NodeVO.SPECIALS_HIDE_WALLS |
+							NodeVO.SPECIALS_SHOW_WALLS); 
 					
 						int direction = previousNode.GetDirectionTowards (node);
 						
@@ -76,26 +76,26 @@ namespace Models.Decorators
 			chains.Sort ();
 			
 			for (int i =0; i < chains.Count; i++) {
-				if (i >= mazeData.config.speedUpsCount) 
+				if (i >= LevelModel.Instance().speedUpsCount) 
 					break;
 			
 				//mark nodes to contain according speedup flags
-				foreach (NodeModel nodeData in chains[i].nodes) {
+				foreach (NodeVO nodeData in chains[i].nodes) {
 					switch (chains [i].direction) {
-					case (NodeModel.DIRECTION_UP_IDX):
-						nodeData.AddFlag (NodeModel.SPECIALS_SPEEDUP_UP);
+					case (NodeVO.DIRECTION_UP_IDX):
+						nodeData.AddFlag (NodeVO.SPECIALS_SPEEDUP_UP);
 						break;
 						
-					case (NodeModel.DIRECTION_RIGHT_IDX):
-						nodeData.AddFlag (NodeModel.SPECIALS_SPEEDUP_RIGHT);
+					case (NodeVO.DIRECTION_RIGHT_IDX):
+						nodeData.AddFlag (NodeVO.SPECIALS_SPEEDUP_RIGHT);
 						break;
 						
-					case (NodeModel.DIRECTION_DOWN_IDX):
-						nodeData.AddFlag (NodeModel.SPECIALS_SPEEDUP_DOWN);
+					case (NodeVO.DIRECTION_DOWN_IDX):
+						nodeData.AddFlag (NodeVO.SPECIALS_SPEEDUP_DOWN);
 						break;
 						
-					case (NodeModel.DIRECTION_LEFT_IDX):
-						nodeData.AddFlag (NodeModel.SPECIALS_SPEEDUP_LEFT);
+					case (NodeVO.DIRECTION_LEFT_IDX):
+						nodeData.AddFlag (NodeVO.SPECIALS_SPEEDUP_LEFT);
 						break;
 					}
 				}

@@ -2,61 +2,47 @@ using UnityEngine;
 using System.Collections;
 using Model;
 using Model.Data;
+using Model.Decorators;
 using Utils;
 using DG.Tweening;
 using System.Collections.Generic;
 using Notifications;
 
-namespace Controllers {
-	public class MazeController : MonoBehaviour
+namespace View {
+	public class MazeMediator : MonoBehaviour
 	{
-		public static float TRANSITION_TIME = 0.5f;
-				
-		//current maze data
-		private MazeModel _mazeData;
-		
+		private static float TRANSITION_TIME = 0.5f;
+
 		//references for cleanup
 		private List<GameObject> _nodeInstances = new List<GameObject> ();
 		
 		//flag for redrawing
-		private bool _dirty;
 		private int _prevMaxX = 0;
 		private int _prevMaxY = 0;
 				
 		void Start(){
-			MazePaceNotifications.MAZE_RECREATED.Add (UpdateMazeData);
+			MazePaceNotifications.MAZE_RECREATED.Add (OnMazeDataRecreated);
 			MazePaceNotifications.PROCEED.Add (Proceed);
 		}
 
-		// Update is called once per frame
-		void Update ()
-		{
-			if (_dirty) {
-				Redraw ();
-				ShowWalls (true);
-				_dirty = false;
-				_prevMaxX = LevelModel.Instance().width - 1;
-				_prevMaxY = LevelModel.Instance().height - 1;
-			}
-		}
-		
-		public void UpdateMazeData (MazeModel mazeData)
-		{
-			_mazeData = mazeData;
-			_dirty = true;
+		void OnMazeDataRecreated(MazeModel maze){
+			Redraw ();
+			ShowWalls (true);
+			_prevMaxX = LevelModel.Instance().width - 1;
+			_prevMaxY = LevelModel.Instance().height - 1;
 		}
 		
 		public void ShowWalls (bool value)
 		{
 			foreach (GameObject node in _nodeInstances)
-				node.GetComponent<NodeController> ().ShowWall (value);
+				node.GetComponent<NodeMediator> ().ShowWall (value);
 		}
 		
 		void Proceed (NodeVO node, float moveSpeed)
 		{
 			int index = node.pos.x * LevelModel.Instance().width + node.pos.y;
 			if (index < _nodeInstances.Count) 
-				_nodeInstances [index].GetComponent<NodeController>().onReached();
+				_nodeInstances [index].GetComponent<NodeMediator>().onReached();
 		
 			if (node.HasFlag (NodeVO.SPECIALS_HIDE_WALLS)) {
 				ShowWalls(false);
@@ -85,7 +71,7 @@ namespace Controllers {
 			for (int cellX = 0; cellX < LevelModel.Instance().width; cellX++) {
 				for (int cellY = 0; cellY < LevelModel.Instance().height; cellY++) {
 				
-					NodeVO node = _mazeData.GetNode (cellX, cellY);
+					NodeVO node = MazeModel.Instance().GetNode (cellX, cellY);
 					
 					float[] tileRelativePos = new float[2] {
 						(float)cellX / LevelModel.Instance().width,
@@ -97,7 +83,7 @@ namespace Controllers {
 					//create a tile				
 					GameObject nodeInstance = (GameObject)Instantiate (PrefabLib.NODE);
 					nodeInstance.transform.parent = transform;
-					nodeInstance.GetComponent<NodeController> ().Redraw (node, ColorComponentVO.GetColorAt (tileRelativePos, colorComponents, tint));
+					nodeInstance.GetComponent<NodeMediator> ().Redraw (node, ColorComponentVO.GetColorAt (tileRelativePos, colorComponents, tint));
 					_nodeInstances.Add (nodeInstance);
 
 					float zOrder = 1 - (float)(cellY + cellX) / (LevelModel.Instance().width + LevelModel.Instance().height);	
@@ -113,7 +99,7 @@ namespace Controllers {
 		}
 
 		public void OnDestroy(){
-			MazePaceNotifications.MAZE_RECREATED.Remove (UpdateMazeData);
+			MazePaceNotifications.MAZE_RECREATED.Remove (OnMazeDataRecreated);
 			MazePaceNotifications.PROCEED.Remove (Proceed);
 		}
 	}

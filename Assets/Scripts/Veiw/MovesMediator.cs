@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using Models;
+using Model;
 using Notifications;
 
 namespace Views {
@@ -19,7 +19,7 @@ namespace Views {
 			_target = GetComponent<Text> ();
 			_audio = GetComponent<AudioSource> ();
 			_previousValue = 0;
-			NotificationManager.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
+			MazePaceNotifications.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
 		}
 
 		void OnGameStateUpdated (GameStateModel state)
@@ -42,7 +42,7 @@ namespace Views {
 		}
 		
 		void OnDestroy(){
-			NotificationManager.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
+			MazePaceNotifications.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }

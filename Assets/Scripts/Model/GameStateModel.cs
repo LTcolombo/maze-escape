@@ -1,4 +1,4 @@
-namespace Models{
+namespace Model{
 	public struct GameStateModel 
 	{
 		public const int STATE_INVALID = -1;

@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Models;
+using Model;
 using Notifications;
 
 namespace Views {
@@ -15,7 +15,7 @@ namespace Views {
 		void Awake(){
 			_target = GetComponent<Text> ();
 			_previousValue = 0;
-			NotificationManager.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
+			MazePaceNotifications.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
 		}
 		
 		// Update is called once per frame
@@ -29,7 +29,7 @@ namespace Views {
 		}
 		
 		void OnDestroy(){
-			NotificationManager.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
+			MazePaceNotifications.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }

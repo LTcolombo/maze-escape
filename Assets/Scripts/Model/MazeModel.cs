@@ -2,57 +2,66 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Models.Data;
+using Model.Data;
 
-namespace Models
+namespace Model
 {
 	///<summary>
 	/// Incapsulates an array of NodeData and its generation. Provides access by x, y coords. 
 	///</summary>
 	public class MazeModel
 	{
-		public NodeModel startingNode;
+		public NodeVO startingNode;
 	
 		/**
 		 * Array of NodeData that represent dead ends generated during maze creation.
 		 * Dead ends cant be any others node previos. Sorted by descending distance from starting point
 		 */
-		public List<NodeModel> deadEnds = new List<NodeModel> ();
+		public List<NodeVO> deadEnds = new List<NodeVO> ();
 
 		/**
 		 * Array of NodeData that represent nodes with more then 3 exits.
 		 */
-		public List<NodeModel> crossRoads = new List<NodeModel> ();
-
-		/**
-		 * currect maze config
-		 */
-		public MazeConfig config { get { return _config; } }
-
-		private MazeConfig _config;
+		public List<NodeVO> crossRoads = new List<NodeVO> ();
 
 		//incapsulated data array
-		private NodeModel[] _data;
+		private NodeVO[] _data;
+		private int _width;
+		private int _height;
 		private System.Random _rnd = new System.Random ();
 
-		public MazeModel (MazeConfig config, int startX, int startY)
-		{			
-			_config = config;
+		private static MazeModel _instance;
+
+		public static MazeModel Instance ()
+		{
+			if (_instance == null)
+				_instance = new MazeModel ();
+
+			return _instance;
+		}
+
+
+		private MazeModel (){
+		}
+
+		public void Recreate(int width, int height, int startX, int startY)
+		{
+			_width = width;
+			_height = height;
+			_data = new NodeVO[_width * _height];
 			
-			_data = new NodeModel[_config.width * _config.height];
-			
-			for (int j = 0; j < _config.width; j++)
-				for (int i = 0; i < _config.height; i++)
-					_data [i + j * _config.height] = new NodeModel (i, j);
+			for (int j = 0; j < _width; j++)
+				for (int i = 0; i < _height; i++)
+					_data [i + j * _height] = new NodeVO (i, j);
 								
 			//1. get starting point
 			startingNode = GetNode (startX, startY);
-			startingNode.AddFlag (NodeModel.PROCESSED);
+			startingNode.AddFlag (NodeVO.PROCESSED);
 			
 			//2. init edge nodes from its neighbours
-			List<NodeModel> edgeNodes = GetNotProcessedNeighboursOf (startingNode);
+			List<NodeVO> edgeNodes = GetNotProcessedNeighboursOf (startingNode);
 			
-			foreach (NodeModel nodeData in edgeNodes) {
+			foreach (NodeVO nodeData in edgeNodes) {
 				Link (startingNode, nodeData);
 			}
 			
@@ -61,13 +70,13 @@ namespace Models
 				
 				//3.1 find a random edge node and remove it from array
 				int idx = _rnd.Next (0, edgeNodes.Count);
-				NodeModel edgeNode = edgeNodes [idx];
+				NodeVO edgeNode = edgeNodes [idx];
 				edgeNodes.RemoveAt (idx);
 				
-				if (!edgeNode.HasFlag (NodeModel.PROCESSED)) {
+				if (!edgeNode.HasFlag (NodeVO.PROCESSED)) {
 					
 					//3.2 attach it to current tree
-					NodeModel processedNeighbour = GetRandomNeighbour (edgeNode, true);
+					NodeVO processedNeighbour = GetRandomNeighbour (edgeNode, true);
 					if (processedNeighbour != null) {
 						Merge (processedNeighbour, edgeNode);
 						Link (processedNeighbour, edgeNode);
@@ -85,15 +94,15 @@ namespace Models
 		/**
 		 * Gets the NodeData at provided 2d coordinates 
 		 */
-		public NodeModel GetNode (int x, int y)
+		public NodeVO GetNode (int x, int y)
 		{
-			return _data [x + y * _config.width];
+			return _data [x + y * _width];
 		}
 		
-		private void CreateBranch (NodeModel startNode, List<NodeModel> edgeNodes)
+		private void CreateBranch (NodeVO startNode, List<NodeVO> edgeNodes)
 		{
-			NodeModel randomNeighbour;
-			NodeModel currentNode = startNode;
+			NodeVO randomNeighbour;
+			NodeVO currentNode = startNode;
 			
 			do {
 				//1. if node exists in edge nodes, remove it
@@ -101,14 +110,14 @@ namespace Models
 					edgeNodes.Remove (currentNode);
 				
 				//1.1 append new edge nodes
-				List<NodeModel> notProcessedNeighbours = GetNotProcessedNeighboursOf (currentNode);
-				foreach (NodeModel nodeData in notProcessedNeighbours) {
+				List<NodeVO> notProcessedNeighbours = GetNotProcessedNeighboursOf (currentNode);
+				foreach (NodeVO nodeData in notProcessedNeighbours) {
 					if (!edgeNodes.Contains (nodeData)) {
 						edgeNodes.Add (nodeData);
 					}
 				}
 				
-				currentNode.AddFlag (NodeModel.PROCESSED);
+				currentNode.AddFlag (NodeVO.PROCESSED);
 				
 				//2. go to random direction and get a neighbour
 				randomNeighbour = GetRandomNeighbour (currentNode, false);
@@ -136,18 +145,18 @@ namespace Models
 		/**
          * Gets all neighbours of specified node not processed by alghoritm.
          */
-		private List<NodeModel> GetNotProcessedNeighboursOf (NodeModel target)
+		private List<NodeVO> GetNotProcessedNeighboursOf (NodeVO target)
 		{
-			List<NodeModel> neighbours = new List<NodeModel> ();
+			List<NodeVO> neighbours = new List<NodeVO> ();
 			
 			for (int i = 0; i < 4; i++) {
 				
-				int x = target.pos.x + NodeModel.DIRECTIONS [i, 0];
-				int y = target.pos.y + NodeModel.DIRECTIONS [i, 1];
+				int x = target.pos.x + NodeVO.DIRECTIONS [i, 0];
+				int y = target.pos.y + NodeVO.DIRECTIONS [i, 1];
 				
 				if (IsInBounds (x, y)) {
-					NodeModel neighbour = GetNode (x, y);
-					if (!neighbour.HasFlag (NodeModel.PROCESSED))
+					NodeVO neighbour = GetNode (x, y);
+					if (!neighbour.HasFlag (NodeVO.PROCESSED))
 						neighbours.Add (neighbour);
 				}
 			}
@@ -159,24 +168,24 @@ namespace Models
 		 */
 		public bool IsInBounds (int x, int y)
 		{
-			return ((x > -1) && (x < _config.width) && (y > -1) && (y < _config.height));
+			return ((x > -1) && (x < _width) && (y > -1) && (y < _height));
 		}
 		
 		/**
 		 * Finds a random neighbour with specified param
 		 */
-		private NodeModel GetRandomNeighbour (NodeModel target, bool processedNeeded)
+		private NodeVO GetRandomNeighbour (NodeVO target, bool processedNeeded)
 		{
 			int offset = _rnd.Next (0, 4);
 			for (int i = 0; i < 4; i++) {
 				int dir = (offset + i) % 4;
 				
-				int x = target.pos.x + NodeModel.DIRECTIONS [dir, 0];
-				int y = target.pos.y + NodeModel.DIRECTIONS [dir, 1];
+				int x = target.pos.x + NodeVO.DIRECTIONS [dir, 0];
+				int y = target.pos.y + NodeVO.DIRECTIONS [dir, 1];
 				
 				if (IsInBounds (x, y)) {
-					NodeModel neighbour = GetNode (x, y);
-					if ((neighbour.HasFlag (NodeModel.PROCESSED) && processedNeeded) || (!neighbour.HasFlag (NodeModel.PROCESSED) && !processedNeeded))
+					NodeVO neighbour = GetNode (x, y);
+					if ((neighbour.HasFlag (NodeVO.PROCESSED) && processedNeeded) || (!neighbour.HasFlag (NodeVO.PROCESSED) && !processedNeeded))
 						return neighbour;
 				}
 			}
@@ -187,26 +196,26 @@ namespace Models
 		/**
 		 * Removes walls between two specified nodes
 		 */
-		private void Merge (NodeModel from, NodeModel to)
+		private void Merge (NodeVO from, NodeVO to)
 		{
 			int dx = to.pos.x - from.pos.x;
 			int dy = to.pos.y - from.pos.y;
 			
 			if (dx != 0) {
 				if (dx > 0) {
-					to.RemoveWall (NodeModel.DIRECTION_LEFT_IDX);
-					from.RemoveWall (NodeModel.DIRECTION_RIGHT_IDX);
+					to.RemoveWall (NodeVO.DIRECTION_LEFT_IDX);
+					from.RemoveWall (NodeVO.DIRECTION_RIGHT_IDX);
 				} else {
-					to.RemoveWall (NodeModel.DIRECTION_RIGHT_IDX);
-					from.RemoveWall (NodeModel.DIRECTION_LEFT_IDX);
+					to.RemoveWall (NodeVO.DIRECTION_RIGHT_IDX);
+					from.RemoveWall (NodeVO.DIRECTION_LEFT_IDX);
 				}
 			} else if (dy != 0) {
 				if (dy > 0) {
-					to.RemoveWall (NodeModel.DIRECTION_DOWN_IDX);
-					from.RemoveWall (NodeModel.DIRECTION_UP_IDX);
+					to.RemoveWall (NodeVO.DIRECTION_DOWN_IDX);
+					from.RemoveWall (NodeVO.DIRECTION_UP_IDX);
 				} else {
-					to.RemoveWall (NodeModel.DIRECTION_UP_IDX);
-					from.RemoveWall (NodeModel.DIRECTION_DOWN_IDX);
+					to.RemoveWall (NodeVO.DIRECTION_UP_IDX);
+					from.RemoveWall (NodeVO.DIRECTION_DOWN_IDX);
 				}
 			}
 		}
@@ -214,7 +223,7 @@ namespace Models
 		/*
 		* Sets previous and next references to each other
 		*/
-		private void Link(NodeModel previous, NodeModel next){
+		private void Link(NodeVO previous, NodeVO next){
 			next.previousNode = previous;
 			previous.nextNode = next;
 		}

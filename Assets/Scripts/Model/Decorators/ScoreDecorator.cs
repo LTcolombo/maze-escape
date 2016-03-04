@@ -1,6 +1,6 @@
-using Models;
+using Model.Data;
 
-namespace Models.Decorators
+namespace Model.Decorators
 {
 	/**
 	 * Populates maze nodes with score values according to maze configuration
@@ -9,10 +9,10 @@ namespace Models.Decorators
 	{
 		public static void Apply (MazeModel mazeData)
 		{
-			foreach (NodeModel deadEnd in mazeData.deadEnds) {
+			foreach (NodeVO deadEnd in mazeData.deadEnds) {
 				
-				NodeModel node = deadEnd;
-				int currentScore = mazeData.config.minScore;
+				NodeVO node = deadEnd;
+				int currentScore = LevelModel.Instance().minScore;
 				int ds = 1;
 				
 				while (node!=null && node.score == 0) {
@@ -20,10 +20,10 @@ namespace Models.Decorators
 					currentScore += ds;
 					node.score = currentScore;
 					//define score delta
-					if (node.score <= mazeData.config.minScore)
+					if (node.score <= LevelModel.Instance().minScore)
 						ds = 1;
 					
-					if (node.score >= mazeData.config.maxScore)
+					if (node.score >= LevelModel.Instance().maxScore)
 						ds = -1;
 					
 					node = node.previousNode;

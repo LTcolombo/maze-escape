@@ -1,6 +1,7 @@
-using Models;
+using Model;
+using Model.Data;
 
-namespace Models.Decorators
+namespace Model.Decorators
 {
 	public class ExitDecorator
 	{
@@ -8,7 +9,7 @@ namespace Models.Decorators
 		public static void Apply (MazeModel mazeData)
 		{
 			if (mazeData.deadEnds.Count > 0)
-				mazeData.deadEnds [0].AddFlag (NodeModel.SPECIALS_EXIT);
+				mazeData.deadEnds [0].AddFlag (NodeVO.SPECIALS_EXIT);
 		}
 	}
 }

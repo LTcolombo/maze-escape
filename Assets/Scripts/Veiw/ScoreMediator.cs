@@ -1,25 +1,27 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Models;
+using Model;
 using Notifications;
 
-namespace Views {
+namespace Views
+{
 	public class ScoreMediator : MonoBehaviour
 	{
 		
 		public string prefix = "SCORE: ";
 		public string format = "F0";
 		private Text _target;
-		private int _previousState; //move to state?
-		private int _previousValue; 
+		private int _previousState;
+		//move to state?
+		private int _previousValue;
 		private AudioSource _audio;
-		
+
 		void Awake ()
 		{
 			_target = GetComponent<Text> ();
 			_audio = GetComponent<AudioSource> ();
 			_previousValue = 0;
-			NotificationManager.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
+			MazePaceNotifications.GAME_STATE_UPDATED.Add (OnGameStateUpdated);
 		}
 		
 		// Update is called once per frame
@@ -41,14 +43,15 @@ namespace Views {
 			
 			_target.text = prefix + state.score.ToString (format);
 			
-			if (_previousValue < state.score && _audio!=null && !_audio.isPlaying)
-				_audio.Play();
+			if (_previousValue < state.score && _audio != null && !_audio.isPlaying)
+				_audio.Play ();
 			
 			_previousValue = state.score;
 		}
-		
-		void OnDestroy(){
-			NotificationManager.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
+
+		void OnDestroy ()
+		{
+			MazePaceNotifications.GAME_STATE_UPDATED.Remove (OnGameStateUpdated);
 		}
 	}
 }

@@ -1,10 +1,10 @@
 
 using System;
-using Models.Data;
+using Model;
 
-namespace Models
+namespace Model.Data
 {
-	public class NodeModel
+	public class NodeVO
 	{
 		//indexes from direction array
 		public const int DIRECTION_INVALID_IDX = -1;
@@ -43,8 +43,8 @@ namespace Models
 		public int score = 0;
 		
 		//previous/next node during maze generation
-		public NodeModel previousNode;
-		public NodeModel nextNode;
+		public NodeVO previousNode;
+		public NodeVO nextNode;
 
 		//node state		
 		private uint _data = UP_WALL | RIGHT_WALL | DOWN_WALL | LEFT_WALL;
@@ -52,7 +52,7 @@ namespace Models
 		/**
 		 * Creates a node data with position specified
 		 */
-		public NodeModel (int x, int y)
+		public NodeVO (int x, int y)
 		{
 			pos = new IntPoint(x, y);
 		}
@@ -124,18 +124,18 @@ namespace Models
 		/**
 		 * Gets a direction index towards another NodeData. Assumes other node is near this |deltaX + deltaY = 1|
 		 */
-		public int GetDirectionTowards (NodeModel other)
+		public int GetDirectionTowards (NodeVO other)
 		{
 			if (other.pos.x == pos.x) {
 				if (other.pos.y > pos.y)
-					return NodeModel.DIRECTION_UP_IDX;
+					return NodeVO.DIRECTION_UP_IDX;
 				else
-					return NodeModel.DIRECTION_DOWN_IDX;
+					return NodeVO.DIRECTION_DOWN_IDX;
 			} else {
 				if (other.pos.x > pos.x)
-					return NodeModel.DIRECTION_RIGHT_IDX;
+					return NodeVO.DIRECTION_RIGHT_IDX;
 				else
-					return NodeModel.DIRECTION_LEFT_IDX;
+					return NodeVO.DIRECTION_LEFT_IDX;
 			}
 		}
 
@@ -145,7 +145,7 @@ namespace Models
 		public uint GetDistance ()
 		{
 			uint distance = 0;
-			NodeModel node = previousNode;
+			NodeVO node = previousNode;
 			while (node != null) {
 				distance++;
 				node = node.previousNode;

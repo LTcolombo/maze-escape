@@ -5,7 +5,7 @@ namespace Utils
 	/**
 	 * A prefab decpriptors static storage class
 	 */
-	public class Prefabs
+	public class PrefabLib
 	{
 		public static GameObject NODE = (GameObject)(Resources.Load ("Prefabs/Node"));
 		public static GameObject WALL_WEST = (GameObject)(Resources.Load ("Prefabs/WallWest"));

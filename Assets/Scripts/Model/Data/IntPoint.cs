@@ -1,5 +1,5 @@
 
-namespace Models.Data {
+namespace Model.Data {
 	public class IntPoint 
 	{
 		public int x;

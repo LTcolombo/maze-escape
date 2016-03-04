@@ -1,7 +1,8 @@
 using System;
-using Models;
+using Model;
+using Model.Data;
 
-namespace Models.Decorators
+namespace Model.Decorators
 {
 	/**
 	 * Populates maze nodes with hide/unhide flags according to maze configuration
@@ -12,11 +13,11 @@ namespace Models.Decorators
 
 		public static void Apply (MazeModel mazeData)
 		{
-			if (mazeData.config.hidersCount == 0)
+			if (LevelModel.Instance().hidersCount == 0)
 				return;
 
 			for (int i =0; i < mazeData.deadEnds.Count; i++) {
-				if (i >= mazeData.config.hidersCount)
+				if (i >= LevelModel.Instance().hidersCount)
 					break;
 
 				int distance = (int)mazeData.deadEnds [i].GetDistance ();
@@ -27,17 +28,17 @@ namespace Models.Decorators
 				int showIndex = _rnd.Next ((int)distance / 4, (int)distance / 2);
 				int hideIndex = _rnd.Next (showIndex + 2, showIndex + (int)Math.Min((int)(distance / 2), 8));
 				
-				NodeModel node = mazeData.deadEnds [i].previousNode;
+				NodeVO node = mazeData.deadEnds [i].previousNode;
 				int index = 0;
 				while (node !=null) {
 					index++;
 
 					if (index == showIndex)
-						node.AddFlag (NodeModel.SPECIALS_SHOW_WALLS);
+						node.AddFlag (NodeVO.SPECIALS_SHOW_WALLS);
 
 					
 					if (index == hideIndex)
-						node.AddFlag (NodeModel.SPECIALS_HIDE_WALLS);
+						node.AddFlag (NodeVO.SPECIALS_HIDE_WALLS);
 
 					node = node.previousNode;
 				}

@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using DG.Tweening;
-using Models;
-using Models.Data;
+using Model;
+using Model.Data;
 using Notifications;
 
 public delegate void PlayerStepComplete ();
@@ -10,10 +10,6 @@ public delegate void PlayerStepComplete ();
 namespace Controllers {
 	public class PlayerController : MonoBehaviour
 	{
-		public IntPoint cellPosition { get { return _cellPosition; } }
-
-		private IntPoint _cellPosition;
-		private int _directionIdx;
 		private Vector2 _touchStartPoint;
 		private SpriteRenderer _renderer;
 		private AudioSource _audio;
@@ -21,21 +17,18 @@ namespace Controllers {
 		// Use this for initialization
 		void Start ()
 		{
-			_cellPosition = new IntPoint (0, 0);
-
-			_directionIdx = NodeModel.DIRECTION_UP_IDX;
-			transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
-			transform.localPosition = new Vector3 (MazeController.NODE_SIZE * _cellPosition.x, 
-			                                      MazeController.NODE_SIZE * _cellPosition.y, 
+			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance().directionIdx);
+			transform.localPosition = new Vector3 (LevelModel.NODE_SIZE * PlayerModel.Instance().cellPosition.x, 
+				LevelModel.NODE_SIZE * PlayerModel.Instance().cellPosition.y, 
 			                                      0);
 			                                      
 			_renderer = GetComponent<SpriteRenderer> ();
 			_audio = GetComponent<AudioSource> ();
 
-			NotificationManager.MAZE_DATA_UPDATED.Add (onMazeDataUpdated);
-			NotificationManager.PROCEED.Add (Proceed);
-			NotificationManager.EXIT_REACHED.Add (OnExitReached);
-			NotificationManager.PLAYER_STUCK.Add (OnStuck);
+			MazePaceNotifications.MAZE_RECREATED.Add (onMazeDataUpdated);
+			MazePaceNotifications.PROCEED.Add (Proceed);
+			MazePaceNotifications.EXIT_REACHED.Add (OnExitReached);
+			MazePaceNotifications.PLAYER_STUCK.Add (OnStuck);
 		}
 		
 		void onMazeDataUpdated (MazeModel data)
@@ -46,21 +39,21 @@ namespace Controllers {
 		void OnReadyToProceed ()
 		{
 			DOTween.CompleteAll ();
-			transform.eulerAngles = new Vector3 (0, 0, -90 * _directionIdx);
-			NotificationManager.PLAYER_READY_TO_PROCEED.Dispatch (_cellPosition, _directionIdx);
+			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance().directionIdx);
+			MazePaceNotifications.PLAYER_READY_TO_PROCEED.Dispatch (PlayerModel.Instance().cellPosition, PlayerModel.Instance().directionIdx);
 		}
 
-		void Proceed (NodeModel node, float moveTime)
+		void Proceed (NodeVO node, float moveTime)
 		{
 			if (moveTime > 0) {
 				transform.DOMove (transform.position + new Vector3 (
-					NodeModel.DIRECTIONS [_directionIdx, 0] * MazeController.NODE_SIZE, 
-					NodeModel.DIRECTIONS [_directionIdx, 1] * MazeController.NODE_SIZE, 
+					NodeVO.DIRECTIONS [ PlayerModel.Instance().directionIdx, 0] * LevelModel.NODE_SIZE, 
+					NodeVO.DIRECTIONS [ PlayerModel.Instance().directionIdx, 1] * LevelModel.NODE_SIZE, 
 					0
 				), moveTime).OnComplete (OnReadyToProceed).SetEase (Ease.Linear);
 
-				_cellPosition.x += NodeModel.DIRECTIONS [_directionIdx, 0];
-				_cellPosition.y += NodeModel.DIRECTIONS [_directionIdx, 1];
+				PlayerModel.Instance().cellPosition.x += NodeVO.DIRECTIONS [ PlayerModel.Instance().directionIdx, 0];
+				PlayerModel.Instance().cellPosition.y += NodeVO.DIRECTIONS [ PlayerModel.Instance().directionIdx, 1];
 			};
 		}
 
@@ -80,13 +73,13 @@ namespace Controllers {
 			//keyboard input
 			
 			if (Input.GetKeyDown (KeyCode.UpArrow)) {
-				SetDirection (NodeModel.DIRECTION_UP_IDX);
+				SetDirection (NodeVO.DIRECTION_UP_IDX);
 			} else if (Input.GetKeyDown (KeyCode.RightArrow)) {
-				SetDirection (NodeModel.DIRECTION_RIGHT_IDX);
+				SetDirection (NodeVO.DIRECTION_RIGHT_IDX);
 			} else if (Input.GetKeyDown (KeyCode.DownArrow)) {
-				SetDirection (NodeModel.DIRECTION_DOWN_IDX);
+				SetDirection (NodeVO.DIRECTION_DOWN_IDX);
 			} else if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-				SetDirection (NodeModel.DIRECTION_LEFT_IDX);
+				SetDirection (NodeVO.DIRECTION_LEFT_IDX);
 			} 
 					
 			if (Input.touchCount > 0) {
@@ -103,14 +96,14 @@ namespace Controllers {
 						
 						if (Mathf.Abs (delta.x) > Mathf.Abs (delta.y)) {
 							if (delta.x > 0) 
-								SetDirection (NodeModel.DIRECTION_RIGHT_IDX);
+								SetDirection (NodeVO.DIRECTION_RIGHT_IDX);
 							else
-								SetDirection (NodeModel.DIRECTION_LEFT_IDX);
+								SetDirection (NodeVO.DIRECTION_LEFT_IDX);
 						} else {
 							if (delta.y > 0) 
-								SetDirection (NodeModel.DIRECTION_UP_IDX);
+								SetDirection (NodeVO.DIRECTION_UP_IDX);
 							else
-								SetDirection (NodeModel.DIRECTION_DOWN_IDX);
+								SetDirection (NodeVO.DIRECTION_DOWN_IDX);
 						}
 					}
 				}
@@ -119,19 +112,19 @@ namespace Controllers {
 		
 		public void SetDirection (int value)
 		{
-			_directionIdx = value;
+			PlayerModel.Instance().directionIdx = value;
 					
 			if (!DOTween.IsTweening (transform)) 
 				OnReadyToProceed ();
 
-			NotificationManager.PLAYER_DIRECTION_UPDATED.Dispatch (_directionIdx);
+			MazePaceNotifications.PLAYER_DIRECTION_UPDATED.Dispatch (PlayerModel.Instance().directionIdx);
 		}
 
 		public void OnDestroy(){
-			NotificationManager.MAZE_DATA_UPDATED.Remove (onMazeDataUpdated);
-			NotificationManager.PROCEED.Remove (Proceed);
-			NotificationManager.EXIT_REACHED.Remove (OnExitReached);
-			NotificationManager.PLAYER_STUCK.Remove (OnStuck);
+			MazePaceNotifications.MAZE_RECREATED.Remove (onMazeDataUpdated);
+			MazePaceNotifications.PROCEED.Remove (Proceed);
+			MazePaceNotifications.EXIT_REACHED.Remove (OnExitReached);
+			MazePaceNotifications.PLAYER_STUCK.Remove (OnStuck);
 		}
 	}
 }
