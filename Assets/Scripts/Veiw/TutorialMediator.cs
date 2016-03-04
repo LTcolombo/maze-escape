@@ -31,7 +31,7 @@ namespace View
 			MazePaceNotifications.GAME_STATE_UPDATED.Add (OnGameStateUpdated);
 			MazePaceNotifications.NODE_REACHED.Add (OnNodePassed);
 			MazePaceNotifications.MAZE_RECREATED.Add (OnMazeDataUpdated);
-			MazePaceNotifications.PLAYER_DIRECTION_UPDATED.Add (OnPlayerDirectionUpdated);
+			MazePaceNotifications.SET_PLAYER_DIRECTION.Add (OnPlayerDirectionUpdated);
 		}
 
 		public void OnMazeDataUpdated (MazeModel mazeData)
@@ -191,7 +191,7 @@ namespace View
 			MazePaceNotifications.GAME_STATE_UPDATED.Remove (OnGameStateUpdated);
 			MazePaceNotifications.NODE_REACHED.Remove (OnNodePassed);
 			MazePaceNotifications.MAZE_RECREATED.Remove (OnMazeDataUpdated);
-			MazePaceNotifications.PLAYER_DIRECTION_UPDATED.Remove (OnPlayerDirectionUpdated);
+			MazePaceNotifications.SET_PLAYER_DIRECTION.Remove (OnPlayerDirectionUpdated);
 		}
 	}
 }

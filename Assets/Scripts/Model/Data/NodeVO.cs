@@ -37,7 +37,7 @@ namespace Model.Data
 		public static int[,] DIRECTIONS = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 		
 		//position on grid
-		public IntPoint pos;
+		public IntPointVO pos;
 		
 		//score assigned to node
 		public int score = 0;
@@ -54,7 +54,7 @@ namespace Model.Data
 		 */
 		public NodeVO (int x, int y)
 		{
-			pos = new IntPoint(x, y);
+			pos = new IntPointVO(x, y);
 		}
 
 		/**

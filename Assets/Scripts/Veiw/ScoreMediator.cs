@@ -41,12 +41,13 @@ namespace View
 			if (_previousValue == state.score)
 				return;
 			
-			_target.text = prefix + state.score.ToString (format);
+			int score = state.score;
+			_target.text = prefix + score.ToString (format);
 			
-			if (_previousValue < state.score && _audio != null && !_audio.isPlaying)
+			if (_previousValue < score && _audio != null && !_audio.isPlaying)
 				_audio.Play ();
 			
-			_previousValue = state.score;
+			_previousValue = score;
 		}
 
 		void OnDestroy ()

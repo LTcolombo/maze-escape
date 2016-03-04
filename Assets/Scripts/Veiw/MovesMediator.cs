@@ -38,7 +38,8 @@ namespace View {
 			else
 				_target.color = new Color (0.56f, 0.56f, 0.56f);
 				
-			_target.text = prefix + state.movesLeft.ToString (format);
+			uint movesLeft = state.movesLeft;
+			_target.text = prefix + movesLeft.ToString (format);
 		}
 		
 		void OnDestroy(){

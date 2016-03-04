@@ -25,7 +25,7 @@ namespace View {
 				return;
 				
 			_previousValue = state.timeBonus;
-			_target.text = prefix + state.timeBonus.ToString (format);
+			_target.text = prefix + _previousValue.ToString (format);
 		}
 		
 		void OnDestroy(){

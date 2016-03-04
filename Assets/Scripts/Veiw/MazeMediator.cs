@@ -102,7 +102,6 @@ namespace View
 				}
 			}
 
-			OnToggleWallsVisibility (true);
 			_prevMaxX = levelModel.width - 1;
 			_prevMaxY = levelModel.height - 1;
 		}
@@ -111,7 +110,6 @@ namespace View
 		{
 			MazePaceNotifications.MAZE_RECREATED.Remove (UpdateMazeData);
 			MazePaceNotifications.NODE_REACHED.Remove (OnNodeReached);
-			MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Remove (OnToggleWallsVisibility);
 		}
 	}
 }

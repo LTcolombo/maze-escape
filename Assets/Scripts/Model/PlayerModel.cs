@@ -9,7 +9,7 @@ namespace Model
 	///</summary>
 	public class PlayerModel
 	{
-		public IntPoint cellPosition;
+		public IntPointVO cellPosition;
 		public int directionIdx;
 
 		private static PlayerModel _instance;
@@ -24,7 +24,7 @@ namespace Model
 
 		//move to model
 		public PlayerModel (){
-			cellPosition = new IntPoint (0, 0);
+			cellPosition = new IntPointVO (0, 0);
 			directionIdx = NodeVO.DIRECTION_UP_IDX;
 		}
 	}

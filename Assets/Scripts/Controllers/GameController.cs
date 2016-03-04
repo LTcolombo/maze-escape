@@ -13,105 +13,80 @@ using UnityEngine.SceneManagement;
 namespace View
 {
 	public class GameController : MonoBehaviour
-	{				
-		//current maze data
-		MazeModel _mazeData;
-		
-		//current game state
-		GameStateModel _gameState;
-
-		//starting point of the maze
-		IntPoint _mazeStartPos;
-		DelayedValue _scoreDelayed;
-		DelayedValue _movesDelayed;
-		DelayedValue _timeBonusDelayed;
-		
+	{	
 		// Use this for initialization
 		void Start ()
 		{
-			_mazeStartPos = new IntPoint (0, 0);
-
-			_gameState.state = GameStateModel.STATE_INVALID;
-			_gameState.movesLeft = 0;
-			_gameState.score = 0;
-			_gameState.levelNumber = PlayerPrefs.GetInt ("maxlevel", 0) / 2;
-			Next ();
+			LevelModel.Instance().SetNumber(PlayerPrefs.GetInt ("maxlevel", 0) / 2);
+			StartLevel ();
 
 			MazePaceNotifications.PLAYER_READY_TO_PROCEED.Add (OnReadyToProceed);
 			MazePaceNotifications.PLAYER_STUCK.Add (OnStuck);
 		}
-		
-		// Update is called once per frame
-		void Update ()
-		{
-			switch (_gameState.state) {
-			//if not activated - drain timebonus;
-			case (GameStateModel.STATE_INITED): 
-				_gameState.timeBonus = _timeBonusDelayed.GetCurrentValue (); 
-				MazePaceNotifications.GAME_STATE_UPDATED.Dispatch(_gameState);
-				break;
-			//if stuck - drain score
-			case(GameStateModel.STATE_STUCK):
-				_gameState.score = _scoreDelayed.GetCurrentValueAsInt ();
-				if (_gameState.score <= 0) {
-					_gameState.score = 0;
-					AnalyticsWrapper.ReportGameLost (_gameState);
-					SceneManager.LoadScene ("MenuScene");
-				} 
-				MazePaceNotifications.GAME_STATE_UPDATED.Dispatch(_gameState);
-				break;
-			//if ended - transfer moves to score in 0.5 seconds
-			case(GameStateModel.STATE_ENDED):
-				_gameState.score = _scoreDelayed.GetCurrentValueAsInt ();
-				if (_gameState.maxScore < _gameState.score)
-					_gameState.maxScore = _gameState.score;
-				_gameState.movesLeft = _movesDelayed.GetCurrentValueAsUInt ();
-				MazePaceNotifications.GAME_STATE_UPDATED.Dispatch(_gameState);
-				break;
-			}
+
+		void StartLevel ()
+		{	
+			if (GameStateModel.Instance().levelNumber > PlayerPrefs.GetInt ("maxlevel", 0))
+				PlayerPrefs.SetInt ("maxlevel", GameStateModel.Instance().levelNumber);
+
+			MazeModel.Instance ().Recreate (LevelModel.Instance ().width, LevelModel.Instance ().height, PlayerModel.Instance().cellPosition.x, PlayerModel.Instance().cellPosition.y);
+			ExitDecorator.Apply (MazeModel.Instance());
+			ScoreDecorator.Apply (MazeModel.Instance());
+			HiderDecorator.Apply (MazeModel.Instance());
+			SpeedUpDecorator.Apply (MazeModel.Instance());
+			RotatorDecorator.Apply (MazeModel.Instance());
+
+			MazePaceNotifications.MAZE_RECREATED.Dispatch (MazeModel.Instance());
+
+			GameStateModel.Instance().state = GameStateModel.STATE_INITED;
+			GameStateModel.Instance().timeBonus.SetValue (LevelModel.Instance ().maxTimeBonus, LevelModel.Instance ().minTimeBonus, LevelModel.Instance ().bonusTime);
+			GameStateModel.Instance().movesLeft.SetValue (MazeModel.Instance().deadEnds [0].GetDistance () * 2);
+
+			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch (GameStateModel.Instance());
 		}
-		
+
+
 		void OnApplicationPause (bool paused)
 		{
-			AnalyticsWrapper.ReportGamePaused (_gameState);
+			AnalyticsWrapper.ReportGamePaused (GameStateModel.Instance());
 		
-			if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
-				PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
+			if (GameStateModel.Instance().maxScore > PlayerPrefs.GetInt ("highscore", 0))
+				PlayerPrefs.SetInt ("highscore", GameStateModel.Instance().maxScore);
 		}
-		
-		void OnReadyToProceed (IntPoint pos, int directionIdx)
+
+		void OnReadyToProceed (IntPointVO pos, int directionIdx)
 		{		
-			NodeVO node = _mazeData.GetNode (pos.x, pos.y);
+			NodeVO node = MazeModel.Instance().GetNode (pos.x, pos.y);
 			
-			_gameState.score += (int)((float)node.score * _gameState.timeBonus);
+			GameStateModel.Instance().score.inc((int)((float)node.score * GameStateModel.Instance().timeBonus));
 			
-			if (_gameState.maxScore < _gameState.score) {
-				_gameState.maxScore = _gameState.score;
+			if (GameStateModel.Instance().maxScore < GameStateModel.Instance().score) {
+				GameStateModel.Instance().maxScore = GameStateModel.Instance().score;
 			}
 			
-			_gameState.movesLeft--;
+			GameStateModel.Instance().movesLeft.dec(1);
 					
-			if (_gameState.movesLeft == 0) {
+			if (GameStateModel.Instance().movesLeft < 1) {
 				
-				if (_gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
-					PlayerPrefs.SetInt ("highscore", _gameState.maxScore);
+				if (GameStateModel.Instance().maxScore > PlayerPrefs.GetInt ("highscore", 0))
+					PlayerPrefs.SetInt ("highscore", GameStateModel.Instance().maxScore);
 				
-				AnalyticsWrapper.ReportGameLost (_gameState);
+				AnalyticsWrapper.ReportGameLost (GameStateModel.Instance());
 				
 				SceneManager.LoadScene ("MenuScene");
 				return;
 			} 
 				
-			if (_gameState.state == GameStateModel.STATE_INITED || _gameState.state == GameStateModel.STATE_STUCK){
-				_gameState.state = GameStateModel.STATE_ACTIVATED;	
+			if (GameStateModel.Instance().state == GameStateModel.STATE_INITED || GameStateModel.Instance().state == GameStateModel.STATE_STUCK) {
+				GameStateModel.Instance().state = GameStateModel.STATE_ACTIVATED;	
 			}
 			
-			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch(_gameState);
+			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch (GameStateModel.Instance());
 			
 			if (node.HasFlag (NodeVO.SPECIALS_EXIT)) {
 				OnExit (pos);
 			} else {
-				float moveTime = LevelModel.Instance().moveTime;
+				float moveTime = LevelModel.Instance ().moveTime;
 				if (node.HasFlag (NodeVO.SPECIALS_SPEEDUP_UP)) {
 					if (directionIdx == NodeVO.DIRECTION_UP_IDX)
 						moveTime /= 2;
@@ -145,11 +120,11 @@ namespace View
 				}
 
 				if (node.HasFlag (NodeVO.SPECIALS_HIDE_WALLS)) {
-					MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Dispatch(false);
+					MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Dispatch (false);
 				}
 
 				if (node.HasFlag (NodeVO.SPECIALS_SHOW_WALLS)) {
-					MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Dispatch(true);
+					MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Dispatch (true);
 				}		
 
 				if (!node.HasWall (directionIdx)) {
@@ -159,56 +134,35 @@ namespace View
 				}
 			}
 		}
-		
+
 		public void OnExitClick ()
 		{
-			AnalyticsWrapper.ReportGameExit (_gameState);
+			AnalyticsWrapper.ReportGameExit (GameStateModel.Instance());
 			SceneManager.LoadScene ("MenuScene");
 		}
 
-		void OnExit (IntPoint pos)
+		void OnExit (IntPointVO pos)
 		{
-			_gameState.state = GameStateModel.STATE_ENDED;
-			_movesDelayed = new DelayedValue (_gameState.movesLeft, 0, 0.5f);
-			var avgScore = (LevelModel.Instance().minScore + LevelModel.Instance().maxScore) / 2;
-			_scoreDelayed = new DelayedValue (_gameState.score, _gameState.score + _gameState.movesLeft * _gameState.timeBonus * avgScore, 0.5f);
-			_gameState.levelNumber ++;
-			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch(_gameState);
+			GameStateModel.Instance().state = GameStateModel.STATE_ENDED;
+			GameStateModel.Instance().movesLeft.SetValue(GameStateModel.Instance().movesLeft, 0u, 0.5f);
+			var avgScore = (LevelModel.Instance ().minScore + LevelModel.Instance ().maxScore) / 2;
+			GameStateModel.Instance().score.SetValue(GameStateModel.Instance().score, (int)(GameStateModel.Instance().score + GameStateModel.Instance().movesLeft * GameStateModel.Instance().timeBonus * avgScore), 0.5f);
+			GameStateModel.Instance().levelNumber++;
+			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch (GameStateModel.Instance());
 
-			_mazeStartPos = pos;
 			MazePaceNotifications.EXIT_REACHED.Dispatch ();
 			Invoke ("Next", 0.6f);
 		}
 
 		void OnStuck ()
 		{	
-			_gameState.state = GameStateModel.STATE_STUCK;
-			_scoreDelayed = new DelayedValue (_gameState.score, 0, LevelModel.Instance().scoreDrainTime);
-		}
-		
-		void Next ()
-		{	
-			if (_gameState.levelNumber > PlayerPrefs.GetInt ("maxlevel", 0))
-				PlayerPrefs.SetInt ("maxlevel", _gameState.levelNumber);
-		
-			MazeModel.Instance().Recreate(LevelModel.Instance().width, LevelModel.Instance().height, _mazeStartPos.x, _mazeStartPos.y);
-			ExitDecorator.Apply (_mazeData);
-			ScoreDecorator.Apply (_mazeData);
-			HiderDecorator.Apply (_mazeData);
-			SpeedUpDecorator.Apply (_mazeData);
-			RotatorDecorator.Apply (_mazeData);
-
-			MazePaceNotifications.MAZE_RECREATED.Dispatch (_mazeData);
-
-			_gameState.state = GameStateModel.STATE_INITED;
-			_gameState.timeBonus = LevelModel.Instance().maxTimeBonus;
-			_timeBonusDelayed = new DelayedValue (LevelModel.Instance().maxTimeBonus, LevelModel.Instance().minTimeBonus, LevelModel.Instance().bonusTime);
-			_gameState.movesLeft = _mazeData.deadEnds [0].GetDistance () * 2;
-
-			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch(_gameState);
+			GameStateModel.Instance().state = GameStateModel.STATE_STUCK;
+			GameStateModel.Instance().score.SetValue(GameStateModel.Instance().score, 0, LevelModel.Instance ().scoreDrainTime);
 		}
 
-		public void OnDestroy(){
+
+		public void OnDestroy ()
+		{
 			MazePaceNotifications.PLAYER_READY_TO_PROCEED.Remove (OnReadyToProceed);
 			MazePaceNotifications.PLAYER_STUCK.Remove (OnStuck);
 		}

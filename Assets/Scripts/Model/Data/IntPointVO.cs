@@ -1,11 +1,11 @@
 
 namespace Model.Data {
-	public class IntPoint 
+	public class IntPointVO 
 	{
 		public int x;
 		public int y;
 		
-		public IntPoint (int x, int y)
+		public IntPointVO (int x, int y)
 		{
 			this.x = x;
 			this.y = y;
