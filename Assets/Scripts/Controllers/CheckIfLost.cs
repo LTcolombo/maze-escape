@@ -3,14 +3,10 @@ using Model;
 using Utils;
 using UnityEngine.SceneManagement;
 
-namespace AssemblyCSharp
+namespace Controller
 {
 	public class CheckIfLost
 	{
-		public CheckIfLost ()
-		{
-		}
-
 		void Execute(){
 			var gameStateModel = GameStateModel.Instance ();
 			if (gameStateModel.state == GameStateModel.STATE_STUCK) {

@@ -2,8 +2,8 @@ using UnityEngine;
 using System.Collections;
 using DG.Tweening;
 
-namespace Utils {
-	public class BackgroundFader : MonoBehaviour
+namespace View {
+	public class Crossfade : MonoBehaviour
 	{
 		public Color startColor;
 

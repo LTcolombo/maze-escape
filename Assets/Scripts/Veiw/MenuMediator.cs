@@ -50,7 +50,7 @@ namespace View {
 			Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
 			tipText.text = "LOADING...";
 			_canExit = false;
-			SceneManager.LoadScene ("GameScene");
+//			SceneManager.LoadScene ("GameScene");
 		}
 	}
 }

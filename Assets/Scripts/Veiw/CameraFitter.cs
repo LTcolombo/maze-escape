@@ -3,9 +3,9 @@ using System.Collections;
 
 
 /**
- * Resizes the orthographic size of the camera to contain provded minimal dimensions
+ * Resizes the orthographic size of the camera to contain provided minimal dimensions
  */
-namespace Utils {
+namespace View {
 	public class CameraFitter : MonoBehaviour
 	{
 		public int MinWidth;

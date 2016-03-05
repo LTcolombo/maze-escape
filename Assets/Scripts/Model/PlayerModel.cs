@@ -22,8 +22,7 @@ namespace Model
 			return _instance;
 		}
 
-		//move to model
-		public PlayerModel (){
+		private PlayerModel (){
 			cellPosition = new IntPointVO (0, 0);
 			directionIdx = NodeVO.DIRECTION_UP_IDX;
 		}

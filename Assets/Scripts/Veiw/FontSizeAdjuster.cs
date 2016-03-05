@@ -7,7 +7,7 @@ using UnityEngine.UI;
  * Assumes the Y anchor to be 0
  */
 
-namespace Utils {
+namespace View {
 	[AddComponentMenu( "Utilities/FontSizeAdjuster")]
 	public class FontSizeAdjuster : MonoBehaviour
 	{

@@ -1,26 +1,17 @@
-﻿using System;
-using Model.Data;
-using Notifications;
+﻿using Notifications;
 using UnityEngine;
+using Model.Data;
 
 namespace Controller
 {
-	public class ProcessInput
+	public class CheckSwipe
 	{
 		Vector2 _touchStartPoint;
-
-		public ProcessInput ()
-		{
-		}
 
 		// Update is called once per frame
 		void Execute ()
 		{
-			//if gamestate is active
-//			if (!_renderer.isVisible)//todo make it not binded to renderer
-//				return;
 			//keyboard input
-
 			if (Input.GetKeyDown (KeyCode.UpArrow)) {
 				MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_UP_IDX);
 			} else if (Input.GetKeyDown (KeyCode.RightArrow)) {
