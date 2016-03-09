@@ -12,32 +12,33 @@ namespace Controller
 	{
 		void Execute(){
 			IntPointVO pos = PlayerModel.Instance ().cellPosition;
-
 			int directionIdx = PlayerModel.Instance ().directionIdx;
-
 			NodeVO node = MazeModel.Instance().GetNode (pos.x, pos.y);
+			GameStateModel gameState = GameStateModel.Instance ();
 
-			GameStateModel.Instance().score.inc((int)((float)node.score * GameStateModel.Instance().timeBonus));
+			gameState.score.inc((int)((float)node.score * gameState.timeBonus));
 
-			if (GameStateModel.Instance().maxScore < GameStateModel.Instance().score) {
-				GameStateModel.Instance().maxScore = GameStateModel.Instance().score;
+			//incapsulate into gamestatemodel
+			if (gameState.maxScore < gameState.score) {
+				gameState.maxScore = gameState.score;
 			}
 
-			GameStateModel.Instance().movesLeft.dec(1);
+			gameState.movesLeft.dec(1);
 
-			if (GameStateModel.Instance().movesLeft < 1) {
+			if (gameState.movesLeft < 1) {
 
-				if (GameStateModel.Instance().maxScore > PlayerPrefs.GetInt ("highscore", 0))
-					PlayerPrefs.SetInt ("highscore", GameStateModel.Instance().maxScore);
+				//move stuff to command
+				if (gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
+					PlayerPrefs.SetInt ("highscore", gameState.maxScore);
 
-				AnalyticsWrapper.ReportGameLost (GameStateModel.Instance());
+				AnalyticsWrapper.ReportGameLost (gameState);
 
 				SceneManager.LoadScene ("MenuScene");
 				return;
 			} 
 
-			if (GameStateModel.Instance().state == GameStateModel.STATE_INITED || GameStateModel.Instance().state == GameStateModel.STATE_STUCK) {
-				GameStateModel.Instance().state = GameStateModel.STATE_ACTIVATED;	
+			if (gameState.state == GameStateModel.STATE_INITED || gameState.state == GameStateModel.STATE_STUCK) {
+				gameState.state = GameStateModel.STATE_ACTIVATED;	
 			}
 
 			if (node.HasFlag (NodeVO.SPECIALS_EXIT)) {
@@ -87,8 +88,8 @@ namespace Controller
 				if (!node.HasWall (directionIdx)) {
 					MazePaceNotifications.NODE_REACHED.Dispatch (node, moveTime);
 				} else {
-					GameStateModel.Instance().state = GameStateModel.STATE_STUCK;
-					GameStateModel.Instance().score.SetValue(GameStateModel.Instance().score, 0, LevelModel.Instance ().scoreDrainTime);
+					gameState.state = GameStateModel.STATE_STUCK;
+					gameState.score.SetValue(gameState.score, 0, LevelModel.Instance ().scoreDrainTime);
 					MazePaceNotifications.PLAYER_STUCK.Dispatch ();
 				}
 			}

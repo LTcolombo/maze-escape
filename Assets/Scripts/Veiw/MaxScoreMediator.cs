@@ -12,7 +12,7 @@ namespace View {
 		Text _target;
 		int _previousValue;
 		
-		void Awake(){
+		void Start(){
 			_target = GetComponent<Text> ();
 			_previousValue = 0;
 			MazePaceNotifications.GAME_STATE_UPDATED.Add(OnGameStateUpdated);

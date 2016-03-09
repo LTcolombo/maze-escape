@@ -1,7 +1,7 @@
 ﻿using Model;
 using UnityEngine;
 
-namespace AssemblyCSharp
+namespace Controller
 {
 	public class RetrieveLevel
 	{

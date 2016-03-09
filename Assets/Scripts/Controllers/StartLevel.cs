@@ -9,8 +9,7 @@ namespace Controller
 	public class StartLevel
 	{
 		void Execute(){
-			if (GameStateModel.Instance().levelNumber > PlayerPrefs.GetInt ("maxlevel", 0))
-				PlayerPrefs.SetInt ("maxlevel", GameStateModel.Instance().levelNumber);
+			//SaveLevel ();
 
 			MazeModel.Instance ().Recreate (LevelModel.Instance ().width, LevelModel.Instance ().height, PlayerModel.Instance().cellPosition.x, PlayerModel.Instance().cellPosition.y);
 			ExitDecorator.Apply (MazeModel.Instance());

@@ -1,7 +1,7 @@
 ﻿using System;
 using Model;
 using UnityEngine;
-using AssemblyCSharp;
+using Controller;
 
 namespace Controller
 {

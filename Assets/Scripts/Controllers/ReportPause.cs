@@ -9,9 +9,7 @@ namespace Controller
 		public void Execute ()
 		{
 			AnalyticsWrapper.ReportGamePaused (GameStateModel.Instance());
-
-			if (GameStateModel.Instance().maxScore > PlayerPrefs.GetInt ("highscore", 0))
-				PlayerPrefs.SetInt ("highscore", GameStateModel.Instance().maxScore);
+			//SaveMaxScore ();
 		}
 	}
 }
