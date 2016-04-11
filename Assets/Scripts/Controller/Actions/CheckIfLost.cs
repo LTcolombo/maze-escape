@@ -5,9 +5,9 @@ using UnityEngine.SceneManagement;
 
 namespace Controller
 {
-	public class CheckIfLost
+	public class CheckIfLost:Action
 	{
-		void Execute(){
+		override public PrefromResult Perform(float delta){
 			var gameStateModel = GameStateModel.Instance ();
 			if (gameStateModel.state == GameStateModel.STATE_STUCK) {
 				if (gameStateModel.score <= 0) {
@@ -15,6 +15,8 @@ namespace Controller
 					SceneManager.LoadScene ("MenuScene");
 				} 
 			}
+
+			return PrefromResult.SUCCESS;
 		}
 	}
 }

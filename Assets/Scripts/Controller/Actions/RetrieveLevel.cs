@@ -3,11 +3,13 @@ using UnityEngine;
 
 namespace Controller
 {
-	public class RetrieveLevel
+	public class RetrieveLevel:Action
 	{
-		public void Execute ()
+		override public PrefromResult Perform (float delta)
 		{
 			LevelModel.Instance().SetNumber(PlayerPrefs.GetInt ("maxlevel", 0) / 2);
+
+			return PrefromResult.COMPLETED;
 		}
 	}
 }

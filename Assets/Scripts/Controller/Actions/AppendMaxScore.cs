@@ -4,12 +4,14 @@ using UnityEngine;
 
 namespace Controller
 {
-	public class AppendMaxScore
+	public class AppendMaxScore:Action
 	{
-		public void Execute ()
+		override public PrefromResult Perform (float delta)
 		{
 			if (GameStateModel.Instance().maxScore > PlayerPrefs.GetInt ("highscore", 0))
 				PlayerPrefs.SetInt ("highscore", GameStateModel.Instance().maxScore);
+
+			return PrefromResult.COMPLETED;
 		}
 	}
 }

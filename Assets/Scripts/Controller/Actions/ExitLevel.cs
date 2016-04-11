@@ -4,9 +4,9 @@ using Notifications;
 
 namespace Controller
 {
-	public class ExitLevel
+	public class ExitLevel:Action
 	{
-		public void Execute(){
+		override public PrefromResult Perform(float delta){
 			GameStateModel.Instance().state = GameStateModel.STATE_ENDED;
 			GameStateModel.Instance().movesLeft.SetValue(GameStateModel.Instance().movesLeft, 0u, 0.5f);
 			var avgScore = (LevelModel.Instance ().minScore + LevelModel.Instance ().maxScore) / 2;
@@ -15,7 +15,8 @@ namespace Controller
 			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch (GameStateModel.Instance());
 
 			MazePaceNotifications.EXIT_REACHED.Dispatch ();
-//			Invoke ("Next", 0.6f);
+
+			return PrefromResult.COMPLETED;
 		}
 	}
 }

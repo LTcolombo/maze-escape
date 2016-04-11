@@ -7,13 +7,12 @@ using Utils;
 using UnityEngine.SceneManagement;
 
 namespace View {
-	public class MenuMediator : MonoBehaviour
+	public class MenuMediator : ActionInvoker<MazePaceActions>
 	{
 		private bool _canExit;
 
-		// Use this for initialization
-		void Start ()
-		{
+		override protected void Start(){
+			base.Start ();
 			Text bestScoreText = (Text)GameObject.Find ("Canvas/BestScoreText").GetComponent<Text> ();
 			bestScoreText.text = "BEST SCORE: " + PlayerPrefs.GetInt ("highscore", 0);
 			
@@ -28,9 +27,9 @@ namespace View {
 			_canExit = true;
 		}
 		
-		// Update is called once per frame
-		void Update ()
-		{	
+
+		override protected void Update(){
+			base.Update ();
 			if (Application.isEditor && Input.anyKey && _canExit)
 				ExitToGame();
 			
@@ -50,7 +49,7 @@ namespace View {
 			Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
 			tipText.text = "LOADING...";
 			_canExit = false;
-//			SceneManager.LoadScene ("GameScene");
+			InvokeCommand (MazePaceActions.NavigateToGame);
 		}
 	}
 }

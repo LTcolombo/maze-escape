@@ -27,7 +27,7 @@ namespace Utils
 			Analytics.CustomEvent ("GamePaused", eventData);
 		}
 		
-		public static void ReportGameExit (GameStateModel gameState)
+		public static void ReportReturnToMenu (GameStateModel gameState)
 		{
 			IDictionary<string, object> eventData = new Dictionary<string, object> ();
 			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber));

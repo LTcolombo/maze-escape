@@ -33,9 +33,9 @@ namespace Model
 			levelNumber = 0;
 			maxScore = 0;
 			state = GameStateModel.STATE_INVALID;
-			score.SetValue (0);
-			movesLeft.SetValue (0);
-			timeBonus.SetValue (0);
+			score = new Interpolatable ();
+			movesLeft = new Interpolatable ();
+			timeBonus = new Interpolatable ();
 		}
 	}
 }

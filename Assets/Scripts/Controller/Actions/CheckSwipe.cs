@@ -4,12 +4,12 @@ using Model.Data;
 
 namespace Controller
 {
-	public class CheckSwipe
+	public class CheckSwipe:Action
 	{
 		Vector2 _touchStartPoint;
 
 		// Update is called once per frame
-		void Execute ()
+		override public PrefromResult Perform (float delta)
 		{
 			//keyboard input
 			if (Input.GetKeyDown (KeyCode.UpArrow)) {
@@ -30,17 +30,17 @@ namespace Controller
 						_touchStartPoint = touch.position;
 					} else if (touch.phase == TouchPhase.Ended) {
 
-						Vector2 delta = touch.position - _touchStartPoint;
-						if (delta.magnitude == 0)
+						Vector2 deltaPosition = touch.position - _touchStartPoint;
+						if (deltaPosition.magnitude == 0)
 							continue;
 
-						if (Mathf.Abs (delta.x) > Mathf.Abs (delta.y)) {
-							if (delta.x > 0)
+						if (Mathf.Abs (deltaPosition.x) > Mathf.Abs (deltaPosition.y)) {
+							if (deltaPosition.x > 0)
 								MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_RIGHT_IDX);
 							else
 								MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_LEFT_IDX);
 						} else {
-							if (delta.y > 0)
+							if (deltaPosition.y > 0)
 								MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_UP_IDX);
 							else
 								MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_DOWN_IDX);
@@ -48,6 +48,8 @@ namespace Controller
 					}
 				}
 			}
+
+			return PrefromResult.SUCCESS;
 		}
 	}
 }

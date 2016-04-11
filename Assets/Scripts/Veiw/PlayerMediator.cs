@@ -7,14 +7,13 @@ using Notifications;
 
 namespace View
 {
-	public class PlayerMediator : MonoBehaviour
+	public class PlayerMediator : ActionInvoker<MazePaceActions>
 	{
 		private SpriteRenderer _renderer;
 		private AudioSource _audio;
 
-		// Use this for initialization
-		void Start ()
-		{
+		override protected void Start(){
+			base.Start ();
 			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
 			transform.localPosition = new Vector3 (LevelModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.x, 
 				LevelModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.y, 
@@ -35,13 +34,6 @@ namespace View
 			_renderer.enabled = true;
 		}
 
-		void OnReadyToProceed ()
-		{
-			DOTween.CompleteAll ();
-			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
-			MazePaceNotifications.PLAYER_READY_TO_PROCEED.Dispatch (PlayerModel.Instance ().cellPosition, PlayerModel.Instance ().directionIdx);
-		}
-
 		void Proceed (NodeVO node, float moveTime)
 		{
 			if (moveTime > 0) {
@@ -53,8 +45,7 @@ namespace View
 
 				PlayerModel.Instance ().cellPosition.x += NodeVO.DIRECTIONS [PlayerModel.Instance ().directionIdx, 0];
 				PlayerModel.Instance ().cellPosition.y += NodeVO.DIRECTIONS [PlayerModel.Instance ().directionIdx, 1];
-			}
-			;
+			};
 		}
 
 		public void SetDirection (int value)
@@ -63,6 +54,14 @@ namespace View
 
 			if (!DOTween.IsTweening (transform))
 				OnReadyToProceed ();
+		}
+
+		void OnReadyToProceed ()
+		{
+			DOTween.CompleteAll ();
+			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
+
+			InvokeCommand (MazePaceActions.TryMovePlayer);
 		}
 
 		void OnExitReached ()

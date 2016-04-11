@@ -4,12 +4,13 @@ using UnityEngine;
 
 namespace Controller
 {
-	public class ReportPause
+	public class ReportPause:Action
 	{
-		public void Execute ()
+		override public PrefromResult Perform (float delta)
 		{
 			AnalyticsWrapper.ReportGamePaused (GameStateModel.Instance());
-			//SaveMaxScore ();
+
+			return PrefromResult.COMPLETED;
 		}
 	}
 }

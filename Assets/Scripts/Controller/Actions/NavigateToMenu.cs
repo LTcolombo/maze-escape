@@ -4,12 +4,13 @@ using Model;
 
 namespace Controller
 {
-	public class NavigateToMenu
+	public class NavigateToMenu:Action
 	{
-		public void Execute ()
+		override public PrefromResult Perform (float delta)
 		{
-			AnalyticsWrapper.ReportGameExit (GameStateModel.Instance());
 			SceneManager.LoadScene ("MenuScene");
+
+			return PrefromResult.COMPLETED;
 		}
 	}
 }

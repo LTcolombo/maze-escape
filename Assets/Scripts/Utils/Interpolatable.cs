@@ -12,6 +12,8 @@ namespace Utils
 
 		public Interpolatable ()
 		{
+			_from = 0;
+			_static = true;
 		}
 
 		public void SetValue (float start, float end, float time)

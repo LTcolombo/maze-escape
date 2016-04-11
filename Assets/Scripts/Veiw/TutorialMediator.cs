@@ -52,7 +52,7 @@ namespace View
 				for (int x = 0; x < _directionsToExit.GetLength (1); x++)
 					str += _directionsToExit [x, y] + ",";
 					
-				Debug.Log (str);
+				//Debug.Log (str);
 			}
 		}
 

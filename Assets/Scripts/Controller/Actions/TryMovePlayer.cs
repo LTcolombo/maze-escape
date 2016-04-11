@@ -8,9 +8,9 @@ using Notifications;
 
 namespace Controller
 {
-	public class TryMovePlayer
+	public class TryMovePlayer:Action
 	{
-		void Execute(){
+		override public PrefromResult Perform(float delta){
 			IntPointVO pos = PlayerModel.Instance ().cellPosition;
 			int directionIdx = PlayerModel.Instance ().directionIdx;
 			NodeVO node = MazeModel.Instance().GetNode (pos.x, pos.y);
@@ -34,7 +34,7 @@ namespace Controller
 				AnalyticsWrapper.ReportGameLost (gameState);
 
 				SceneManager.LoadScene ("MenuScene");
-				return;
+				return PrefromResult.COMPLETED;
 			} 
 
 			if (gameState.state == GameStateModel.STATE_INITED || gameState.state == GameStateModel.STATE_STUCK) {
@@ -93,6 +93,8 @@ namespace Controller
 					MazePaceNotifications.PLAYER_STUCK.Dispatch ();
 				}
 			}
+
+			return PrefromResult.COMPLETED;
 		}
 	}
 }
