@@ -22,8 +22,9 @@ namespace View {
 			MazePaceNotifications.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
 		}
 
-		void OnGameStateUpdated (GameStateModel state)
+		void OnGameStateUpdated ()
 		{
+			GameStateModel state = GameStateModel.Instance ();
 			if (state.movesLeft == _previousValue)
 				return;
 			

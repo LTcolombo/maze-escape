@@ -42,7 +42,7 @@ namespace Controller
 			}
 
 			if (node.HasFlag (NodeVO.SPECIALS_EXIT)) {
-				//OnExit (pos);
+				MazePaceNotifications.EXIT_REACHED.Dispatch ();
 			} else {
 				float moveTime = LevelModel.Instance ().moveTime;
 				if (node.HasFlag (NodeVO.SPECIALS_SPEEDUP_UP)) {
@@ -83,7 +83,7 @@ namespace Controller
 
 				if (node.HasFlag (NodeVO.SPECIALS_SHOW_WALLS)) {
 					MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Dispatch (true);
-				}		
+				}
 
 				if (!node.HasWall (directionIdx)) {
 					MazePaceNotifications.NODE_REACHED.Dispatch (node, moveTime);
@@ -94,6 +94,7 @@ namespace Controller
 				}
 			}
 
+			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch ();
 			return PrefromResult.COMPLETED;
 		}
 	}

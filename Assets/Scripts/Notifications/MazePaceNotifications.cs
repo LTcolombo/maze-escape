@@ -3,7 +3,7 @@ using Model.Data;
 
 namespace Notifications {
 	
-	public class GameUpdated : Notification1<GameStateModel> {}
+	public class GameUpdated : Notification0 {}
 	public class MazeUpdated : Notification1<MazeModel> {}
 	public class Proceed : Notification2<NodeVO, float> {}
 	public class ReadyToProceed : Notification2<IntPointVO, int> {}

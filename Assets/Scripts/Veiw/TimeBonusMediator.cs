@@ -17,17 +17,28 @@ namespace View {
 			_previousValue = 0;
 			MazePaceNotifications.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
 		}
-		
-		// Update is called once per frame
-		void OnGameStateUpdated (GameStateModel state) {
-			
+
+		void OnGameStateUpdated () {
+			GameStateModel state = GameStateModel.Instance ();
+
 			if (_previousValue == state.timeBonus)
 				return;
-				
-			_previousValue = state.timeBonus;
+
+			RenderValue(state.timeBonus);
+		}
+
+		void Update(){
+			GameStateModel state = GameStateModel.Instance ();
+			if (state.state == GameStateModel.STATE_INITED) {
+				RenderValue(state.timeBonus);
+			}
+		}
+
+		void RenderValue(float value){
+			_previousValue = value;
 			_target.text = prefix + _previousValue.ToString (format);
 		}
-		
+
 		void OnDestroy(){
 			MazePaceNotifications.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
 		}

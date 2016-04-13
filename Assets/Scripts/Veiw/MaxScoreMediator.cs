@@ -19,7 +19,8 @@ namespace View {
 		}
 		
 		// Update is called once per frame
-		void OnGameStateUpdated (GameStateModel state) {
+		void OnGameStateUpdated () {
+			GameStateModel state = GameStateModel.Instance ();
 			if (_previousValue == state.maxScore)
 				return;
 				

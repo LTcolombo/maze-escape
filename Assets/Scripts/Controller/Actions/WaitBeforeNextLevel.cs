@@ -12,7 +12,7 @@ namespace Controller
 			if (_waitFor < 0) 
 				return PrefromResult.COMPLETED;
 			else
-				return PrefromResult.SUCCESS;
+				return PrefromResult.BLOCK;
 		}
 	}
 }

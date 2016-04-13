@@ -11,7 +11,7 @@ namespace Controller
 			GameStateModel.Instance().timeBonus.SetValue (LevelModel.Instance ().maxTimeBonus, LevelModel.Instance ().minTimeBonus, LevelModel.Instance ().bonusTime);
 			GameStateModel.Instance().movesLeft.SetValue (MazeModel.Instance().deadEnds [0].GetDistance () * 2);
 
-			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch (GameStateModel.Instance());
+			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch ();
 
 			return PrefromResult.COMPLETED;
 		}

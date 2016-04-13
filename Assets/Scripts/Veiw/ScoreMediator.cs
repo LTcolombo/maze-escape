@@ -23,10 +23,10 @@ namespace View
 			_previousValue = 0;
 			MazePaceNotifications.GAME_STATE_UPDATED.Add (OnGameStateUpdated);
 		}
-		
-		// Update is called once per frame
-		void OnGameStateUpdated (GameStateModel state)
+
+		void OnGameStateUpdated ()
 		{
+			GameStateModel state = GameStateModel.Instance ();
 			if (state.state != _previousState) {
 				if (state.state == GameStateModel.STATE_STUCK)
 					_target.color = new Color (0.8f, 0.2f, 0.2f);
@@ -41,13 +41,22 @@ namespace View
 			if (_previousValue == state.score)
 				return;
 			
-			int score = state.score;
-			_target.text = prefix + score.ToString (format);
-			
-			if (_previousValue < score && _audio != null && !_audio.isPlaying)
+			RenderValue (GameStateModel.Instance ().score);
+		}
+
+		void Update(){
+			if (_previousState == GameStateModel.STATE_STUCK) {
+				RenderValue (GameStateModel.Instance ().score);
+			}
+		}
+
+		void RenderValue(int value){
+			_target.text = prefix + value.ToString (format);
+
+			if (_previousValue < value && _audio != null && !_audio.isPlaying)
 				_audio.Play ();
-			
-			_previousValue = score;
+
+			_previousValue = value;
 		}
 
 		void OnDestroy ()

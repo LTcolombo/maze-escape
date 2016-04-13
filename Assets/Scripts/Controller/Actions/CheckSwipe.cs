@@ -49,7 +49,7 @@ namespace Controller
 				}
 			}
 
-			return PrefromResult.SUCCESS;
+			return PrefromResult.PROCEED;
 		}
 	}
 }

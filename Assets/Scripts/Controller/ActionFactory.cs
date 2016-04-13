@@ -35,6 +35,8 @@ namespace Controller
 					return new RetrieveLevel ();
 				case(MazePaceActions.TryMovePlayer):
 					return new TryMovePlayer ();
+				case(MazePaceActions.WaitBeforeNextLevel):
+					return new WaitBeforeNextLevel ();
 				}
 				return null;
 			}

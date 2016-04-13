@@ -110,6 +110,7 @@ namespace View
 		{
 			MazePaceNotifications.MAZE_RECREATED.Remove (UpdateMazeData);
 			MazePaceNotifications.NODE_REACHED.Remove (OnNodeReached);
+			MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Remove (OnToggleWallsVisibility);
 		}
 	}
 }

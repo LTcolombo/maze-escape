@@ -10,5 +10,6 @@
 	ReportPause,
 	ResetGameState,
 	RetrieveLevel,
-	TryMovePlayer
+	TryMovePlayer,
+	WaitBeforeNextLevel
 }

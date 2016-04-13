@@ -12,9 +12,7 @@ namespace Controller
 			var avgScore = (LevelModel.Instance ().minScore + LevelModel.Instance ().maxScore) / 2;
 			GameStateModel.Instance().score.SetValue(GameStateModel.Instance().score, (int)(GameStateModel.Instance().score + GameStateModel.Instance().movesLeft * GameStateModel.Instance().timeBonus * avgScore), 0.5f);
 			GameStateModel.Instance().levelNumber++;
-			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch (GameStateModel.Instance());
-
-			MazePaceNotifications.EXIT_REACHED.Dispatch ();
+			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch ();
 
 			return PrefromResult.COMPLETED;
 		}

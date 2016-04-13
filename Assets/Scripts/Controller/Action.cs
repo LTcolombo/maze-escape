@@ -1,8 +1,8 @@
 ﻿namespace Controller
 {
 	public enum PrefromResult {
-		SUCCESS,
-		FAILURE,
+		PROCEED,
+		BLOCK,
 		COMPLETED
 	}
 	

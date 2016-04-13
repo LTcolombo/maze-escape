@@ -111,8 +111,9 @@ namespace View
 			}
 		}
 
-		void OnGameStateUpdated (GameStateModel state)
+		void OnGameStateUpdated ()
 		{
+			GameStateModel state = GameStateModel.Instance ();
 			if (_lastState == state.state)
 				return;
 			

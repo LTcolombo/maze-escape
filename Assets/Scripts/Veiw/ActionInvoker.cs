@@ -23,18 +23,20 @@ namespace View
 		{
 			int commandCount = _queue.Count; //retaining commands will enqueue again
 			while (commandCount > 0) {
-				Action action = _queue.Dequeue ();
+				Action action = _queue.Peek ();
 				commandCount--;
 				PrefromResult result = action.Perform (Time.deltaTime);
 
 				switch (result) {
 				case(PrefromResult.COMPLETED):
+					_queue.Dequeue ();
 					break;
 
-				case(PrefromResult.FAILURE):
-					break;
+				case(PrefromResult.BLOCK):
+					return;
 
-				case(PrefromResult.SUCCESS):
+				case(PrefromResult.PROCEED):
+					_queue.Dequeue ();
 					_queue.Enqueue (action);
 					break;
 				}
