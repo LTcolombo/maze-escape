@@ -17,12 +17,12 @@ namespace Model
 		 * Array of NodeData that represent dead ends generated during maze creation.
 		 * Dead ends cant be any others node previos. Sorted by descending distance from starting point
 		 */
-		public List<NodeVO> deadEnds = new List<NodeVO> ();
+		public List<NodeVO> deadEnds;
 
 		/**
 		 * Array of NodeData that represent nodes with more then 3 exits.
 		 */
-		public List<NodeVO> crossRoads = new List<NodeVO> ();
+		public List<NodeVO> crossRoads;
 
 		//incapsulated data array
 		private NodeVO[] _data;
@@ -49,6 +49,8 @@ namespace Model
 			_width = width;
 			_height = height;
 			_data = new NodeVO[_width * _height];
+			deadEnds = new List<NodeVO> ();
+			crossRoads = new List<NodeVO> ();
 			
 			for (int j = 0; j < _width; j++)
 				for (int i = 0; i < _height; i++)

@@ -8,6 +8,7 @@ namespace View
 	{
 		override protected void Start(){
 			base.Start ();
+			InvokeCommand (MazePaceActions.ResetModels);
 			InvokeCommand (MazePaceActions.RetrieveLevel);
 			InvokeCommand (MazePaceActions.CreateMaze);
 			InvokeCommand (MazePaceActions.ResetGameState);

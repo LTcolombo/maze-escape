@@ -14,10 +14,6 @@ namespace View
 
 		override protected void Start(){
 			base.Start ();
-			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
-			transform.localPosition = new Vector3 (LevelModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.x, 
-				LevelModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.y, 
-				0);
 			                                      
 			_renderer = GetComponent<SpriteRenderer> ();
 			_audio = GetComponent<AudioSource> ();
@@ -31,6 +27,10 @@ namespace View
 
 		void OnMazeRecreated (MazeModel data)
 		{
+			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
+			transform.localPosition = new Vector3 (LevelModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.x, 
+				LevelModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.y, 
+				0);
 			_renderer.enabled = true;
 		}
 

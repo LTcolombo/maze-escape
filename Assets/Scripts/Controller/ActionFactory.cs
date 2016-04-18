@@ -31,6 +31,8 @@ namespace Controller
 					return new ReportPause ();
 				case(MazePaceActions.ResetGameState):
 					return new ResetGameState ();
+				case(MazePaceActions.ResetModels):
+					return new ResetModels ();
 				case(MazePaceActions.RetrieveLevel):
 					return new RetrieveLevel ();
 				case(MazePaceActions.TryMovePlayer):
