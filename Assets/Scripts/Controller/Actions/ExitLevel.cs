@@ -7,12 +7,12 @@ namespace Controller
 	public class ExitLevel:Action
 	{
 		override public PrefromResult Perform(float delta){
-			GameStateModel.Instance().state = GameStateModel.STATE_ENDED;
-			GameStateModel.Instance().movesLeft.SetValue(GameStateModel.Instance().movesLeft, 0u, 0.5f);
+			GameModel.Instance().state = GameModel.STATE_ENDED;
+			GameModel.Instance().movesLeft.SetValue(GameModel.Instance().movesLeft, 0u, 0.5f);
 			var avgScore = (LevelModel.Instance ().minScore + LevelModel.Instance ().maxScore) / 2;
-			GameStateModel.Instance().score.SetValue(GameStateModel.Instance().score, (int)(GameStateModel.Instance().score + GameStateModel.Instance().movesLeft * GameStateModel.Instance().timeBonus * avgScore), 0.5f);
-			GameStateModel.Instance().levelNumber++;
-			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch ();
+			GameModel.Instance().score.SetValue(GameModel.Instance().score, (int)(GameModel.Instance().score + GameModel.Instance().movesLeft * GameModel.Instance().timeBonus * avgScore), 0.5f);
+			GameModel.Instance().levelNumber++;
+			MazePaceNotifications.GAME_UPDATED.Dispatch ();
 
 			return PrefromResult.COMPLETED;
 		}

@@ -10,93 +10,51 @@ namespace Controller
 {
 	public class TryMovePlayer:Action
 	{
-		override public PrefromResult Perform(float delta){
-			IntPointVO pos = PlayerModel.Instance ().cellPosition;
-			int directionIdx = PlayerModel.Instance ().directionIdx;
-			NodeVO node = MazeModel.Instance().GetNode (pos.x, pos.y);
-			GameStateModel gameState = GameStateModel.Instance ();
+		override public PrefromResult Perform (float delta)
+		{
+			var player = PlayerModel.Instance ();
+			IntPointVO pos = player.cellPosition;
+			int directionIdx = player.directionIdx;
+			NodeVO node = MazeModel.Instance ().GetNode (pos.x, pos.y);
+			GameModel gameState = GameModel.Instance ();
 
-			gameState.score.inc((int)((float)node.score * gameState.timeBonus));
+			gameState.AddScore ((int)((float)node.score * gameState.timeBonus));
+			node.score = 0;
 
-			//incapsulate into gamestatemodel
-			if (gameState.maxScore < gameState.score) {
-				gameState.maxScore = gameState.score;
-			}
+			gameState.movesLeft.Dec (1);
 
-			gameState.movesLeft.dec(1);
-
-			if (gameState.movesLeft < 1) {
-
-				//move stuff to command
-				if (gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
-					PlayerPrefs.SetInt ("highscore", gameState.maxScore);
-
-				AnalyticsWrapper.ReportGameLost (gameState);
-
-				SceneManager.LoadScene ("MenuScene");
-				return PrefromResult.COMPLETED;
-			} 
-
-			if (gameState.state == GameStateModel.STATE_INITED || gameState.state == GameStateModel.STATE_STUCK) {
-				gameState.state = GameStateModel.STATE_ACTIVATED;	
+			if (gameState.state == GameModel.STATE_INITED || gameState.state == GameModel.STATE_STUCK) {
+				gameState.state = GameModel.STATE_MOVING;	
+				gameState.score.Freeze();
 			}
 
 			if (node.HasFlag (NodeVO.SPECIALS_EXIT)) {
 				MazePaceNotifications.EXIT_REACHED.Dispatch ();
 			} else {
-				float moveTime = LevelModel.Instance ().moveTime;
-				if (node.HasFlag (NodeVO.SPECIALS_SPEEDUP_UP)) {
-					if (directionIdx == NodeVO.DIRECTION_UP_IDX)
-						moveTime /= 2;
-
-					if (directionIdx == NodeVO.DIRECTION_DOWN_IDX)
-						moveTime *= 2;
-				}
-
-				if (node.HasFlag (NodeVO.SPECIALS_SPEEDUP_RIGHT)) {
-					if (directionIdx == NodeVO.DIRECTION_RIGHT_IDX)
-						moveTime /= 2;
-
-					if (directionIdx == NodeVO.DIRECTION_LEFT_IDX)
-						moveTime *= 2;
-				}
-
-				if (node.HasFlag (NodeVO.SPECIALS_SPEEDUP_DOWN)) {
-					if (directionIdx == NodeVO.DIRECTION_DOWN_IDX)
-						moveTime /= 2;
-
-					if (directionIdx == NodeVO.DIRECTION_UP_IDX)
-						moveTime *= 2;
-				}
-
-				if (node.HasFlag (NodeVO.SPECIALS_SPEEDUP_LEFT)) {
-					if (directionIdx == NodeVO.DIRECTION_LEFT_IDX)
-						moveTime /= 2;
-
-					if (directionIdx == NodeVO.DIRECTION_RIGHT_IDX)
-						moveTime *= 2;
-				}
-
 				if (node.HasFlag (NodeVO.SPECIALS_HIDE_WALLS)) {
 					MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Dispatch (false);
 				}
-
 				if (node.HasFlag (NodeVO.SPECIALS_SHOW_WALLS)) {
 					MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Dispatch (true);
 				}
-
-				if (!node.HasWall (directionIdx)) {
-					MazePaceNotifications.NODE_REACHED.Dispatch (node, moveTime);
+				bool shouldRotate = node.HasWall (directionIdx) || player.moved;
+				if (node.HasFlag (NodeVO.SPECIALS_ROTATOR_CW | NodeVO.SPECIALS_ROTATOR_CCW) && shouldRotate) {
+					MazePaceNotifications.ROTATE_AT_NODE.Dispatch (node);
+					player.moved = false;
+				} else if (!node.HasWall (directionIdx)) {
+					MazePaceNotifications.PROCEED_FROM_NODE.Dispatch (node);
+					player.cellPosition.x += NodeVO.DIRECTIONS [player.directionIdx, 0];
+					player.cellPosition.y += NodeVO.DIRECTIONS [player.directionIdx, 1];
+					player.moved = true;
 				} else {
-					gameState.state = GameStateModel.STATE_STUCK;
-					gameState.score.SetValue(gameState.score, 0, LevelModel.Instance ().scoreDrainTime);
+					gameState.state = GameModel.STATE_STUCK;
+					gameState.score.SetValue (gameState.score, 0, LevelModel.Instance ().scoreDrainTime);
 					MazePaceNotifications.PLAYER_STUCK.Dispatch ();
 				}
 			}
 
-			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch ();
+			MazePaceNotifications.GAME_UPDATED.Dispatch ();
 			return PrefromResult.COMPLETED;
 		}
 	}
 }
-

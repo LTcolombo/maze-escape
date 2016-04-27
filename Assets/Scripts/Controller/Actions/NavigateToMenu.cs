@@ -9,7 +9,6 @@ namespace Controller
 		override public PrefromResult Perform (float delta)
 		{
 			SceneManager.LoadScene ("MenuScene");
-
 			return PrefromResult.COMPLETED;
 		}
 	}

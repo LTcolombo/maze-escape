@@ -6,7 +6,7 @@ namespace Utils
 {
 	public class AnalyticsWrapper
 	{
-		public static void ReportGameLost (GameStateModel gameState)
+		public static void ReportGameLost (GameModel gameState)
 		{
 			IDictionary<string, object> eventData = new Dictionary<string, object> ();
 			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber));
@@ -17,7 +17,7 @@ namespace Utils
 			Analytics.CustomEvent ("GameLost", eventData);
 		}
 		
-		public static void ReportGamePaused (GameStateModel gameState)
+		public static void ReportGamePaused (GameModel gameState)
 		{
 			IDictionary<string, object> eventData = new Dictionary<string, object> ();
 			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber));
@@ -27,7 +27,7 @@ namespace Utils
 			Analytics.CustomEvent ("GamePaused", eventData);
 		}
 		
-		public static void ReportReturnToMenu (GameStateModel gameState)
+		public static void ReportReturnToMenu (GameModel gameState)
 		{
 			IDictionary<string, object> eventData = new Dictionary<string, object> ();
 			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber));

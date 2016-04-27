@@ -7,11 +7,11 @@ namespace Controller
 	{
 		override public PrefromResult Perform (float delta)
 		{
-			GameStateModel.Instance().state = GameStateModel.STATE_INITED;
-			GameStateModel.Instance().timeBonus.SetValue (LevelModel.Instance ().maxTimeBonus, LevelModel.Instance ().minTimeBonus, LevelModel.Instance ().bonusTime);
-			GameStateModel.Instance().movesLeft.SetValue (MazeModel.Instance().deadEnds [0].GetDistance () * 2);
+			GameModel.Instance().state = GameModel.STATE_INITED;
+			GameModel.Instance().timeBonus.SetValue (LevelModel.Instance ().maxTimeBonus, LevelModel.Instance ().minTimeBonus, LevelModel.Instance ().bonusTime);
+			GameModel.Instance().movesLeft.SetValue (MazeModel.Instance().deadEnds [0].GetDistance () * 2);
 
-			MazePaceNotifications.GAME_STATE_UPDATED.Dispatch ();
+			MazePaceNotifications.GAME_UPDATED.Dispatch ();
 
 			return PrefromResult.COMPLETED;
 		}

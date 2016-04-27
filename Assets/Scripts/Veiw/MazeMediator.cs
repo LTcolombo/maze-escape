@@ -48,9 +48,10 @@ namespace View
 				node.GetComponent<NodeMediator> ().ShowWall (value);
 		}
 
-		private void OnNodeReached (NodeVO node, float moveSpeed)
+		private void OnNodeReached ()
 		{
-			int index = node.pos.x * LevelModel.Instance ().width + node.pos.y;
+			var cellPosition = PlayerModel.Instance ().cellPosition;
+			int index = cellPosition.x * LevelModel.Instance ().width + cellPosition.y;
 			if (index < _nodeInstances.Count)
 				_nodeInstances [index].GetComponent<NodeMediator> ().onReached ();
 		}

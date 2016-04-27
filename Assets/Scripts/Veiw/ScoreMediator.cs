@@ -21,16 +21,16 @@ namespace View
 			_target = GetComponent<Text> ();
 			_audio = GetComponent<AudioSource> ();
 			_previousValue = 0;
-			MazePaceNotifications.GAME_STATE_UPDATED.Add (OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Add (OnGameStateUpdated);
 		}
 
 		void OnGameStateUpdated ()
 		{
-			GameStateModel state = GameStateModel.Instance ();
+			GameModel state = GameModel.Instance ();
 			if (state.state != _previousState) {
-				if (state.state == GameStateModel.STATE_STUCK)
+				if (state.state == GameModel.STATE_STUCK)
 					_target.color = new Color (0.8f, 0.2f, 0.2f);
-				else if (state.state == GameStateModel.STATE_ENDED)
+				else if (state.state == GameModel.STATE_ENDED)
 					_target.color = new Color (0.2f, 0.8f, 0.2f);
 				else
 					_target.color = new Color (0.56f, 0.56f, 0.56f);
@@ -41,12 +41,12 @@ namespace View
 			if (_previousValue == state.score)
 				return;
 			
-			RenderValue (GameStateModel.Instance ().score);
+			RenderValue (GameModel.Instance ().score);
 		}
 
 		void Update(){
-			if (_previousState == GameStateModel.STATE_STUCK) {
-				RenderValue (GameStateModel.Instance ().score);
+			if (_previousState == GameModel.STATE_STUCK) {
+				RenderValue (GameModel.Instance ().score);
 			}
 		}
 
@@ -61,7 +61,7 @@ namespace View
 
 		void OnDestroy ()
 		{
-			MazePaceNotifications.GAME_STATE_UPDATED.Remove (OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Remove (OnGameStateUpdated);
 		}
 	}
 }

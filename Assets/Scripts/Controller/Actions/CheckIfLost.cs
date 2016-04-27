@@ -2,18 +2,21 @@
 using Model;
 using Utils;
 using UnityEngine.SceneManagement;
+using UnityEngine;
+using Notifications;
 
 namespace Controller
 {
 	public class CheckIfLost:Action
 	{
 		override public PrefromResult Perform(float delta){
-			var gameStateModel = GameStateModel.Instance ();
-			if (gameStateModel.state == GameStateModel.STATE_STUCK) {
-				if (gameStateModel.score <= 0) {
-					AnalyticsWrapper.ReportGameLost (gameStateModel);
-					SceneManager.LoadScene ("MenuScene");
-				} 
+			var gameState = GameModel.Instance ();
+			if (gameState.GetIsLost ()) {
+				if (gameState.maxScore > PlayerPrefs.GetInt ("highscore", 0))
+					PlayerPrefs.SetInt ("highscore", gameState.maxScore);
+
+				AnalyticsWrapper.ReportGameLost (gameState);
+				SceneManager.LoadScene ("MenuScene");
 			}
 
 			return PrefromResult.PROCEED;

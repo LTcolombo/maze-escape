@@ -8,8 +8,8 @@ namespace Controller
 	{
 		override public PrefromResult Perform (float delta)
 		{
-			if (GameStateModel.Instance ().levelNumber > PlayerPrefs.GetInt ("maxlevel", 0))
-				PlayerPrefs.SetInt ("maxlevel", GameStateModel.Instance ().levelNumber);
+			if (GameModel.Instance ().levelNumber > PlayerPrefs.GetInt ("maxlevel", 0))
+				PlayerPrefs.SetInt ("maxlevel", GameModel.Instance ().levelNumber);
 
 			return PrefromResult.COMPLETED;
 		}

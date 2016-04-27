@@ -13,13 +13,13 @@ namespace Controller
 		{
 			//keyboard input
 			if (Input.GetKeyDown (KeyCode.UpArrow)) {
-				MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_UP_IDX);
+				MazePaceNotifications.DIRECTION_UPDATED.Dispatch (NodeVO.DIRECTION_UP_IDX);
 			} else if (Input.GetKeyDown (KeyCode.RightArrow)) {
-				MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_RIGHT_IDX);
+				MazePaceNotifications.DIRECTION_UPDATED.Dispatch (NodeVO.DIRECTION_RIGHT_IDX);
 			} else if (Input.GetKeyDown (KeyCode.DownArrow)) {
-				MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_DOWN_IDX);
+				MazePaceNotifications.DIRECTION_UPDATED.Dispatch (NodeVO.DIRECTION_DOWN_IDX);
 			} else if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-				MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_LEFT_IDX);
+				MazePaceNotifications.DIRECTION_UPDATED.Dispatch (NodeVO.DIRECTION_LEFT_IDX);
 			} 
 
 			if (Input.touchCount > 0) {
@@ -36,14 +36,14 @@ namespace Controller
 
 						if (Mathf.Abs (deltaPosition.x) > Mathf.Abs (deltaPosition.y)) {
 							if (deltaPosition.x > 0)
-								MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_RIGHT_IDX);
+								MazePaceNotifications.DIRECTION_UPDATED.Dispatch (NodeVO.DIRECTION_RIGHT_IDX);
 							else
-								MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_LEFT_IDX);
+								MazePaceNotifications.DIRECTION_UPDATED.Dispatch (NodeVO.DIRECTION_LEFT_IDX);
 						} else {
 							if (deltaPosition.y > 0)
-								MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_UP_IDX);
+								MazePaceNotifications.DIRECTION_UPDATED.Dispatch (NodeVO.DIRECTION_UP_IDX);
 							else
-								MazePaceNotifications.SET_PLAYER_DIRECTION.Dispatch (NodeVO.DIRECTION_DOWN_IDX);
+								MazePaceNotifications.DIRECTION_UPDATED.Dispatch (NodeVO.DIRECTION_DOWN_IDX);
 						}
 					}
 				}

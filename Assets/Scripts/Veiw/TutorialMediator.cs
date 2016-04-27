@@ -12,10 +12,9 @@ namespace View
 	{
 		GameObject _handObject;
 		Transform _handTransform;
-		SpriteRenderer _handRenderer;
-		int _lastState;
 		int _correctDirection;
 		int _playerDirection;
+		int _lastState;
 		string[] directions = { "up", "right", "down", "left" };
 		int[,] _directionsToExit;
 		
@@ -24,20 +23,18 @@ namespace View
 		{
 			_handObject = GameObject.Find ("Hand");
 			_handTransform = _handObject.GetComponent<Transform> ();
-			_handRenderer = _handObject.GetComponent<SpriteRenderer> ();
-			
-			_lastState = GameStateModel.STATE_INVALID;
+
+			_lastState = GameModel.STATE_INVALID;
 			_correctDirection = NodeVO.DIRECTION_INVALID_IDX;
-			MazePaceNotifications.GAME_STATE_UPDATED.Add (OnGameStateUpdated);
-			MazePaceNotifications.NODE_REACHED.Add (OnNodePassed);
+			MazePaceNotifications.PROCEED_FROM_NODE.Add (OnProceed);
 			MazePaceNotifications.MAZE_RECREATED.Add (OnMazeDataUpdated);
-			MazePaceNotifications.SET_PLAYER_DIRECTION.Add (OnPlayerDirectionUpdated);
+			MazePaceNotifications.DIRECTION_UPDATED.Add (OnPlayerDirectionUpdated);
 		}
 
 		public void OnMazeDataUpdated (MazeModel mazeData)
 		{
 			enabled = LevelModel.Instance().isTutorial;
-			OnNodePassed (mazeData.startingNode, 0);
+			OnProceed (mazeData.startingNode);
 			
 			_directionsToExit = new int[LevelModel.Instance().width, LevelModel.Instance().height];
 			for (int x = 0; x < LevelModel.Instance().width; x++) {
@@ -46,7 +43,7 @@ namespace View
 				}
 			}
 
-			findDirectionsTo (mazeData, mazeData.deadEnds [0]);
+			FindDirectionsTo (mazeData, mazeData.deadEnds [0]);
 			for (int y = 0; y < _directionsToExit.GetLength (0); y++) {
 				string str = "";
 				for (int x = 0; x < _directionsToExit.GetLength (1); x++)
@@ -56,7 +53,7 @@ namespace View
 			}
 		}
 
-		void findDirectionsTo (MazeModel maze, NodeVO node)
+		void FindDirectionsTo (MazeModel maze, NodeVO node)
 		{
 			for (int directionIdx = NodeVO.DIRECTION_UP_IDX; directionIdx <= NodeVO.DIRECTION_LEFT_IDX; directionIdx++) {
 				int x = node.pos.x;
@@ -92,14 +89,14 @@ namespace View
 				}
 				if (maze.IsInBounds (nextX, nextY) && _directionsToExit [nextX, nextY] == NodeVO.DIRECTION_INVALID_IDX) {
 					_directionsToExit [x, y] = directionToExit;
-					findDirectionsTo (maze, maze.GetNode (nextX, nextY));
+					FindDirectionsTo (maze, maze.GetNode (nextX, nextY));
 				}
 			}
 		}
 
-		void OnNodePassed (NodeVO node, float moveSpeed)
+		void OnProceed (NodeVO node)
 		{
-			if (_lastState != GameStateModel.STATE_ACTIVATED) {
+			if (_lastState != GameModel.STATE_MOVING) {
 				if (node.nextNode != null) {
 					SetCorrectDirection (node.GetDirectionTowards (node.nextNode));
 				}
@@ -110,25 +107,7 @@ namespace View
 				}
 			}
 		}
-
-		void OnGameStateUpdated ()
-		{
-			GameStateModel state = GameStateModel.Instance ();
-			if (_lastState == state.state)
-				return;
-			
-			_lastState = state.state;
-			switch (state.state) {
-			case (GameStateModel.STATE_STUCK):
-				_handRenderer.color = new Color (0.8f, 0.2f, 0.2f);
-				break;
-				
-			default:
-				_handRenderer.color = new Color (1f, 1f, 1f);
-				break;
-			}
-		}
-
+	
 		void SetCorrectDirection (int value)
 		{
 			Debug.Log ("Correct Direction: " + directions [value]);
@@ -189,10 +168,9 @@ namespace View
 
 		void OnDestroy ()
 		{
-			MazePaceNotifications.GAME_STATE_UPDATED.Remove (OnGameStateUpdated);
-			MazePaceNotifications.NODE_REACHED.Remove (OnNodePassed);
+			MazePaceNotifications.PROCEED_FROM_NODE.Remove (OnProceed);
 			MazePaceNotifications.MAZE_RECREATED.Remove (OnMazeDataUpdated);
-			MazePaceNotifications.SET_PLAYER_DIRECTION.Remove (OnPlayerDirectionUpdated);
+			MazePaceNotifications.DIRECTION_UPDATED.Remove (OnPlayerDirectionUpdated);
 		}
 	}
 }

@@ -15,11 +15,11 @@ namespace View {
 		void Awake(){
 			_target = GetComponent<Text> ();
 			_previousValue = 0;
-			MazePaceNotifications.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Add(OnGameStateUpdated);
 		}
 
 		void OnGameStateUpdated () {
-			GameStateModel state = GameStateModel.Instance ();
+			GameModel state = GameModel.Instance ();
 
 			if (_previousValue == state.timeBonus)
 				return;
@@ -28,8 +28,8 @@ namespace View {
 		}
 
 		void Update(){
-			GameStateModel state = GameStateModel.Instance ();
-			if (state.state == GameStateModel.STATE_INITED) {
+			GameModel state = GameModel.Instance ();
+			if (state.state == GameModel.STATE_INITED) {
 				RenderValue(state.timeBonus);
 			}
 		}
@@ -40,7 +40,7 @@ namespace View {
 		}
 
 		void OnDestroy(){
-			MazePaceNotifications.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }

@@ -27,14 +27,10 @@ namespace Controller
 					return new NavigateToGame ();
 				case(MazePaceActions.NavigateToMenu):
 					return new NavigateToMenu ();
-				case(MazePaceActions.ReportPause):
-					return new ReportPause ();
 				case(MazePaceActions.ResetGameState):
 					return new ResetGameState ();
 				case(MazePaceActions.ResetModels):
 					return new ResetModels ();
-				case(MazePaceActions.RetrieveLevel):
-					return new RetrieveLevel ();
 				case(MazePaceActions.TryMovePlayer):
 					return new TryMovePlayer ();
 				case(MazePaceActions.WaitBeforeNextLevel):

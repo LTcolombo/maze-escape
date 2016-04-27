@@ -31,14 +31,19 @@ namespace Utils
 			_static = true;
 		}
 
-		public void inc(float value){
+		public void Inc(float value){
 			_from += value;
 			_to += value;
 		}
 
-		public void dec(float value){
+		public void Dec(float value){
 			_from -= value;
 			_to -= value;
+		}
+
+		public void Freeze(){
+			_from = this;
+			_static = true;
 		}
 
 		public static implicit operator float(Interpolatable value)

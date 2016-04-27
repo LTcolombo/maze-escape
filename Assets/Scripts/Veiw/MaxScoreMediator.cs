@@ -15,12 +15,12 @@ namespace View {
 		void Start(){
 			_target = GetComponent<Text> ();
 			_previousValue = 0;
-			MazePaceNotifications.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Add(OnGameStateUpdated);
 		}
 		
 		// Update is called once per frame
 		void OnGameStateUpdated () {
-			GameStateModel state = GameStateModel.Instance ();
+			GameModel state = GameModel.Instance ();
 			if (_previousValue == state.maxScore)
 				return;
 				
@@ -29,7 +29,7 @@ namespace View {
 		}
 		
 		void OnDestroy(){
-			MazePaceNotifications.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }

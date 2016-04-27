@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System;
 using Notifications;
+using Utils;
+using Model;
 
 namespace View
 {
@@ -9,7 +11,6 @@ namespace View
 		override protected void Start(){
 			base.Start ();
 			InvokeCommand (MazePaceActions.ResetModels);
-			InvokeCommand (MazePaceActions.RetrieveLevel);
 			InvokeCommand (MazePaceActions.CreateMaze);
 			InvokeCommand (MazePaceActions.ResetGameState);
 			InvokeCommand (MazePaceActions.CheckSwipe);
@@ -25,6 +26,21 @@ namespace View
 			InvokeCommand (MazePaceActions.WaitBeforeNextLevel);
 			InvokeCommand (MazePaceActions.CreateMaze);
 			InvokeCommand (MazePaceActions.ResetGameState);
+		}
+
+		override protected void Update(){
+			base.Update ();
+			if (GameModel.Instance().IsChanging()) {
+				MazePaceNotifications.GAME_UPDATED.Dispatch ();
+			}
+		}
+
+		void OnApplicationPause (bool paused)
+		{
+			AnalyticsWrapper.ReportGamePaused (GameModel.Instance());
+
+			if (GameModel.Instance().maxScore > PlayerPrefs.GetInt ("highscore", 0))
+				PlayerPrefs.SetInt ("highscore", GameModel.Instance().maxScore);
 		}
 
 		public void OnDestroy ()
