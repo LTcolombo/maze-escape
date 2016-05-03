@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using DG.Tweening;
 using Utils;
-using Models.Data;
+using Model.Data;
 
-namespace Views {
+namespace View {
 	public class AnimatedLogoMediator : MonoBehaviour {
 
 		//writing matrix
@@ -24,7 +24,7 @@ namespace Views {
 		// Use this for initialization
 		void Start () {
 			//set of base colors
-			ColorComponent[] colorComponents = ColorComponent.GetArray ();
+			ColorComponentVO[] colorComponents = ColorComponentVO.GetArray ();
 			
 			for (int cell_y = 0; cell_y < LOGO_MATRIX.GetLength(0); cell_y++){
 				for (int cell_x = 0; cell_x< LOGO_MATRIX.GetLength(1); cell_x++) {
@@ -47,19 +47,14 @@ namespace Views {
 						else
 							pos.y += Random.Range (-400, 400);
 						
-						GameObject tileInstance = (GameObject)Instantiate (Prefabs.TILE_SMALL, pos, Quaternion.identity);
+						GameObject tileInstance = (GameObject)Instantiate (PrefabLib.TILE_SMALL, pos, Quaternion.identity);
 						tileInstance.transform.parent = transform;
-						tileInstance.GetComponent<SpriteRenderer> ().color = ColorComponent.GetColorAt(tileRelativePos, colorComponents, tint);
+						tileInstance.GetComponent<SpriteRenderer> ().color = ColorComponentVO.GetColorAt(tileRelativePos, colorComponents, tint);
 						
 						tileInstance.transform.DOMove (new Vector3 (x, y, 0), 0.5f);
 					}	
 				}
 			}
-		}
-		
-		// Update is called once per frame
-		void Update () {
-		
 		}
 	}
 }

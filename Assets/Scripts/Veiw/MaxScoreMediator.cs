@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Models;
+using Model;
 using Notifications;
 
-namespace Views {
+namespace View {
 	public class MaxScoreMediator : MonoBehaviour {
 		
 		public string prefix = "MAX SCORE: ";
@@ -12,14 +12,15 @@ namespace Views {
 		Text _target;
 		int _previousValue;
 		
-		void Awake(){
+		void Start(){
 			_target = GetComponent<Text> ();
 			_previousValue = 0;
-			NotificationManager.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Add(OnGameStateUpdated);
 		}
 		
 		// Update is called once per frame
-		void OnGameStateUpdated (GameStateModel state) {
+		void OnGameStateUpdated () {
+			GameModel state = GameModel.Instance ();
 			if (_previousValue == state.maxScore)
 				return;
 				
@@ -28,7 +29,7 @@ namespace Views {
 		}
 		
 		void OnDestroy(){
-			NotificationManager.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }

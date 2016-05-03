@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Models;
+using Model;
 using Notifications;
 
-namespace Views {
+namespace View {
 	public class TimeBonusMediator : MonoBehaviour {
 		
 		public string prefix = "TIME BONUS: ";
@@ -15,21 +15,32 @@ namespace Views {
 		void Awake(){
 			_target = GetComponent<Text> ();
 			_previousValue = 0;
-			NotificationManager.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Add(OnGameStateUpdated);
 		}
-		
-		// Update is called once per frame
-		void OnGameStateUpdated (GameStateModel state) {
-			
+
+		void OnGameStateUpdated () {
+			GameModel state = GameModel.Instance ();
+
 			if (_previousValue == state.timeBonus)
 				return;
-				
-			_previousValue = state.timeBonus;
-			_target.text = prefix + state.timeBonus.ToString (format);
+
+			RenderValue(state.timeBonus);
 		}
-		
+
+		void Update(){
+			GameModel state = GameModel.Instance ();
+			if (state.state == GameModel.STATE_INITED) {
+				RenderValue(state.timeBonus);
+			}
+		}
+
+		void RenderValue(float value){
+			_previousValue = value;
+			_target.text = prefix + _previousValue.ToString (format);
+		}
+
 		void OnDestroy(){
-			NotificationManager.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }

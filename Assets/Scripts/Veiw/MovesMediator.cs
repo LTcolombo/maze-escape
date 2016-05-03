@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using Models;
+using Model;
 using Notifications;
 
-namespace Views {
+namespace View {
 	public class MovesMediator : MonoBehaviour
 	{
 		public string prefix = "MOVES: ";
@@ -19,11 +19,12 @@ namespace Views {
 			_target = GetComponent<Text> ();
 			_audio = GetComponent<AudioSource> ();
 			_previousValue = 0;
-			NotificationManager.GAME_STATE_UPDATED.Add(OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Add(OnGameStateUpdated);
 		}
 
-		void OnGameStateUpdated (GameStateModel state)
+		void OnGameStateUpdated ()
 		{
+			GameModel state = GameModel.Instance ();
 			if (state.movesLeft == _previousValue)
 				return;
 			
@@ -32,17 +33,17 @@ namespace Views {
 				
 			_previousValue = state.movesLeft;
 				
-			
-			if (_previousValue < CRITICAL_MOVES && state.state != GameStateModel.STATE_ENDED)
+			if (_previousValue < CRITICAL_MOVES && state.state != GameModel.STATE_ENDED)
 				_target.color = new Color (0.8f, 0.2f, 0.2f);
 			else
 				_target.color = new Color (0.56f, 0.56f, 0.56f);
 				
-			_target.text = prefix + state.movesLeft.ToString (format);
+			uint movesLeft = state.movesLeft;
+			_target.text = prefix + movesLeft.ToString (format);
 		}
 		
 		void OnDestroy(){
-			NotificationManager.GAME_STATE_UPDATED.Remove(OnGameStateUpdated);
+			MazePaceNotifications.GAME_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }
