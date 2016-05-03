@@ -75,6 +75,7 @@ namespace View
 
 		void OnRotateCompleted ()
 		{
+			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
 			InvokeCommand (MazePaceActions.TryMovePlayer);
 		}
 
