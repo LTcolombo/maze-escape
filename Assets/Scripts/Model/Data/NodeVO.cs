@@ -41,10 +41,12 @@ namespace Model.Data
 		
 		//score assigned to node
 		public int score = 0;
+
+		//direction toward next node lading to exit
+		public int directionToExit = DIRECTION_INVALID_IDX;
 		
-		//previous/next node during maze generation
+		//previous node during maze generation
 		public NodeVO previousNode;
-		public NodeVO nextNode;
 
 		//node state		
 		private uint _data = UP_WALL | RIGHT_WALL | DOWN_WALL | LEFT_WALL;
@@ -126,6 +128,9 @@ namespace Model.Data
 		 */
 		public int GetDirectionTowards (NodeVO other)
 		{
+			if (other == null)
+				return NodeVO.DIRECTION_INVALID_IDX;
+			
 			if (other.pos.x == pos.x) {
 				if (other.pos.y > pos.y)
 					return NodeVO.DIRECTION_UP_IDX;

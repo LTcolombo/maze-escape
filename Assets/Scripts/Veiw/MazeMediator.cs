@@ -37,7 +37,7 @@ namespace View
 			}
 		}
 
-		private void UpdateMazeData (MazeModel mazeData)
+		private void UpdateMazeData ()
 		{
 			_dirty = true;
 		}

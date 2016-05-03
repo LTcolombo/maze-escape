@@ -18,7 +18,7 @@ namespace Controller
 			SpeedUpDecorator.Apply (MazeModel.Instance ());
 			RotatorDecorator.Apply (MazeModel.Instance ());
 
-			MazePaceNotifications.MAZE_RECREATED.Dispatch (MazeModel.Instance ());
+			MazePaceNotifications.MAZE_RECREATED.Dispatch ();
 
 			return PrefromResult.COMPLETED;
 		}
