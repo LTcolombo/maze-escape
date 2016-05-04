@@ -27,7 +27,7 @@ namespace View
 			MazePaceNotifications.PLAYER_STUCK.Add (OnStuck);
 		}
 
-		void OnMazeRecreated (MazeModel data)
+		void OnMazeRecreated ()
 		{
 			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
 			transform.localPosition = new Vector3 (LevelModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.x, 
@@ -75,6 +75,7 @@ namespace View
 
 		void OnRotateCompleted ()
 		{
+			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
 			InvokeCommand (MazePaceActions.TryMovePlayer);
 		}
 

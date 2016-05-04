@@ -14,9 +14,6 @@ namespace View
 		Transform _handTransform;
 		int _correctDirection;
 		int _playerDirection;
-		int _lastState;
-		string[] directions = { "up", "right", "down", "left" };
-		int[,] _directionsToExit;
 		
 		// Use this for initialization
 		void Start ()
@@ -24,98 +21,33 @@ namespace View
 			_handObject = GameObject.Find ("Hand");
 			_handTransform = _handObject.GetComponent<Transform> ();
 
-			_lastState = GameModel.STATE_INVALID;
 			_correctDirection = NodeVO.DIRECTION_INVALID_IDX;
-			MazePaceNotifications.PROCEED_FROM_NODE.Add (OnProceed);
 			MazePaceNotifications.MAZE_RECREATED.Add (OnMazeDataUpdated);
+			MazePaceNotifications.PROCEED_FROM_NODE.Add (OnProceedFromNode);
 			MazePaceNotifications.DIRECTION_UPDATED.Add (OnPlayerDirectionUpdated);
 		}
 
-		public void OnMazeDataUpdated (MazeModel mazeData)
+		public void OnMazeDataUpdated ()
 		{
-			enabled = LevelModel.Instance().isTutorial;
-			OnProceed (mazeData.startingNode);
-			
-			_directionsToExit = new int[LevelModel.Instance().width, LevelModel.Instance().height];
-			for (int x = 0; x < LevelModel.Instance().width; x++) {
-				for (int y = 0; y < LevelModel.Instance().width; y++) {
-					_directionsToExit [x, y] = NodeVO.DIRECTION_INVALID_IDX;
-				}
-			}
-
-			FindDirectionsTo (mazeData, mazeData.deadEnds [0]);
-			for (int y = 0; y < _directionsToExit.GetLength (0); y++) {
-				string str = "";
-				for (int x = 0; x < _directionsToExit.GetLength (1); x++)
-					str += _directionsToExit [x, y] + ",";
-					
-				//Debug.Log (str);
-			}
+			UpdateCorrectDirection ();
 		}
 
-		void FindDirectionsTo (MazeModel maze, NodeVO node)
+		void OnProceedFromNode (NodeVO node)
 		{
-			for (int directionIdx = NodeVO.DIRECTION_UP_IDX; directionIdx <= NodeVO.DIRECTION_LEFT_IDX; directionIdx++) {
-				int x = node.pos.x;
-				int nextX = node.pos.x;
-				int y = node.pos.y;
-				int nextY = node.pos.y;
-				int directionToExit = NodeVO.DIRECTION_INVALID_IDX;
-				
-				if (node.HasWall (directionIdx)) {
-					continue;
-				}
-				
-				switch (directionIdx) {
-				case (NodeVO.DIRECTION_UP_IDX):
-					directionToExit = NodeVO.DIRECTION_DOWN_IDX;
-					nextY++;
-					break;
-					
-				case (NodeVO.DIRECTION_RIGHT_IDX):
-					directionToExit = NodeVO.DIRECTION_LEFT_IDX;
-					nextX++;
-					break;
-					
-				case (NodeVO.DIRECTION_DOWN_IDX):
-					directionToExit = NodeVO.DIRECTION_UP_IDX;
-					nextY--;
-					break;
-					
-				case (NodeVO.DIRECTION_LEFT_IDX):
-					directionToExit = NodeVO.DIRECTION_RIGHT_IDX;
-					nextX--;
-					break;
-				}
-				if (maze.IsInBounds (nextX, nextY) && _directionsToExit [nextX, nextY] == NodeVO.DIRECTION_INVALID_IDX) {
-					_directionsToExit [x, y] = directionToExit;
-					FindDirectionsTo (maze, maze.GetNode (nextX, nextY));
-				}
-			}
-		}
-
-		void OnProceed (NodeVO node)
-		{
-			if (_lastState != GameModel.STATE_MOVING) {
-				if (node.nextNode != null) {
-					SetCorrectDirection (node.GetDirectionTowards (node.nextNode));
-				}
-			} else {
-				//check if there are two nodes ahead to define needed direction
-				if (node.nextNode != null && node.nextNode.nextNode != null) {
-					SetCorrectDirection (node.nextNode.GetDirectionTowards (node.nextNode.nextNode));
-				}
-			}
+			UpdateCorrectDirection ();
 		}
 	
-		void SetCorrectDirection (int value)
+		void UpdateCorrectDirection ()
 		{
-			Debug.Log ("Correct Direction: " + directions [value]);
-			if (_correctDirection == value) {
+			IntPointVO cell = PlayerModel.Instance ().cellPosition;
+			var currentNode = MazeModel.Instance().GetNode(cell.x, cell.y);
+			int newDirection = currentNode.directionToExit;
+
+			if (_correctDirection == newDirection) {
 				return;
 			}
 	
-			_correctDirection = value;
+			_correctDirection = newDirection;
 			
 			var active = true;//_playerDirection != _correctDirection;
 			_handObject.SetActive (active);
@@ -153,12 +85,10 @@ namespace View
 			
 			_handTransform.position = start;
 			_handTransform.DOMove (stop, 0.8f).SetLoops (-1).SetEase (Ease.InOutCubic);
-				
 		}
 
 		void OnPlayerDirectionUpdated (int value)
 		{
-			Debug.Log ("Player Direction: " + directions [value]);
 			if (_playerDirection == value)
 				return;
 		
@@ -168,8 +98,8 @@ namespace View
 
 		void OnDestroy ()
 		{
-			MazePaceNotifications.PROCEED_FROM_NODE.Remove (OnProceed);
 			MazePaceNotifications.MAZE_RECREATED.Remove (OnMazeDataUpdated);
+			MazePaceNotifications.PROCEED_FROM_NODE.Remove (OnProceedFromNode);
 			MazePaceNotifications.DIRECTION_UPDATED.Remove (OnPlayerDirectionUpdated);
 		}
 	}

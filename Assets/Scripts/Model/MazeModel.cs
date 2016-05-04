@@ -227,7 +227,6 @@ namespace Model
 		*/
 		private void Link(NodeVO previous, NodeVO next){
 			next.previousNode = previous;
-			previous.nextNode = next;
 		}
 	}
 }

@@ -4,7 +4,7 @@ using Model.Data;
 namespace Notifications {
 	
 	public class GameUpdated : Notification0 {}
-	public class MazeUpdated : Notification1<MazeModel> {}
+	public class MazeRecreated : Notification0 {}
 	public class NodeReached : Notification0 {}
 	public class ProceedFromNode : Notification1<NodeVO> {}
 	public class RotateAtNode : Notification1<NodeVO> {}
@@ -17,7 +17,7 @@ namespace Notifications {
 	public class MazePaceNotifications
 	{
 		public static GameUpdated GAME_UPDATED = new GameUpdated();
-		public static MazeUpdated MAZE_RECREATED = new MazeUpdated();
+		public static MazeRecreated MAZE_RECREATED = new MazeRecreated();
 		public static NodeReached NODE_REACHED = new NodeReached();
 		public static ProceedFromNode PROCEED_FROM_NODE = new ProceedFromNode();
 		public static RotateAtNode ROTATE_AT_NODE = new RotateAtNode();
