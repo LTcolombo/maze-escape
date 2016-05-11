@@ -5,47 +5,49 @@ using UnityEngine.UI;
 using UnityEngine.Analytics;
 using Utils;
 using UnityEngine.SceneManagement;
+using Model;
 
-namespace View {
+namespace View
+{
 	public class MenuMediator : ActionInvoker<MazePaceActions>
 	{
 		private bool _canExit;
 
-		override protected void Start(){
+		override protected void Start ()
+		{
 			base.Start ();
-			Text bestScoreText = (Text)GameObject.Find ("Canvas/BestScoreText").GetComponent<Text> ();
-			bestScoreText.text = "BEST SCORE: " + PlayerPrefs.GetInt ("highscore", 0);
 			
 			_canExit = false;
-			Invoke("AllowExit", 1);
+			Invoke ("AllowProceedToGame", 1); //todo commands please
 		}
-		
-		void AllowExit ()
+
+		void AllowProceedToGame ()
 		{
 			Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
 			tipText.text = "TAP ANYWHERE TO PLAY";
 			_canExit = true;
 		}
-		
 
-		override protected void Update(){
+		override protected void Update ()
+		{
 			base.Update ();
 			if (Application.isEditor && Input.anyKey && _canExit)
-				ExitToGame();
+				ProceedToGame ();
 			
 			if (Input.touchCount > 0) {
 				bool start = true;
 				for (int i = 0; i < Input.touchCount; i++) {
-					if (Input.GetTouch (i).phase != TouchPhase.Ended) 
+					if (Input.GetTouch (i).phase != TouchPhase.Ended)
 						start = false;
 				}
-				
-				if (start && _canExit) 
-					ExitToGame();
+
+				if (start && _canExit)
+					ProceedToGame ();
 			}		
 		}
 
-		void ExitToGame() {		
+		void ProceedToGame ()
+		{		
 			Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
 			tipText.text = "LOADING...";
 			_canExit = false;
