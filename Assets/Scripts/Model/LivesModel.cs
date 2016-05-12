@@ -1,11 +1,12 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Model
 {
 	public class LivesModel
 	{
 		private static int MAX_LIVES = 5;
-		private static int RESTORE_TIME = 5;
+		private static int RESTORE_TIME = 60;
 		private static int TICKS_IN_SECOND = 10000000;
 
 		private long _timeStamp;
@@ -13,7 +14,11 @@ namespace Model
 
 		private LivesModel ()
 		{
-			_timeStamp = DateTime.UtcNow.Ticks + RESTORE_TIME * TICKS_IN_SECOND;
+			string stored = PlayerPrefs.GetString ("timeStamp");
+			if (!Int64.TryParse (stored, out _timeStamp)) {
+				Debug.Log("cant parse lives, stored value = " + stored);
+				_timeStamp = 0;
+			}
 		}
 
 		public static LivesModel Instance ()
@@ -46,6 +51,7 @@ namespace Model
 				_timeStamp = DateTime.UtcNow.Ticks;
 			
 			_timeStamp += RESTORE_TIME * TICKS_IN_SECOND;
+			PlayerPrefs.SetString ("timeStamp", _timeStamp.ToString());
 		}
 	}
 }
