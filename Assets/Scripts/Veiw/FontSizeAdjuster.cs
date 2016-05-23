@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 /**
  * Adjust the font to be relative to screen size.
- * Assumes the Y anchor to be 0
  */
 
 namespace View {

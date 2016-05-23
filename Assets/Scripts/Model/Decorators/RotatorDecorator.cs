@@ -22,7 +22,7 @@ namespace Model.Decorators
 	{
 		public static void Apply (MazeModel mazeData)
 		{
-			if (LevelModel.Instance().rotatorsCount == 0)
+			if (DifficultyModel.Instance().rotatorsCount == 0)
 				return;
 			
 			List<NodeVO> exitChain = new List<NodeVO> ();
@@ -60,7 +60,7 @@ namespace Model.Decorators
 
 			Shuffle (candidates);
 			for (int i =0; i < candidates.Count; i++) {
-				if (i >= LevelModel.Instance().rotatorsCount) 
+				if (i >= DifficultyModel.Instance().rotatorsCount) 
 					break;
 				
 				uint type = 0;

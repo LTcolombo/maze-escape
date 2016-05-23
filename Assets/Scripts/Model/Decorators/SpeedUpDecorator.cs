@@ -22,7 +22,7 @@ namespace Model.Decorators
 	{
 		public static void Apply (MazeModel mazeData)
 		{
-			if (LevelModel.Instance().speedUpsCount == 0)
+			if (DifficultyModel.Instance().speedUpsCount == 0)
 				return;
 				
 			List<SpeedUpChain> chains = new List<SpeedUpChain> ();
@@ -76,7 +76,7 @@ namespace Model.Decorators
 			chains.Sort ();
 			
 			for (int i =0; i < chains.Count; i++) {
-				if (i >= LevelModel.Instance().speedUpsCount) 
+				if (i >= DifficultyModel.Instance().speedUpsCount) 
 					break;
 			
 				//mark nodes to contain according speedup flags

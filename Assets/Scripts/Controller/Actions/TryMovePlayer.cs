@@ -49,7 +49,7 @@ namespace Controller
 					MazePaceNotifications.PROCEED_FROM_NODE.Dispatch (node);
 				} else {
 					gameState.state = GameModel.STATE_STUCK;
-					gameState.score.SetValue (gameState.score, 0, LevelModel.Instance ().scoreDrainTime);
+					gameState.score.SetValue (gameState.score, 0, DifficultyModel.Instance ().scoreDrainTime);
 					MazePaceNotifications.PLAYER_STUCK.Dispatch ();
 				}
 			}

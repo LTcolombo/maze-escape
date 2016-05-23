@@ -19,7 +19,8 @@ namespace Utils
 		public static GameObject SHOW = (GameObject)(Resources.Load ("Prefabs/Show"));
 		public static GameObject MAZE = (GameObject)(Resources.Load ("Prefabs/Maze"));
 		public static GameObject PLAYER = (GameObject)(Resources.Load ("Prefabs/Player"));			
-		public static GameObject TILE_SMALL = (GameObject)(Resources.Load ("Prefabs/TileSmall"));
+		public static GameObject TILE_SMALL = (GameObject)(Resources.Load ("Prefabs/TileSmall"));	
+		public static GameObject HEART = (GameObject)(Resources.Load ("Prefabs/Heart"));
 	}	
 }
 
