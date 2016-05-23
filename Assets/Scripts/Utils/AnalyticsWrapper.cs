@@ -9,7 +9,7 @@ namespace Utils
 		public static void ReportGameLost (GameModel gameState)
 		{
 			IDictionary<string, object> eventData = new Dictionary<string, object> ();
-			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber));
+//			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber)); todo
 			eventData.Add (new KeyValuePair<string, object> ("Score", gameState.score));
 			eventData.Add (new KeyValuePair<string, object> ("MaxScore", gameState.maxScore));
 			eventData.Add (new KeyValuePair<string, object> ("MovesLeft", gameState.movesLeft));
@@ -20,7 +20,7 @@ namespace Utils
 		public static void ReportGamePaused (GameModel gameState)
 		{
 			IDictionary<string, object> eventData = new Dictionary<string, object> ();
-			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber));
+//			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber)); todo
 			eventData.Add (new KeyValuePair<string, object> ("Score", gameState.score));
 			eventData.Add (new KeyValuePair<string, object> ("MaxScore", gameState.maxScore));
 			eventData.Add (new KeyValuePair<string, object> ("MovesLeft", gameState.movesLeft));
@@ -30,7 +30,7 @@ namespace Utils
 		public static void ReportReturnToMenu (GameModel gameState)
 		{
 			IDictionary<string, object> eventData = new Dictionary<string, object> ();
-			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber));
+//			eventData.Add (new KeyValuePair<string, object> ("Number", gameState.levelNumber)); todo
 			eventData.Add (new KeyValuePair<string, object> ("Score", gameState.score));
 			eventData.Add (new KeyValuePair<string, object> ("MaxScore", gameState.maxScore));
 			eventData.Add (new KeyValuePair<string, object> ("MovesLeft", gameState.movesLeft));

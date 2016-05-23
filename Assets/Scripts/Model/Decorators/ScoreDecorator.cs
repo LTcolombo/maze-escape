@@ -12,7 +12,7 @@ namespace Model.Decorators
 			foreach (NodeVO deadEnd in mazeData.deadEnds) {
 				
 				NodeVO node = deadEnd;
-				int currentScore = LevelModel.Instance().minScore;
+				int currentScore = DifficultyModel.Instance().minScore;
 				int ds = 1;
 				
 				while (node!=null && node.score == 0) {
@@ -20,10 +20,10 @@ namespace Model.Decorators
 					currentScore += ds;
 					node.score = currentScore;
 					//define score delta
-					if (node.score <= LevelModel.Instance().minScore)
+					if (node.score <= DifficultyModel.Instance().minScore)
 						ds = 1;
 					
-					if (node.score >= LevelModel.Instance().maxScore)
+					if (node.score >= DifficultyModel.Instance().maxScore)
 						ds = -1;
 					
 					node = node.previousNode;

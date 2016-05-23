@@ -42,7 +42,7 @@ namespace Model
 
 		public float getMoveTime (NodeVO node)
 		{
-			float moveTime = LevelModel.Instance ().moveTime;
+			float moveTime = DifficultyModel.Instance ().moveTime;
 			if (node.HasFlag (NodeVO.SPECIALS_SPEEDUP_UP)) {
 				if (directionIdx == NodeVO.DIRECTION_UP_IDX)
 					moveTime /= 2;

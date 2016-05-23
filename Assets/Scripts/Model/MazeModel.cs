@@ -24,10 +24,11 @@ namespace Model
 		 */
 		public List<NodeVO> crossRoads;
 
+		public int width;
+		public int height;
+
 		//incapsulated data array
 		private NodeVO[] _data;
-		private int _width;
-		private int _height;
 		private System.Random _rnd = new System.Random ();
 
 		private static MazeModel _instance;
@@ -44,17 +45,17 @@ namespace Model
 		private MazeModel (){
 		}
 
-		public void Recreate(int width, int height, int startX, int startY)
+		public void Recreate(int size, int startX, int startY)
 		{
-			_width = width;
-			_height = height;
-			_data = new NodeVO[_width * _height];
+			width = size;
+			height = size;
+			_data = new NodeVO[width * height];
 			deadEnds = new List<NodeVO> ();
 			crossRoads = new List<NodeVO> ();
 			
-			for (int j = 0; j < _width; j++)
-				for (int i = 0; i < _height; i++)
-					_data [i + j * _height] = new NodeVO (i, j);
+			for (int j = 0; j < width; j++)
+				for (int i = 0; i < height; i++)
+					_data [i + j * height] = new NodeVO (i, j);
 								
 			//1. get starting point
 			startingNode = GetNode (startX, startY);
@@ -98,7 +99,7 @@ namespace Model
 		 */
 		public NodeVO GetNode (int x, int y)
 		{
-			return _data [x + y * _width];
+			return _data [x + y * width];
 		}
 		
 		private void CreateBranch (NodeVO startNode, List<NodeVO> edgeNodes)
@@ -170,7 +171,7 @@ namespace Model
 		 */
 		public bool IsInBounds (int x, int y)
 		{
-			return ((x > -1) && (x < _width) && (y > -1) && (y < _height));
+			return ((x > -1) && (x < width) && (y > -1) && (y < height));
 		}
 		
 		/**
