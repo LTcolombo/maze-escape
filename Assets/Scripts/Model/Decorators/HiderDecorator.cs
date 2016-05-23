@@ -13,11 +13,11 @@ namespace Model.Decorators
 
 		public static void Apply (MazeModel mazeData)
 		{
-			if (LevelModel.Instance().hidersCount == 0)
+			if (DifficultyModel.Instance().hidersCount == 0)
 				return;
 
 			for (int i =0; i < mazeData.deadEnds.Count; i++) {
-				if (i >= LevelModel.Instance().hidersCount)
+				if (i >= DifficultyModel.Instance().hidersCount)
 					break;
 
 				int distance = (int)mazeData.deadEnds [i].GetDistance ();

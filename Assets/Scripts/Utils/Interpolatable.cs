@@ -42,6 +42,9 @@ namespace Utils
 		}
 
 		public void Freeze(){
+			if (_static)
+				return;
+			
 			_from = this;
 			_static = true;
 		}

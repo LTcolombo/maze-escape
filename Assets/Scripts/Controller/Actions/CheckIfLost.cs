@@ -16,6 +16,7 @@ namespace Controller
 					PlayerPrefs.SetInt ("highscore", gameState.maxScore);
 
 				AnalyticsWrapper.ReportGameLost (gameState);
+				LivesModel.Instance().DecLives ();
 				SceneManager.LoadScene ("MenuScene");
 			}
 

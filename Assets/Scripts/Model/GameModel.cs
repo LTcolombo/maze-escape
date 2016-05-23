@@ -11,7 +11,6 @@ namespace Model
 		public const int STATE_STUCK = 2;
 		public const int STATE_ENDED = 3;
 
-		public int levelNumber;
 		public int state;
 
 		public int maxScore{ get { return _maxScore; } }
@@ -53,7 +52,6 @@ namespace Model
 
 		private GameModel ()
 		{
-			levelNumber = 0;
 			_maxScore = 0;
 			state = GameModel.STATE_INVALID;
 			score = new Interpolatable ();

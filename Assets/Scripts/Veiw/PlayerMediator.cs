@@ -27,11 +27,11 @@ namespace View
 			MazePaceNotifications.PLAYER_STUCK.Add (OnStuck);
 		}
 
-		void OnMazeRecreated (MazeModel data)
+		void OnMazeRecreated ()
 		{
 			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
-			transform.localPosition = new Vector3 (LevelModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.x, 
-				LevelModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.y, 
+			transform.localPosition = new Vector3 (DifficultyModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.x, 
+				DifficultyModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.y, 
 				0);
 			_renderer.enabled = true;
 		}
@@ -41,8 +41,8 @@ namespace View
 			float moveTime = PlayerModel.Instance ().getMoveTime (node);
 			if (moveTime > 0) {
 				transform.DOMove (transform.position + new Vector3 (
-					NodeVO.DIRECTIONS [PlayerModel.Instance ().directionIdx, 0] * LevelModel.NODE_SIZE, 
-					NodeVO.DIRECTIONS [PlayerModel.Instance ().directionIdx, 1] * LevelModel.NODE_SIZE, 
+					NodeVO.DIRECTIONS [PlayerModel.Instance ().directionIdx, 0] * DifficultyModel.NODE_SIZE, 
+					NodeVO.DIRECTIONS [PlayerModel.Instance ().directionIdx, 1] * DifficultyModel.NODE_SIZE, 
 					0
 				), moveTime).OnComplete (OnMoveCompleted).SetEase (Ease.Linear);
 			};
@@ -75,6 +75,7 @@ namespace View
 
 		void OnRotateCompleted ()
 		{
+			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
 			InvokeCommand (MazePaceActions.TryMovePlayer);
 		}
 

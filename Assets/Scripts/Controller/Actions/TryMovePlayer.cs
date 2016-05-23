@@ -26,6 +26,7 @@ namespace Controller
 			if (gameState.state == GameModel.STATE_INITED || gameState.state == GameModel.STATE_STUCK) {
 				gameState.state = GameModel.STATE_MOVING;	
 				gameState.score.Freeze();
+				gameState.timeBonus.Freeze();
 			}
 
 			if (node.HasFlag (NodeVO.SPECIALS_EXIT)) {
@@ -42,13 +43,13 @@ namespace Controller
 					MazePaceNotifications.ROTATE_AT_NODE.Dispatch (node);
 					player.moved = false;
 				} else if (!node.HasWall (directionIdx)) {
-					MazePaceNotifications.PROCEED_FROM_NODE.Dispatch (node);
 					player.cellPosition.x += NodeVO.DIRECTIONS [player.directionIdx, 0];
 					player.cellPosition.y += NodeVO.DIRECTIONS [player.directionIdx, 1];
 					player.moved = true;
+					MazePaceNotifications.PROCEED_FROM_NODE.Dispatch (node);
 				} else {
 					gameState.state = GameModel.STATE_STUCK;
-					gameState.score.SetValue (gameState.score, 0, LevelModel.Instance ().scoreDrainTime);
+					gameState.score.SetValue (gameState.score, 0, DifficultyModel.Instance ().scoreDrainTime);
 					MazePaceNotifications.PLAYER_STUCK.Dispatch ();
 				}
 			}
