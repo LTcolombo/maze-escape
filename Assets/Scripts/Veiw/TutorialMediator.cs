@@ -10,16 +10,18 @@ namespace View
 {
 	public class TutorialMediator : MonoBehaviour
 	{
-		GameObject _handObject;
 		Transform _handTransform;
+		Renderer _handRenderer;
+
 		int _correctDirection;
 		int _playerDirection;
 		
 		// Use this for initialization
 		void Start ()
 		{
-			_handObject = GameObject.Find ("Hand");
-			_handTransform = _handObject.GetComponent<Transform> ();
+			GameObject handObject = GameObject.Find ("Hand");
+			_handTransform = handObject.GetComponent<Transform> ();
+			_handRenderer = handObject.GetComponent<Renderer> ();
 
 			_correctDirection = NodeVO.DIRECTION_INVALID_IDX;
 			MazePaceNotifications.MAZE_RECREATED.Add (OnMazeDataUpdated);
@@ -29,6 +31,7 @@ namespace View
 
 		public void OnMazeDataUpdated ()
 		{
+			_handRenderer.enabled = true;
 			UpdateCorrectDirection ();
 		}
 
@@ -36,25 +39,33 @@ namespace View
 		{
 			UpdateCorrectDirection ();
 		}
-	
+
 		void UpdateCorrectDirection ()
 		{
 			IntPointVO cell = PlayerModel.Instance ().cellPosition;
-			var currentNode = MazeModel.Instance().GetNode(cell.x, cell.y);
+			var currentNode = MazeModel.Instance ().GetNode (cell.x, cell.y);
 			int newDirection = currentNode.directionToExit;
+			if (newDirection == NodeVO.DIRECTION_INVALID_IDX)
+				return;
 
+			if (currentNode.HasFlag (NodeVO.SPECIALS_ROTATOR_CW))
+				newDirection--;
+
+			if (currentNode.HasFlag (NodeVO.SPECIALS_ROTATOR_CCW))
+				newDirection++;
+
+			if (newDirection > 3)
+				newDirection = 0;
+			
+			if (newDirection < 0)
+				newDirection = 3;
+			
 			if (_correctDirection == newDirection) {
 				return;
 			}
 	
 			_correctDirection = newDirection;
-			
-			var active = true;//_playerDirection != _correctDirection;
-			_handObject.SetActive (active);
-			
-			if (!active) {
-				return;
-			}
+			_handRenderer.enabled = _playerDirection != _correctDirection;
 			
 			DOTween.Kill (_handTransform);
 			
@@ -84,7 +95,7 @@ namespace View
 			}
 			
 			_handTransform.position = start;
-			_handTransform.DOMove (stop, 0.8f).SetLoops (-1).SetEase (Ease.InOutCubic);
+			_handTransform.DOMove (stop, 0.5f).SetLoops (-1).SetEase (Ease.InOutCubic);
 		}
 
 		void OnPlayerDirectionUpdated (int value)
@@ -93,7 +104,12 @@ namespace View
 				return;
 		
 			_playerDirection = value;
-			//_handObject.SetActive (_playerDirection != _correctDirection);
+			_handRenderer.enabled = _playerDirection != _correctDirection;
+		}
+
+		void OnExitReached ()
+		{
+			_handRenderer.enabled = false;
 		}
 
 		void OnDestroy ()
