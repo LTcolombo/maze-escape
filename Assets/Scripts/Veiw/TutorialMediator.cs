@@ -15,6 +15,8 @@ namespace View
 
 		int _correctDirection;
 		int _playerDirection;
+
+		bool _waitingNextLevel;
 		
 		// Use this for initialization
 		void Start ()
@@ -24,6 +26,8 @@ namespace View
 			_handRenderer = handObject.GetComponent<Renderer> ();
 
 			_correctDirection = NodeVO.DIRECTION_INVALID_IDX;
+			_playerDirection = NodeVO.DIRECTION_INVALID_IDX;
+
 			MazePaceNotifications.MAZE_RECREATED.Add (OnMazeDataUpdated);
 			MazePaceNotifications.PROCEED_FROM_NODE.Add (OnProceedFromNode);
 			MazePaceNotifications.DIRECTION_UPDATED.Add (OnPlayerDirectionUpdated);
@@ -31,7 +35,7 @@ namespace View
 
 		public void OnMazeDataUpdated ()
 		{
-			_handRenderer.enabled = true;
+			_waitingNextLevel = false;
 			UpdateCorrectDirection ();
 		}
 
@@ -45,8 +49,6 @@ namespace View
 			IntPointVO cell = PlayerModel.Instance ().cellPosition;
 			var currentNode = MazeModel.Instance ().GetNode (cell.x, cell.y);
 			int newDirection = currentNode.directionToExit;
-			if (newDirection == NodeVO.DIRECTION_INVALID_IDX)
-				return;
 
 			if (currentNode.HasFlag (NodeVO.SPECIALS_ROTATOR_CW))
 				newDirection--;
@@ -65,7 +67,7 @@ namespace View
 			}
 	
 			_correctDirection = newDirection;
-			_handRenderer.enabled = _playerDirection != _correctDirection;
+			UpdateVisibility ();
 			
 			DOTween.Kill (_handTransform);
 			
@@ -104,12 +106,20 @@ namespace View
 				return;
 		
 			_playerDirection = value;
-			_handRenderer.enabled = _playerDirection != _correctDirection;
+			UpdateVisibility ();
+		}
+
+		void UpdateVisibility(){
+			_handRenderer.enabled = 
+				DifficultyModel.Instance().tutorialPresent && 
+				_playerDirection != _correctDirection && 
+				_correctDirection != NodeVO.DIRECTION_INVALID_IDX && 
+				!_waitingNextLevel;
 		}
 
 		void OnExitReached ()
 		{
-			_handRenderer.enabled = false;
+			_waitingNextLevel = true;
 		}
 
 		void OnDestroy ()
