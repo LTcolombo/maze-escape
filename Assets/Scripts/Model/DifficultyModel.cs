@@ -21,8 +21,9 @@ namespace Model
 		};
 
 		private LevelValueSet _moveTime = new LevelValueSet {
-			new LevelValue (0, 1),
-			new LevelValue (3, 0.8f),
+			new LevelValue (0, 0.8f),
+			new LevelValue (3, 0.7f),
+			new LevelValue (4, 0.5f),
 			new LevelValue (8, 0.4f),
 			new LevelValue (20, 0.2f)
 		};

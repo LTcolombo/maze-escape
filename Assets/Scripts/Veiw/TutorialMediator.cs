@@ -50,17 +50,17 @@ namespace View
 			var currentNode = MazeModel.Instance ().GetNode (cell.x, cell.y);
 			int newDirection = currentNode.directionToExit;
 
-			if (currentNode.HasFlag (NodeVO.SPECIALS_ROTATOR_CW))
+			if (currentNode.HasFlag (NodeVO.SPECIALS_ROTATOR_CW)) {
 				newDirection--;
+				if (newDirection < 0)
+					newDirection = 3;
+			}
 
-			if (currentNode.HasFlag (NodeVO.SPECIALS_ROTATOR_CCW))
+			if (currentNode.HasFlag (NodeVO.SPECIALS_ROTATOR_CCW)) {
 				newDirection++;
-
-			if (newDirection > 3)
-				newDirection = 0;
-			
-			if (newDirection < 0)
-				newDirection = 3;
+				if (newDirection > 3)
+					newDirection = 0;
+			}
 			
 			if (_correctDirection == newDirection) {
 				return;
