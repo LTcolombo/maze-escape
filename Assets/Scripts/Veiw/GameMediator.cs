@@ -8,9 +8,10 @@ namespace View
 {
 	public class GameMediator : ActionInvoker<MazePaceActions>
 	{
-		override protected void Start(){
-			base.Start ();
-			InvokeCommand (MazePaceActions.ResetModels);
+		void Start()
+        {
+            CreateQueue();
+            InvokeCommand (MazePaceActions.ResetModels);
 			InvokeCommand (MazePaceActions.CreateMaze);
 			InvokeCommand (MazePaceActions.ResetGameState);
 			InvokeCommand (MazePaceActions.CheckSwipe);
@@ -19,7 +20,7 @@ namespace View
 			MazePaceNotifications.EXIT_REACHED.Add (OnExitReached);
 		}
 
-		void OnExitReached ()
+            void OnExitReached ()
 		{
 			InvokeCommand (MazePaceActions.ExitLevel);
 			InvokeCommand (MazePaceActions.AppendLevel);
@@ -28,9 +29,9 @@ namespace View
 			InvokeCommand (MazePaceActions.ResetGameState);
 		}
 
-		override protected void Update(){
-			base.Update ();
-			if (GameModel.Instance().IsChanging()) {
+		void Update(){
+            InvokeActions();
+            if (GameModel.Instance().IsChanging()) {
 				MazePaceNotifications.GAME_UPDATED.Dispatch ();
 			}
 		}
