@@ -12,9 +12,9 @@ namespace View
 		private SpriteRenderer _renderer;
 		private AudioSource _audio;
 
-		override protected void Start ()
+		void Start ()
 		{
-			base.Start ();
+			CreateQueue ();
 			                                      
 			_renderer = GetComponent<SpriteRenderer> ();
 			_audio = GetComponent<AudioSource> ();
@@ -26,6 +26,10 @@ namespace View
 			MazePaceNotifications.EXIT_REACHED.Add (OnExitReached);
 			MazePaceNotifications.PLAYER_STUCK.Add (OnStuck);
 		}
+
+        void Update() {
+            InvokeActions();
+        }
 
 		void OnMazeRecreated ()
 		{

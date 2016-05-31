@@ -13,11 +13,11 @@ namespace View
 	{
 		private bool _canExit;
 
-		override protected void Start ()
-		{
-			base.Start ();
-			
-			_canExit = false;
+		void Start ()
+        {
+            CreateQueue();
+
+            _canExit = false;
 			Invoke ("AllowProceedToGame", 1); //todo commands please
 		}
 
@@ -28,9 +28,9 @@ namespace View
 			_canExit = true;
 		}
 
-		override protected void Update ()
+		void Update ()
 		{
-			base.Update ();
+			InvokeActions ();
 			if (Application.isEditor && Input.anyKey && _canExit)
 				ProceedToGame ();
 			

@@ -9,7 +9,7 @@ namespace View
 		Queue<Action> _queue;
 		ActionFactory<T> _factory;
 
-		virtual protected void Start(){
+		protected void CreateQueue(){
 			_factory = new ActionFactory<T>();
 			_queue = new Queue<Action> ();
 		}
@@ -19,7 +19,7 @@ namespace View
 			_queue.Enqueue (_factory.Create(commandId));
 		}
 
-		virtual protected void Update ()
+		protected void InvokeActions()
 		{
 			int commandCount = _queue.Count; //retaining commands will enqueue again
 			while (commandCount > 0) {
