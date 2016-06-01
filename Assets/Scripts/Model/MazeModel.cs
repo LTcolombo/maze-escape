@@ -24,8 +24,7 @@ namespace Model
 		 */
 		public List<NodeVO> crossRoads;
 
-		public int width;
-		public int height;
+		public int size;
 
 		//incapsulated data array
 		private NodeVO[] _data;
@@ -47,15 +46,14 @@ namespace Model
 
 		public void Recreate(int size, int startX, int startY)
 		{
-			width = size;
-			height = size;
-			_data = new NodeVO[width * height];
+			this.size = size;
+			_data = new NodeVO[size * size];
 			deadEnds = new List<NodeVO> ();
 			crossRoads = new List<NodeVO> ();
 			
-			for (int j = 0; j < width; j++)
-				for (int i = 0; i < height; i++)
-					_data [i + j * height] = new NodeVO (i, j);
+			for (int j = 0; j < size; j++)
+				for (int i = 0; i < size; i++)
+					_data [i + j * size] = new NodeVO (i, j);
 								
 			//1. get starting point
 			startingNode = GetNode (startX, startY);
@@ -99,7 +97,7 @@ namespace Model
 		 */
 		public NodeVO GetNode (int x, int y)
 		{
-			return _data [x + y * width];
+			return _data [x + y * size];
 		}
 		
 		private void CreateBranch (NodeVO startNode, List<NodeVO> edgeNodes)
@@ -171,7 +169,7 @@ namespace Model
 		 */
 		public bool IsInBounds (int x, int y)
 		{
-			return ((x > -1) && (x < width) && (y > -1) && (y < height));
+			return ((x > -1) && (x < size) && (y > -1) && (y < size));
 		}
 		
 		/**
