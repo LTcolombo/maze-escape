@@ -20,7 +20,7 @@ namespace View
 			MazePaceNotifications.EXIT_REACHED.Add (OnExitReached);
 		}
 
-            void OnExitReached ()
+        void OnExitReached ()
 		{
 			InvokeCommand (MazePaceActions.ExitLevel);
 			InvokeCommand (MazePaceActions.AppendLevel);

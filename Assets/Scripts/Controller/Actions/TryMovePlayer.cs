@@ -30,6 +30,7 @@ namespace Controller
 			}
 
 			if (node.HasFlag (NodeVO.SPECIALS_EXIT)) {
+				GameModel.Instance().state = GameModel.STATE_ENDED;
 				MazePaceNotifications.EXIT_REACHED.Dispatch ();
 			} else {
 				if (node.HasFlag (NodeVO.SPECIALS_HIDE_WALLS)) {

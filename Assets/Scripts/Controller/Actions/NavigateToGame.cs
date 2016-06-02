@@ -1,4 +1,5 @@
 ﻿using UnityEngine.SceneManagement;
+using Utils;
 
 namespace Controller
 {
@@ -7,7 +8,6 @@ namespace Controller
 		override public PrefromResult Perform (float delta)
 		{
 			SceneManager.LoadScene ("GameScene");
-
 			return PrefromResult.COMPLETED;
 		}
 	}

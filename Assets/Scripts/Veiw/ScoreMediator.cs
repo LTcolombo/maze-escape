@@ -20,7 +20,7 @@ namespace View
 		{
 			_target = GetComponent<Text> ();
 			_audio = GetComponent<AudioSource> ();
-			_previousValue = 0;
+			_previousValue = -1;
 			MazePaceNotifications.GAME_UPDATED.Add (OnGameStateUpdated);
 		}
 

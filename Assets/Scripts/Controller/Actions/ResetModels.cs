@@ -10,6 +10,9 @@ namespace Controller
 		{
 			//todo persistent data provider?
 			DifficultyModel.Instance ().number = PlayerPrefs.GetInt ("maxlevel", 0) / 2;
+			GameModel.Instance ().maxScore = PlayerPrefs.GetInt ("highscore", 0);
+
+			GameModel.Instance ().score.SetValue(0);
 
 			PlayerModel.Instance ().cellPosition.x = 0;
 			PlayerModel.Instance ().cellPosition.y = 0;

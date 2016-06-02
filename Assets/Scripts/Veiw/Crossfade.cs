@@ -3,11 +3,11 @@ using System.Collections;
 using DG.Tweening;
 
 namespace View {
+	[AddComponentMenu ("UI/Effects/SceneCrossfade")]
 	public class Crossfade : MonoBehaviour
 	{
 		public Color startColor;
-
-		public Color  endColor;
+		public Color endColor;
 
 		public float time;
 

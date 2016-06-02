@@ -2,48 +2,85 @@
 using UnityEngine.UI;
 using Model;
 using Notifications;
+using System;
 
-namespace View {
+namespace View
+{
 	public class MovesMediator : MonoBehaviour
 	{
-		public string prefix = "MOVES: ";
-		public string format = "F0";
+		public string template = "{0}%";
+		public float alpha = 0.2f;
+		public float sizePerCell = 0.0825f;
+		float _relativeSize;
+
 		Text _target;
 		AudioSource _audio;
-		uint _previousValue;
 
-		const int CRITICAL_MOVES = 5;
-		
+		uint _previousValue;
+		uint _movesForLevel;
+
+		int _lastHeight;
+
 		void Awake ()
 		{
 			_target = GetComponent<Text> ();
 			_audio = GetComponent<AudioSource> ();
 			_previousValue = 0;
-			MazePaceNotifications.GAME_UPDATED.Add(OnGameStateUpdated);
+			MazePaceNotifications.MAZE_RECREATED.Add (OnMazeRecreated);
+			MazePaceNotifications.GAME_UPDATED.Add (OnGameStateUpdated);
+			MazePaceNotifications.EXIT_REACHED.Add (OnExitReached);
+		}
+
+		void Update ()
+		{
+			if (_lastHeight != Screen.height) {
+				UpdateFontSize ();
+				_lastHeight = Screen.height;
+			}
+		}
+
+		void OnMazeRecreated ()
+		{
+			_relativeSize = sizePerCell * MazeModel.Instance ().size;
+			UpdateFontSize ();
 		}
 
 		void OnGameStateUpdated ()
 		{
-			GameModel state = GameModel.Instance ();
-			if (state.movesLeft == _previousValue)
+			GameModel game = GameModel.Instance ();
+			if (game.movesLeft == _previousValue)
 				return;
+
+			if (game.state == GameModel.STATE_INITED) {
+				_movesForLevel = GameModel.Instance ().movesLeft;
+			}
 			
-			if (!_audio.isPlaying)
+			if (game.state == GameModel.STATE_MOVING && !_audio.isPlaying)
 				_audio.Play ();
-				
-			_previousValue = state.movesLeft;
-				
-			if (_previousValue < CRITICAL_MOVES && state.state != GameModel.STATE_ENDED)
-				_target.color = new Color (0.8f, 0.2f, 0.2f);
-			else
-				_target.color = new Color (0.56f, 0.56f, 0.56f);
-				
-			uint movesLeft = state.movesLeft;
-			_target.text = prefix + movesLeft.ToString (format);
+
+			if (game.state != GameModel.STATE_ENDED) {
+				float percentage = (float)(game.movesLeft) / _movesForLevel;
+				_target.color = new Color (1, percentage, percentage, alpha);
+			}
+			_target.text = String.Format (template, (int)game.movesLeft);
+
+			_previousValue = game.movesLeft;
 		}
-		
-		void OnDestroy(){
-			MazePaceNotifications.GAME_UPDATED.Remove(OnGameStateUpdated);
+
+		void OnExitReached(){
+			_target.color = new Color (0, 1, 0, alpha);
+		}
+
+		void UpdateFontSize ()
+		{
+			_target.fontSize = Mathf.CeilToInt (_relativeSize * (float)Screen.height);
+		}
+
+		void OnDestroy ()
+		{
+			MazePaceNotifications.MAZE_RECREATED.Remove (OnMazeRecreated);
+			MazePaceNotifications.GAME_UPDATED.Remove (OnGameStateUpdated);
+			MazePaceNotifications.EXIT_REACHED.Remove (OnExitReached);
 		}
 	}
 }

@@ -51,7 +51,7 @@ namespace View
 		private void OnNodeReached ()
 		{
 			var cellPosition = PlayerModel.Instance ().cellPosition;
-			int index = cellPosition.x * MazeModel.Instance ().width + cellPosition.y;
+			int index = cellPosition.x * MazeModel.Instance ().size + cellPosition.y;
 			if (index < _nodeInstances.Count)
 				_nodeInstances [index].GetComponent<NodeMediator> ().onReached ();
 		}
@@ -62,8 +62,8 @@ namespace View
 			var mazeModel = MazeModel.Instance ();
 
 			transform.parent.DOMove (new Vector2 (
-				-(mazeModel.width - 1) * DifficultyModel.NODE_SIZE / 2, 
-				-(mazeModel.height - 1) * DifficultyModel.NODE_SIZE / 2
+				-(mazeModel.size - 1) * DifficultyModel.NODE_SIZE / 2, 
+				-(mazeModel.size - 1) * DifficultyModel.NODE_SIZE / 2
 			), TRANSITION_TIME);
 
 			foreach (Object nodeInstance in _nodeInstances)
@@ -74,14 +74,14 @@ namespace View
 			//set of base colors
 			ColorComponentVO[] colorComponents = ColorComponentVO.GetArray ();
 
-			for (int cellX = 0; cellX < mazeModel.width; cellX++) {
-				for (int cellY = 0; cellY < mazeModel.height; cellY++) {
+			for (int cellX = 0; cellX < mazeModel.size; cellX++) {
+				for (int cellY = 0; cellY < mazeModel.size; cellY++) {
 
 					NodeVO node = mazeModel.GetNode (cellX, cellY);
 
 					float[] tileRelativePos = new float[2] {
-						(float)cellX / mazeModel.width,
-						(float)cellY / mazeModel.height
+						(float)cellX / mazeModel.size,
+						(float)cellY / mazeModel.size
 					};
 
 					float tint = 0.6f + 0.4f * (float)(node.score - difficultyModel.minScore) / (difficultyModel.maxScore - difficultyModel.minScore);
@@ -92,7 +92,7 @@ namespace View
 					nodeInstance.GetComponent<NodeMediator> ().Redraw (node, ColorComponentVO.GetColorAt (tileRelativePos, colorComponents, tint));
 					_nodeInstances.Add (nodeInstance);
 
-					float zOrder = 1 - (float)(cellY + cellX) / (mazeModel.width + mazeModel.height);	
+					float zOrder = 1 - (float)(cellY + cellX) / (mazeModel.size + mazeModel.size);	
 
 					if (cellX <= _prevMaxX && cellY <= _prevMaxY)
 						nodeInstance.transform.localPosition = new Vector3 (cellX * DifficultyModel.NODE_SIZE, cellY * DifficultyModel.NODE_SIZE, zOrder);
@@ -103,8 +103,8 @@ namespace View
 				}
 			}
 
-			_prevMaxX = mazeModel.width - 1;
-			_prevMaxY = mazeModel.height - 1;
+			_prevMaxX = mazeModel.size - 1;
+			_prevMaxY = mazeModel.size - 1;
 		}
 
 		public void OnDestroy ()
