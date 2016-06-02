@@ -7,13 +7,12 @@ using UnityEngine.UI;
  */
 
 namespace View {
-	[AddComponentMenu( "Utilities/FontSizeAdjuster")]
 	public class FontSizeAdjuster : MonoBehaviour
 	{
 		public float relativeSize;
 		public float relativeY;
 		private Text _target;
-		private int _lastHeight;
+		private int _lastSize;
 
 		void Start ()
 		{
@@ -28,11 +27,13 @@ namespace View {
 		{
 			if (_target == null)
 				return;
-		
-			if (_lastHeight != Screen.height) {
-				_target.fontSize = Mathf.CeilToInt (relativeSize * (float)Screen.height);
-				_lastHeight = Screen.height;
-				_target.rectTransform.anchoredPosition = new Vector2 (0, relativeY * (float)Screen.height);
+
+			var newSize = (Screen.height > Screen.width) ? Screen.width : Screen.height;
+			if (_lastSize != newSize) 
+			{
+				_target.fontSize = Mathf.CeilToInt (relativeSize * (float)newSize);
+				_target.rectTransform.anchoredPosition = new Vector2 (0, relativeY * (float)newSize);
+				_lastSize = newSize;
 			}
 		}
 	}

@@ -64,8 +64,8 @@ namespace Model
 
 		private LevelValueSet _bonusTime = new LevelValueSet {
 			new LevelValue (0, 3),
-			new LevelValue (5, 2),
-			new LevelValue (10, 1)
+			new LevelValue (10, 2),
+			new LevelValue (20, 1)
 		};
 
 		private LevelValueSet _scoreDrainTime = new LevelValueSet {

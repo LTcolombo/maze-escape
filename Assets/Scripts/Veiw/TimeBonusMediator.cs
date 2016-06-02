@@ -6,8 +6,8 @@ using Notifications;
 namespace View {
 	public class TimeBonusMediator : MonoBehaviour {
 		
-		public string prefix = "TIME BONUS: ";
-		public string format = "F1";
+		public string prefix = "{0}%";
+		public string format = "F0";
 		
 		Text _target;
 		float _previousValue;
@@ -24,19 +24,20 @@ namespace View {
 			if (_previousValue == state.timeBonus)
 				return;
 
-			RenderValue(state.timeBonus);
+			UpdateValue(state.timeBonus);
 		}
 
 		void Update(){
 			GameModel state = GameModel.Instance ();
 			if (state.state == GameModel.STATE_INITED) {
-				RenderValue(state.timeBonus);
+				UpdateValue(state.timeBonus);
 			}
 		}
 
-		void RenderValue(float value){
+		void UpdateValue(float value){
 			_previousValue = value;
-			_target.text = prefix + _previousValue.ToString (format);
+			_target.enabled = true;
+			_target.text = "+" + ((value - 1) * 100).ToString (format) + "%";
 		}
 
 		void OnDestroy(){

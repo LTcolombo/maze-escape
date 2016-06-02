@@ -1,5 +1,6 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
+using Model;
 
 namespace View
 {
@@ -9,7 +10,7 @@ namespace View
 		{
 			Text target = GetComponent<Text> ();
 			if (target != null)
-				target.text = "BEST SCORE: " + PlayerPrefs.GetInt ("highscore", 0);
+				target.text = "BEST SCORE: " + GameModel.Instance().maxScore;
 			else
 				Debug.Log ("No text component found!");
 		}

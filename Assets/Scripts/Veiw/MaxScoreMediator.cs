@@ -14,18 +14,18 @@ namespace View {
 		
 		void Start(){
 			_target = GetComponent<Text> ();
-			_previousValue = 0;
-			MazePaceNotifications.GAME_UPDATED.Add(OnGameStateUpdated);
+			_previousValue = -1;
+			MazePaceNotifications.GAME_UPDATED.Add (OnGameStateUpdated);
 		}
-		
+
 		// Update is called once per frame
 		void OnGameStateUpdated () {
-			GameModel state = GameModel.Instance ();
-			if (_previousValue == state.maxScore)
+			GameModel game = GameModel.Instance ();
+			if (_previousValue == game.maxScore)
 				return;
 				
-			_previousValue = state.maxScore;
-			_target.text = prefix + state.maxScore.ToString (format);
+			_previousValue = game.maxScore;
+			_target.text = prefix + game.maxScore.ToString (format);
 		}
 		
 		void OnDestroy(){
