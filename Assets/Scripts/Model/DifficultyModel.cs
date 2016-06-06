@@ -10,13 +10,13 @@ namespace Model
 	///</summary>
 	public class DifficultyModel
 	{
-		public static int NODE_SIZE = 128;
+		public static int NODE_SIZE = 32;
 
 		public int number;
 
 		private LevelValueSet _size = new LevelValueSet {
-			new LevelValue (0, 3),
-			new LevelValue (2, 4),
+			new LevelValue (0, 10),
+			new LevelValue (2, 10),
 			new LevelValue (30, 10)
 		};
 

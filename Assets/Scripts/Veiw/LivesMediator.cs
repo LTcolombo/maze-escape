@@ -9,37 +9,20 @@ namespace View
 {
 	public class LivesMediator : MonoBehaviour
 	{
-		private const int HEART_GAP = 80;
+		private const int HEART_GAP = 20;
 
-		private Text _timeUntilLifeRestoredText;
 		private Stack<GameObject> _instances;
 
-		private int _previousTime = -1;
 		private int _previousLives = -1;
 
 		protected void Start ()
 		{
 			_instances = new Stack<GameObject> ();
-			_timeUntilLifeRestoredText = (Text)GameObject.Find ("Canvas/TimeUntilLifeRestored").GetComponent<Text> ();
 		}
 
 		protected void Update ()
 		{		
-			SetTime (LivesModel.Instance ().NextLifeIn ());
 			SetLives (LivesModel.Instance ().GetLives ());
-		}
-
-		void SetTime (int value)
-		{
-			if (_previousTime == value)
-				return;
-			
-			if (value > 0)
-				_timeUntilLifeRestoredText.text = String.Format ("{0:00}:{1:00}", (value / 60), (value % 60));
-			else
-				_timeUntilLifeRestoredText.text = "MAX";
-
-			_previousTime = value;
 		}
 
 		void SetLives (int value)
@@ -61,7 +44,7 @@ namespace View
 
 			int i = 0;
 			foreach (GameObject heart in _instances) {
-				heart.transform.position = new Vector2 (startOffset + HEART_GAP * i, -260);
+				heart.transform.localPosition = new Vector2 (startOffset + HEART_GAP * i, 0);
 				i++;
 			}
 

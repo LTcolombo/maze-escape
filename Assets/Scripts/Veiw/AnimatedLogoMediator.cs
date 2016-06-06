@@ -30,8 +30,8 @@ namespace View {
 				for (int cell_x = 0; cell_x< LOGO_MATRIX.GetLength(1); cell_x++) {
 					
 					if (LOGO_MATRIX [cell_y, cell_x] != 0) {
-						int x = (-LOGO_MATRIX.GetLength (1) / 2 + cell_x) * 34;
-						int y = (LOGO_MATRIX.GetLength (0) - cell_y) * 34; 
+						int x = (-LOGO_MATRIX.GetLength (1) / 2 + cell_x) * 9;
+						int y = (LOGO_MATRIX.GetLength (0) - cell_y) * 9; 
 						
 						float[] tileRelativePos = new float[2] {
 							(float)cell_y / LOGO_MATRIX.GetLength (0),
@@ -43,9 +43,9 @@ namespace View {
 						Vector3 pos = new Vector3 (x, y, 0);
 						
 						if (cell_x % 2 == 0)
-							pos.x += Random.Range (-400, 400);
+							pos.x += Random.Range (-100, 100);
 						else
-							pos.y += Random.Range (-400, 400);
+							pos.y += Random.Range (-100, 100);
 						
 						GameObject tileInstance = (GameObject)Instantiate (PrefabLib.TILE_SMALL, pos, Quaternion.identity);
 						tileInstance.transform.parent = transform;

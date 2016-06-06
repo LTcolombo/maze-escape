@@ -23,7 +23,7 @@ namespace View
 
 		void AllowProceedToGame ()
 		{
-			Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
+			Text tipText = (Text)GameObject.Find ("ScreenHUD/TipText").GetComponent<Text> ();
 			tipText.text = "TAP ANYWHERE TO PLAY";
 			_canExit = true;
 		}
@@ -48,7 +48,7 @@ namespace View
 
 		void ProceedToGame ()
 		{		
-			Text tipText = (Text)GameObject.Find ("Canvas/TipText").GetComponent<Text> ();
+			Text tipText = (Text)GameObject.Find ("ScreenHUD/TipText").GetComponent<Text> ();
 			tipText.text = "LOADING...";
 			_canExit = false;
 			InvokeCommand (MazePaceActions.NavigateToGame);

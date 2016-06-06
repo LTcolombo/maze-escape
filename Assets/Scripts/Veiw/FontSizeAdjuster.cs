@@ -28,7 +28,7 @@ namespace View {
 			if (_target == null)
 				return;
 
-			var newSize = (Screen.height > Screen.width) ? Screen.width : Screen.height;
+			var newSize = (Screen.height);
 			if (_lastSize != newSize) 
 			{
 				_target.fontSize = Mathf.CeilToInt (relativeSize * (float)newSize);

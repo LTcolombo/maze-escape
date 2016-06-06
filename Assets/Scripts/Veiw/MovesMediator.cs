@@ -10,16 +10,15 @@ namespace View
 	{
 		public string template = "{0}%";
 		public float alpha = 0.2f;
-		public float sizePerCell = 0.0825f;
-		float _relativeSize;
+		public float sizePerCell = 0.1f;
+		public int maxVisibleMoves = 99;
+		int _relativeSize;
 
 		Text _target;
 		AudioSource _audio;
 
 		uint _previousValue;
 		uint _movesForLevel;
-
-		int _lastHeight;
 
 		void Awake ()
 		{
@@ -31,18 +30,9 @@ namespace View
 			MazePaceNotifications.EXIT_REACHED.Add (OnExitReached);
 		}
 
-		void Update ()
-		{
-			if (_lastHeight != Screen.height) {
-				UpdateFontSize ();
-				_lastHeight = Screen.height;
-			}
-		}
-
 		void OnMazeRecreated ()
 		{
-			_relativeSize = sizePerCell * MazeModel.Instance ().size;
-			UpdateFontSize ();
+			_target.fontSize = Mathf.CeilToInt (sizePerCell * MazeModel.Instance ().size);
 		}
 
 		void OnGameStateUpdated ()
@@ -52,7 +42,14 @@ namespace View
 				return;
 
 			if (game.state == GameModel.STATE_INITED) {
-				_movesForLevel = GameModel.Instance ().movesLeft;
+				_movesForLevel = (uint)Math.Min(maxVisibleMoves, GameModel.Instance ().movesLeft);
+			}
+
+			if (GameModel.Instance ().movesLeft > _movesForLevel) {
+				_target.enabled = false;
+				return;
+			} else {
+				_target.enabled = true;
 			}
 			
 			if (game.state == GameModel.STATE_MOVING && !_audio.isPlaying)
@@ -69,11 +66,6 @@ namespace View
 
 		void OnExitReached(){
 			_target.color = new Color (0, 1, 0, alpha);
-		}
-
-		void UpdateFontSize ()
-		{
-			_target.fontSize = Mathf.CeilToInt (_relativeSize * (float)Screen.height);
 		}
 
 		void OnDestroy ()
