@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 08de9e874cef14992ade4c74ab3bddca
+timeCreated: 1465335078
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 3
+  fontSize: 320
+  forceTextureCase: 3
+  characterSpacing: 1
+  characterPadding: 0
+  includeFontData: 1
+  fontNames:
+  - BigNoodleNumeric
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 82e25b6e4088c4d3ebb1cb10fe52e921, type: 3}
+  customCharacters: 0123456789
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

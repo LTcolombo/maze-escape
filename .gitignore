@@ -22,6 +22,7 @@ sysinfo.txt
 
 # output
 *-output/
+*-bin/
 
 # windows stuff
 /UWP
