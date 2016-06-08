@@ -15,14 +15,14 @@ namespace Model
 		public int number;
 
 		private LevelValueSet _size = new LevelValueSet {
-			new LevelValue (0, 10),
-			new LevelValue (2, 10),
+			new LevelValue (0, 3),
+			new LevelValue (2, 4),
 			new LevelValue (30, 10)
 		};
 
 		private LevelValueSet _moveTime = new LevelValueSet {
-			new LevelValue (0, 0.8f),
-			new LevelValue (3, 0.7f),
+			new LevelValue (0, 0.7f),
+			new LevelValue (3, 0.6f),
 			new LevelValue (4, 0.5f),
 			new LevelValue (8, 0.4f),
 			new LevelValue (20, 0.2f)
