@@ -1,7 +1,7 @@
 ﻿public enum MazePaceActions {
 	AppendLevel,
 	AppendMaxScore,
-	CheckIfLost,
+	CheckGameState,
 	CheckSwipe,
 	CreateMaze,
 	ExitLevel,

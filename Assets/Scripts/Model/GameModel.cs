@@ -13,8 +13,7 @@ namespace Model
 
 		public int state;
 
-		public int maxScore;
-
+		public Interpolatable maxScore;
 		public Interpolatable score;
 		public Interpolatable movesLeft;
 		public Interpolatable timeBonus;
@@ -34,7 +33,7 @@ namespace Model
 			score.Inc (value);
 		
 			if (maxScore < score) {
-				maxScore = score;
+				maxScore.SetValue(score);
 			}
 		}
 
@@ -50,8 +49,8 @@ namespace Model
 
 		private GameModel ()
 		{
-			maxScore = 0;
 			state = GameModel.STATE_INVALID;
+			maxScore = new Interpolatable ();
 			score = new Interpolatable ();
 			movesLeft = new Interpolatable ();
 			timeBonus = new Interpolatable ();

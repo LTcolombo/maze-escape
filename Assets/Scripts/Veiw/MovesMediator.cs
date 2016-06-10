@@ -42,10 +42,10 @@ namespace View
 				return;
 
 			if (game.state == GameModel.STATE_INITED) {
-				_movesForLevel = (uint)Math.Min(maxVisibleMoves, GameModel.Instance ().movesLeft);
+				_movesForLevel = (uint)Math.Min(maxVisibleMoves, game.movesLeft);
 			}
 
-			if (GameModel.Instance ().movesLeft > _movesForLevel) {
+			if (game.movesLeft > _movesForLevel) {
 				_target.enabled = false;
 				return;
 			} else {

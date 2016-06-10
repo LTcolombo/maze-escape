@@ -56,7 +56,7 @@ namespace View
 		{
 			MazePaceNotifications.NODE_REACHED.Dispatch ();
 			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
-			InvokeCommand (MazePaceActions.TryMovePlayer);
+			InvokeAction (MazePaceActions.TryMovePlayer);
 		}
 
 		void RotateAt (NodeVO node)
@@ -80,7 +80,7 @@ namespace View
 		void OnRotateCompleted ()
 		{
 			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
-			InvokeCommand (MazePaceActions.TryMovePlayer);
+			InvokeAction (MazePaceActions.TryMovePlayer);
 		}
 
 		public void SetDirection (int value)

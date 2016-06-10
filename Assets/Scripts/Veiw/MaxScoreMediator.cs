@@ -15,21 +15,19 @@ namespace View {
 		void Start(){
 			_target = GetComponent<Text> ();
 			_previousValue = -1;
-			MazePaceNotifications.GAME_UPDATED.Add (OnGameStateUpdated);
 		}
 
-		// Update is called once per frame
-		void OnGameStateUpdated () {
+		void Update () {
 			GameModel game = GameModel.Instance ();
-			if (_previousValue == game.maxScore)
+			int newValue = game.maxScore;
+			if (_previousValue == newValue)
 				return;
 				
-			_previousValue = game.maxScore;
-			_target.text = prefix + game.maxScore.ToString (format);
+			_previousValue = newValue;
+			_target.text = prefix + newValue;
 		}
 		
 		void OnDestroy(){
-			MazePaceNotifications.GAME_UPDATED.Remove(OnGameStateUpdated);
 		}
 	}
 }

@@ -11,27 +11,27 @@ namespace View
 		void Start()
         {
             CreateQueue();
-            InvokeCommand (MazePaceActions.ResetModels);
-			InvokeCommand (MazePaceActions.CreateMaze);
-			InvokeCommand (MazePaceActions.ResetGameState);
-			InvokeCommand (MazePaceActions.CheckSwipe);
-			InvokeCommand (MazePaceActions.CheckIfLost);
+            InvokeAction (MazePaceActions.ResetModels);
+			InvokeAction (MazePaceActions.CreateMaze);
+			InvokeAction (MazePaceActions.ResetGameState);
+			InvokeAction (MazePaceActions.CheckSwipe);
+			InvokeAction (MazePaceActions.CheckGameState);
 
 			MazePaceNotifications.EXIT_REACHED.Add (OnExitReached);
 		}
 
         void OnExitReached ()
 		{
-			InvokeCommand (MazePaceActions.ExitLevel);
-			InvokeCommand (MazePaceActions.AppendLevel);
-			InvokeCommand (MazePaceActions.WaitBeforeNextLevel);
-			InvokeCommand (MazePaceActions.CreateMaze);
-			InvokeCommand (MazePaceActions.ResetGameState);
+			InvokeAction (MazePaceActions.ExitLevel);
+			InvokeAction (MazePaceActions.AppendLevel);
+			InvokeAction (MazePaceActions.WaitBeforeNextLevel);
+			InvokeAction (MazePaceActions.CreateMaze);
+			InvokeAction (MazePaceActions.ResetGameState);
 		}
 
 		void Update(){
             InvokeActions();
-            if (GameModel.Instance().IsChanging()) {
+			if (GameModel.Instance().IsChanging()) {
 				MazePaceNotifications.GAME_UPDATED.Dispatch ();
 			}
 		}
@@ -40,8 +40,7 @@ namespace View
 		{
 			AnalyticsWrapper.ReportGamePaused (GameModel.Instance());
 
-			if (GameModel.Instance().maxScore > PlayerPrefs.GetInt ("highscore", 0))
-				PlayerPrefs.SetInt ("highscore", GameModel.Instance().maxScore);
+			InvokeAction (MazePaceActions.AppendMaxScore);
 		}
 
 		public void OnDestroy ()

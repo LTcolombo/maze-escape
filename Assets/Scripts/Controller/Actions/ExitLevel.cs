@@ -7,9 +7,14 @@ namespace Controller
 	public class ExitLevel:Action
 	{
 		override public PrefromResult Perform(float delta){
-			GameModel.Instance().movesLeft.SetValue(GameModel.Instance().movesLeft, 0u, 0.5f);
+			var game = GameModel.Instance ();
+			game.movesLeft.SetValue(game.movesLeft, 0u, 0.5f);
 			var avgScore = (DifficultyModel.Instance ().minScore + DifficultyModel.Instance ().maxScore) / 2;
-			GameModel.Instance().score.SetValue(GameModel.Instance().score, (int)(GameModel.Instance().score + GameModel.Instance().movesLeft * GameModel.Instance().timeBonus * avgScore), 0.5f);
+			var newScore = (int)(game.score + game.movesLeft * game.timeBonus * avgScore);
+			game.score.SetValue (game.score, newScore, 0.5f);
+			if (game.maxScore < newScore) {
+				game.maxScore.SetValue (game.maxScore, newScore, 0.5f);
+			}
 			DifficultyModel.Instance ().number++;
 			MazePaceNotifications.GAME_UPDATED.Dispatch ();
 

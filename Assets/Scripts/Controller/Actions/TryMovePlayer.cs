@@ -16,21 +16,21 @@ namespace Controller
 			IntPointVO pos = player.cellPosition;
 			int directionIdx = player.directionIdx;
 			NodeVO node = MazeModel.Instance ().GetNode (pos.x, pos.y);
-			GameModel gameState = GameModel.Instance ();
+			GameModel game = GameModel.Instance ();
 
-			gameState.AddScore ((int)((float)node.score * gameState.timeBonus));
+			game.AddScore ((int)((float)node.score * game.timeBonus));
 			node.score = 0;
 
-			gameState.movesLeft.Dec (1);
+			game.movesLeft.Dec (1);
 
-			if (gameState.state == GameModel.STATE_INITED || gameState.state == GameModel.STATE_STUCK) {
-				gameState.state = GameModel.STATE_MOVING;	
-				gameState.score.Freeze();
-				gameState.timeBonus.Freeze();
+			if (game.state == GameModel.STATE_INITED || game.state == GameModel.STATE_STUCK) {
+				game.state = GameModel.STATE_MOVING;	
+				game.score.Freeze();
+				game.timeBonus.Freeze();
 			}
 
 			if (node.HasFlag (NodeVO.SPECIALS_EXIT)) {
-				GameModel.Instance().state = GameModel.STATE_ENDED;
+				game.state = GameModel.STATE_ENDED;
 				MazePaceNotifications.EXIT_REACHED.Dispatch ();
 			} else {
 				if (node.HasFlag (NodeVO.SPECIALS_HIDE_WALLS)) {
@@ -49,8 +49,8 @@ namespace Controller
 					player.moved = true;
 					MazePaceNotifications.PROCEED_FROM_NODE.Dispatch (node);
 				} else {
-					gameState.state = GameModel.STATE_STUCK;
-					gameState.score.SetValue (gameState.score, 0, DifficultyModel.Instance ().scoreDrainTime);
+					game.state = GameModel.STATE_STUCK;
+					game.score.SetValue (game.score, 0, DifficultyModel.Instance ().scoreDrainTime);
 					MazePaceNotifications.PLAYER_STUCK.Dispatch ();
 				}
 			}

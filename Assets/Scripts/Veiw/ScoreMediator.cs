@@ -26,27 +26,27 @@ namespace View
 
 		void OnGameStateUpdated ()
 		{
-			GameModel state = GameModel.Instance ();
-			if (state.state != _previousState) {
-				if (state.state == GameModel.STATE_STUCK)
+			GameModel game = GameModel.Instance ();
+			if (game.state != _previousState) {
+				if (game.state == GameModel.STATE_STUCK)
 					_target.color = new Color (0.8f, 0.2f, 0.2f);
-				else if (state.state == GameModel.STATE_ENDED)
+				else if (game.state == GameModel.STATE_ENDED)
 					_target.color = new Color (0.2f, 0.8f, 0.2f);
 				else
 					_target.color = new Color (0.56f, 0.56f, 0.56f);
 					
-				_previousState = state.state;
+				_previousState = game.state;
 			}
 			
-			if (_previousValue == state.score)
+			if (_previousValue == game.score)
 				return;
 			
-			RenderValue (GameModel.Instance ().score);
+			RenderValue (game.score);
 		}
 
 		void Update(){
 			if (_previousState == GameModel.STATE_STUCK) {
-				RenderValue (GameModel.Instance ().score);
+				RenderValue (GameModel.Instance().score);
 			}
 		}
 

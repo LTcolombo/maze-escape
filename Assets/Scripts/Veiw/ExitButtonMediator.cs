@@ -12,7 +12,7 @@ namespace View
 
         public void OnExitClick(){
 			AnalyticsWrapper.ReportReturnToMenu (GameModel.Instance());
-			InvokeCommand(MazePaceActions.NavigateToMenu);
+			InvokeAction(MazePaceActions.NavigateToMenu);
 		}
 
         void Update()

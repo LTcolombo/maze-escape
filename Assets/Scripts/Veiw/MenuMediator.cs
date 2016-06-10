@@ -16,6 +16,7 @@ namespace View
 		void Start ()
         {
             CreateQueue();
+			InvokeAction (MazePaceActions.ResetModels);
 
             _canExit = false;
 			Invoke ("AllowProceedToGame", 1); //todo commands please
@@ -51,7 +52,7 @@ namespace View
 			Text tipText = (Text)GameObject.Find ("ScreenHUD/TipText").GetComponent<Text> ();
 			tipText.text = "LOADING...";
 			_canExit = false;
-			InvokeCommand (MazePaceActions.NavigateToGame);
+			InvokeAction (MazePaceActions.NavigateToGame);
 		}
 	}
 }

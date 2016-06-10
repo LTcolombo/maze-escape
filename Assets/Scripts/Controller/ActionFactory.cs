@@ -15,8 +15,8 @@ namespace Controller
 					return new AppendLevel ();
 				case(MazePaceActions.AppendMaxScore):
 					return new AppendMaxScore ();
-				case(MazePaceActions.CheckIfLost):
-					return new CheckIfLost ();
+				case(MazePaceActions.CheckGameState):
+					return new CheckGameState ();
 				case(MazePaceActions.CheckSwipe):
 					return new CheckSwipe ();
 				case(MazePaceActions.CreateMaze):

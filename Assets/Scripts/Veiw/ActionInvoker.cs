@@ -14,9 +14,9 @@ namespace View
 			_queue = new Queue<Action> ();
 		}
 
-		protected void InvokeCommand (T commandId)
+		protected void InvokeAction (T actionId)
 		{
-			_queue.Enqueue (_factory.Create(commandId));
+			_queue.Enqueue (_factory.Create(actionId));
 		}
 
 		protected void InvokeActions()
