@@ -9,7 +9,7 @@ namespace Controller
 		override public PrefromResult Perform (float delta)
 		{
 			//todo persistent data provider?
-			DifficultyModel.Instance ().number = PlayerPrefs.GetInt ("maxlevel", 0) / 2;
+			DifficultyModel.Instance ().number = 1;//PlayerPrefs.GetInt ("maxlevel", 0) / 2;
 			GameModel.Instance ().maxScore.SetValue(PlayerPrefs.GetInt ("highscore", 0));
 
 			GameModel.Instance ().score.SetValue(0);

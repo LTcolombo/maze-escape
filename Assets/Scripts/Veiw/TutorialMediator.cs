@@ -76,23 +76,23 @@ namespace View
 			
 			switch (_correctDirection) {
 			case (NodeVO.DIRECTION_UP_IDX):
-				start.y -= 50.0f;
-				stop.y += 50.0f;
+				start.y -= 25.0f;
+				stop.y += 25.0f;
 				break;
 				
 			case (NodeVO.DIRECTION_RIGHT_IDX):
-				start.x -= 50.0f;
-				stop.x += 50.0f;
+				start.x -= 25.0f;
+				stop.x += 25.0f;
 				break;
 				
 			case (NodeVO.DIRECTION_DOWN_IDX):
-				start.y += 50.0f;
-				stop.y -= 50.0f;
+				start.y += 25.0f;
+				stop.y -= 25.0f;
 				break;
 				
 			case (NodeVO.DIRECTION_LEFT_IDX):
-				start.x += 50.0f;
-				stop.x -= 50.0f;
+				start.x += 25.0f;
+				stop.x -= 25.0f;
 				break;
 			}
 			

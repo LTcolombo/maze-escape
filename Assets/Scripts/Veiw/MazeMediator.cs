@@ -18,8 +18,6 @@ namespace View
 
 		//flag for redrawing
 		private bool _dirty;
-		private int _prevMaxX = 0;
-		private int _prevMaxY = 0;
 
 		void Start ()
 		{
@@ -61,22 +59,17 @@ namespace View
 			var difficultyModel = DifficultyModel.Instance ();
 			var mazeModel = MazeModel.Instance ();
 
-			transform.parent.DOMove (new Vector2 (
+			transform.parent.localPosition = new Vector2 (
 				-(mazeModel.size - 1) * DifficultyModel.NODE_SIZE / 2, 
 				-(mazeModel.size - 1) * DifficultyModel.NODE_SIZE / 2
-			), TRANSITION_TIME);
-
-			foreach (Object nodeInstance in _nodeInstances)
-				Destroy (nodeInstance);
-
-			_nodeInstances.Clear ();
+			);
 
 			//set of base colors
 			ColorComponentVO[] colorComponents = ColorComponentVO.GetArray ();
 
+			int index = 0;
 			for (int cellX = 0; cellX < mazeModel.size; cellX++) {
 				for (int cellY = 0; cellY < mazeModel.size; cellY++) {
-
 					NodeVO node = mazeModel.GetNode (cellX, cellY);
 
 					float[] tileRelativePos = new float[2] {
@@ -86,25 +79,24 @@ namespace View
 
 					float tint = 0.6f + 0.4f * (float)(node.score - difficultyModel.minScore) / (difficultyModel.maxScore - difficultyModel.minScore);
 
-					//create a tile				
-					GameObject nodeInstance = (GameObject)Instantiate (PrefabLib.NODE);
-					nodeInstance.transform.parent = transform;
-					nodeInstance.GetComponent<NodeMediator> ().Redraw (node, ColorComponentVO.GetColorAt (tileRelativePos, colorComponents, tint));
-					_nodeInstances.Add (nodeInstance);
-
-					float zOrder = 1 - (float)(cellY + cellX) / (mazeModel.size + mazeModel.size);	
-
-					if (cellX <= _prevMaxX && cellY <= _prevMaxY)
-						nodeInstance.transform.localPosition = new Vector3 (cellX * DifficultyModel.NODE_SIZE, cellY * DifficultyModel.NODE_SIZE, zOrder);
-					else {
-						nodeInstance.transform.localPosition = new Vector3 (Mathf.Min (_prevMaxX, cellX) * DifficultyModel.NODE_SIZE, Mathf.Min (_prevMaxY, cellY) * DifficultyModel.NODE_SIZE, zOrder);
-						nodeInstance.transform.DOLocalMove (new Vector3 (cellX * DifficultyModel.NODE_SIZE, cellY * DifficultyModel.NODE_SIZE, zOrder), TRANSITION_TIME);
+					GameObject nodeInstance;
+					if (_nodeInstances.Count > index) {
+						nodeInstance = _nodeInstances [index];
 					}
+					else {
+						//create a tile				
+						nodeInstance = (GameObject)Instantiate (PrefabLib.NODE);
+						nodeInstance.transform.parent = transform;
+						_nodeInstances.Add (nodeInstance);
+					}
+
+					float zOrder = 10 - (float)(cellY + cellX) / (mazeModel.size + mazeModel.size);
+					nodeInstance.GetComponent<NodeMediator> ().Redraw (node, ColorComponentVO.GetColorAt (tileRelativePos, colorComponents, tint));
+					nodeInstance.transform.localPosition = new Vector3 (cellX * DifficultyModel.NODE_SIZE, cellY * DifficultyModel.NODE_SIZE, zOrder);
+
+					index++;
 				}
 			}
-
-			_prevMaxX = mazeModel.size - 1;
-			_prevMaxY = mazeModel.size - 1;
 		}
 
 		public void OnDestroy ()

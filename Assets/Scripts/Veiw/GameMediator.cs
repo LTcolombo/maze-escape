@@ -39,8 +39,7 @@ namespace View
 		void OnApplicationPause (bool paused)
 		{
 			AnalyticsWrapper.ReportGamePaused (GameModel.Instance());
-
-			InvokeAction (MazePaceActions.AppendMaxScore);
+			//InvokeAction (MazePaceActions.AppendMaxScore);
 		}
 
 		public void OnDestroy ()

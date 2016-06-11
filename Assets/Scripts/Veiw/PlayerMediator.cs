@@ -34,7 +34,8 @@ namespace View
 		void OnMazeRecreated ()
 		{
 			transform.eulerAngles = new Vector3 (0, 0, -90 * PlayerModel.Instance ().directionIdx);
-			transform.localPosition = new Vector3 (DifficultyModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.x, 
+			transform.localPosition = new Vector3 (
+				DifficultyModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.x, 
 				DifficultyModel.NODE_SIZE * PlayerModel.Instance ().cellPosition.y, 
 				0);
 			_renderer.enabled = true;
