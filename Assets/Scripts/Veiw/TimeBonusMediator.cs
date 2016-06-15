@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Model;
 using Notifications;
+using DG.Tweening;
 
 namespace View {
 	public class TimeBonusMediator : MonoBehaviour {
@@ -11,11 +12,19 @@ namespace View {
 		
 		Text _target;
 		float _previousValue;
+		float _initialY;
 		
 		void Awake(){
 			_target = GetComponent<Text> ();
 			_previousValue = 0;
+			_initialY = transform.localPosition.y;
+			MazePaceNotifications.MAZE_RECREATED.Add(OnMazeRecreated);
 			MazePaceNotifications.GAME_UPDATED.Add(OnGameStateUpdated);
+			MazePaceNotifications.EXIT_REACHED.Add(OnExitReached);
+		}
+			
+		void OnMazeRecreated(){
+			transform.DOLocalMoveY (_initialY, 0.4f);
 		}
 
 		void OnGameStateUpdated () {
@@ -25,6 +34,10 @@ namespace View {
 				return;
 
 			UpdateValue(state.timeBonus);
+		}
+
+		void OnExitReached(){
+			transform.DOLocalMoveY (0, 0.4f);
 		}
 
 		void Update(){
@@ -41,7 +54,9 @@ namespace View {
 		}
 
 		void OnDestroy(){
+			MazePaceNotifications.MAZE_RECREATED.Remove(OnMazeRecreated);
 			MazePaceNotifications.GAME_UPDATED.Remove(OnGameStateUpdated);
+			MazePaceNotifications.EXIT_REACHED.Remove(OnExitReached);
 		}
 	}
 }

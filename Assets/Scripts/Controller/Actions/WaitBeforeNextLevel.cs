@@ -4,7 +4,7 @@ namespace Controller
 {
 	public class WaitBeforeNextLevel:Action
 	{
-		float _waitFor = 1.4f;
+		float _waitFor = 2.4f;
 
 		public override PrefromResult Perform (float delta)
 		{

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Model;
 using Notifications;
+using DG.Tweening;
 
 namespace View
 {
@@ -12,7 +13,7 @@ namespace View
 		public string format = "F0";
 		private Text _target;
 		private int _previousState;
-		//move to state?
+		private float _initialY;
 		private int _previousValue;
 		private AudioSource _audio;
 
@@ -21,7 +22,14 @@ namespace View
 			_target = GetComponent<Text> ();
 			_audio = GetComponent<AudioSource> ();
 			_previousValue = -1;
+			_initialY = transform.localPosition.y;
+			MazePaceNotifications.MAZE_RECREATED.Add (OnMazeRecreated);
 			MazePaceNotifications.GAME_UPDATED.Add (OnGameStateUpdated);
+			MazePaceNotifications.EXIT_REACHED.Add (OnExitReached);
+		}
+
+		void OnMazeRecreated(){
+			transform.DOLocalMoveY (_initialY, 0.4f);
 		}
 
 		void OnGameStateUpdated ()
@@ -44,6 +52,10 @@ namespace View
 			RenderValue (game.score);
 		}
 
+		void OnExitReached(){
+			transform.DOLocalMoveY (0, 0.4f);
+		}
+
 		void Update(){
 			if (_previousState == GameModel.STATE_STUCK) {
 				RenderValue (GameModel.Instance().score);
@@ -61,7 +73,9 @@ namespace View
 
 		void OnDestroy ()
 		{
+			MazePaceNotifications.MAZE_RECREATED.Remove (OnMazeRecreated);
 			MazePaceNotifications.GAME_UPDATED.Remove (OnGameStateUpdated);
+			MazePaceNotifications.EXIT_REACHED.Remove (OnExitReached);
 		}
 	}
 }

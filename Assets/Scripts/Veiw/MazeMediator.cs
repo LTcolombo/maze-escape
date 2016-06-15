@@ -11,7 +11,7 @@ namespace View
 {
 	public class MazeMediator : MonoBehaviour
 	{
-		public static float TRANSITION_TIME = 0.5f;
+		public static float TRANSITION_TIME = 0.3f;
 
 		//references for cleanup
 		private List<GameObject> _nodeInstances = new List<GameObject> ();
@@ -23,6 +23,7 @@ namespace View
 		{
 			MazePaceNotifications.MAZE_RECREATED.Add (UpdateMazeData);
 			MazePaceNotifications.NODE_REACHED.Add (OnNodeReached);
+			MazePaceNotifications.EXIT_REACHED.Add (OnExitReached);
 			MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Add (OnToggleWallsVisibility);
 		}
 
@@ -54,45 +55,70 @@ namespace View
 				_nodeInstances [index].GetComponent<NodeMediator> ().onReached ();
 		}
 
+		private void OnExitReached ()
+		{
+			var maze = MazeModel.Instance ();
+			for (int i = 0; i < _nodeInstances.Count; i++) {
+				int value = Random.Range (0, 3);
+				GameObject node = _nodeInstances [i];
+				var position = node.transform.position;
+				if (Random.Range (0, 2) == 1)
+					node.transform.DOLocalMoveX ((Random.Range (0, 2) == 1 ? value + maze.size : -(value + 1)) * DifficultyModel.NODE_SIZE, TRANSITION_TIME);
+				else
+					node.transform.DOLocalMoveY ((Random.Range (0, 2) == 1 ? value + maze.size : -(value + 1)) * DifficultyModel.NODE_SIZE, TRANSITION_TIME);
+				
+			}
+		}
+
 		private void Redraw ()
 		{	
 			var difficultyModel = DifficultyModel.Instance ();
-			var mazeModel = MazeModel.Instance ();
+			var maze = MazeModel.Instance ();
 
 			transform.parent.localPosition = new Vector2 (
-				-(mazeModel.size - 1) * DifficultyModel.NODE_SIZE / 2, 
-				-(mazeModel.size - 1) * DifficultyModel.NODE_SIZE / 2
+				-(maze.size - 1) * DifficultyModel.NODE_SIZE / 2, 
+				-(maze.size - 1) * DifficultyModel.NODE_SIZE / 2
 			);
 
 			//set of base colors
 			ColorComponentVO[] colorComponents = ColorComponentVO.GetArray ();
 
 			int index = 0;
-			for (int cellX = 0; cellX < mazeModel.size; cellX++) {
-				for (int cellY = 0; cellY < mazeModel.size; cellY++) {
-					NodeVO node = mazeModel.GetNode (cellX, cellY);
+			for (int cellX = 0; cellX < maze.size; cellX++) {
+				for (int cellY = 0; cellY < maze.size; cellY++) {
+					NodeVO node = maze.GetNode (cellX, cellY);
 
 					float[] tileRelativePos = new float[2] {
-						(float)cellX / mazeModel.size,
-						(float)cellY / mazeModel.size
+						(float)cellX / maze.size,
+						(float)cellY / maze.size
 					};
 
 					float tint = 0.6f + 0.4f * (float)(node.score - difficultyModel.minScore) / (difficultyModel.maxScore - difficultyModel.minScore);
+					float zOrder = 10 - (float)(cellY + cellX) / (maze.size + maze.size);
 
 					GameObject nodeInstance;
 					if (_nodeInstances.Count > index) {
 						nodeInstance = _nodeInstances [index];
-					}
-					else {
+					} else {
 						//create a tile				
 						nodeInstance = (GameObject)Instantiate (PrefabLib.NODE);
 						nodeInstance.transform.parent = transform;
+						int value = Random.Range (0, 3);
+						int randompos = (Random.Range (0, 2) == 1 ? value + maze.size : -(value + 1));
+						if (Random.Range (0, 2) == 1)
+							nodeInstance.transform.localPosition = new Vector3 (cellX * DifficultyModel.NODE_SIZE, randompos * DifficultyModel.NODE_SIZE, zOrder);
+						else
+							nodeInstance.transform.localPosition = new Vector3 (randompos * DifficultyModel.NODE_SIZE, cellY * DifficultyModel.NODE_SIZE, zOrder);
 						_nodeInstances.Add (nodeInstance);
 					}
 
-					float zOrder = 10 - (float)(cellY + cellX) / (mazeModel.size + mazeModel.size);
+					nodeInstance.transform.DOLocalMove (new Vector3 (
+						cellX * DifficultyModel.NODE_SIZE, 
+						cellY * DifficultyModel.NODE_SIZE, 
+						zOrder
+					), TRANSITION_TIME);
+
 					nodeInstance.GetComponent<NodeMediator> ().Redraw (node, ColorComponentVO.GetColorAt (tileRelativePos, colorComponents, tint));
-					nodeInstance.transform.localPosition = new Vector3 (cellX * DifficultyModel.NODE_SIZE, cellY * DifficultyModel.NODE_SIZE, zOrder);
 
 					index++;
 				}
@@ -103,6 +129,7 @@ namespace View
 		{
 			MazePaceNotifications.MAZE_RECREATED.Remove (UpdateMazeData);
 			MazePaceNotifications.NODE_REACHED.Remove (OnNodeReached);
+			MazePaceNotifications.EXIT_REACHED.Remove (OnExitReached);
 			MazePaceNotifications.TOGGLE_WALLS_VISIBILITY.Remove (OnToggleWallsVisibility);
 		}
 	}

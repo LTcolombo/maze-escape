@@ -17,8 +17,7 @@ namespace View {
 		void Start ()
 		{
 			_target = GetComponent<Text> ();
-			
-			
+
 			if (_target == null)
 				Debug.LogError("FontSizeAdjuster is assigned to a non text object");
 		}
