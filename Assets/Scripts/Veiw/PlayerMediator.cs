@@ -13,9 +13,7 @@ namespace View
 		private AudioSource _audio;
 
 		void Start ()
-		{
-			CreateQueue ();
-			                                      
+		{                       
 			_renderer = GetComponent<SpriteRenderer> ();
 			_audio = GetComponent<AudioSource> ();
 

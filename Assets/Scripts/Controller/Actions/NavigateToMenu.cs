@@ -9,7 +9,7 @@ namespace Controller
 		override public PrefromResult Perform (float delta)
 		{
 			LivesModel.Instance().DecLives ();
-			AnalyticsWrapper.ReportReturnToMenu (GameModel.Instance());
+			AnalyticsWrapper.ReportReturnToMenu (DifficultyModel.Instance().number, GameModel.Instance());
 			SceneManager.LoadScene ("MenuScene");
 			return PrefromResult.COMPLETED;
 		}

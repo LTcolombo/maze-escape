@@ -6,13 +6,8 @@ namespace View
 {
 	public class ActionInvoker<T>:MonoBehaviour
 	{
-		Queue<Action> _queue;
-		ActionFactory<T> _factory;
-
-		protected void CreateQueue(){
-			_factory = new ActionFactory<T>();
-			_queue = new Queue<Action> ();
-		}
+		Queue<Action> _queue = new Queue<Action> ();
+		ActionFactory<T> _factory = new ActionFactory<T>();
 
 		protected void InvokeAction (T actionId)
 		{

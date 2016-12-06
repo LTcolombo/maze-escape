@@ -15,7 +15,7 @@ namespace Controller
 				if (game.maxScore > PlayerPrefs.GetInt ("highscore", 0))
 					PlayerPrefs.SetInt ("highscore", game.maxScore);
 
-				AnalyticsWrapper.ReportGameLost (game);
+				AnalyticsWrapper.ReportGameLost (DifficultyModel.Instance().number, game);
 				LivesModel.Instance ().DecLives ();
 				SceneManager.LoadScene ("MenuScene");
 			} 

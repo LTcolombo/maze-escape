@@ -5,13 +5,8 @@ namespace View
 {
 	public class ExitButtonMediator : ActionInvoker<MazePaceActions>
 	{
-        void Start()
-        {
-            CreateQueue();
-        }
-
         public void OnExitClick(){
-			AnalyticsWrapper.ReportReturnToMenu (GameModel.Instance());
+			AnalyticsWrapper.ReportReturnToMenu (DifficultyModel.Instance().number, GameModel.Instance());
 			InvokeAction(MazePaceActions.NavigateToMenu);
 		}
 

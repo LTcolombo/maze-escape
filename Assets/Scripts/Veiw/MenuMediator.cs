@@ -15,7 +15,6 @@ namespace View
 
 		void Start ()
         {
-            CreateQueue();
 			InvokeAction (MazePaceActions.ResetModels);
 
             _canExit = false;

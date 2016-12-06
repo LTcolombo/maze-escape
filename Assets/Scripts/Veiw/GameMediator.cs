@@ -10,7 +10,6 @@ namespace View
 	{
 		void Start()
         {
-            CreateQueue();
             InvokeAction (MazePaceActions.ResetModels);
 			InvokeAction (MazePaceActions.CreateMaze);
 			InvokeAction (MazePaceActions.ResetGameState);
@@ -38,8 +37,8 @@ namespace View
 
 		void OnApplicationPause (bool paused)
 		{
-			AnalyticsWrapper.ReportGamePaused (GameModel.Instance());
-			//InvokeAction (MazePaceActions.AppendMaxScore);
+			AnalyticsWrapper.ReportGamePaused (DifficultyModel.Instance().number, GameModel.Instance());
+			InvokeAction (MazePaceActions.AppendMaxScore);
 		}
 
 		public void OnDestroy ()
